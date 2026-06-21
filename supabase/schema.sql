@@ -1,29 +1,30 @@
 -- ============================================================================
 -- Men's Fishing Trip — database schema
--- Run this in Supabase: SQL Editor -> New query -> paste -> Run.
--- Safe to re-run (uses IF NOT EXISTS / ON CONFLICT where practical).
+-- Run this in Supabase: SQL Editor -> New query -> paste ALL of it -> Run.
+-- Designed to run in a single pass and to be safe to re-run.
 -- ============================================================================
 
 create extension if not exists "pgcrypto";
 
 -- ---------------------------------------------------------------------------
--- Enums
+-- Enums (created only if they don't already exist)
 -- ---------------------------------------------------------------------------
-do $$ begin
-  create type ride_preference as enum ('driving', 'riding', 'either');
-exception when duplicate_object then null; end $$;
-
-do $$ begin
-  create type fishing_session as enum ('saturday_morning', 'saturday_afternoon');
-exception when duplicate_object then null; end $$;
-
-do $$ begin
-  create type signup_role as enum ('breakfast_cook', 'coffee_maker');
-exception when duplicate_object then null; end $$;
-
-do $$ begin
-  create type ride_direction as enum ('to_trip', 'from_trip');
-exception when duplicate_object then null; end $$;
+do $enums$
+begin
+  if not exists (select 1 from pg_type where typname = 'ride_preference') then
+    create type ride_preference as enum ('driving', 'riding', 'either');
+  end if;
+  if not exists (select 1 from pg_type where typname = 'fishing_session') then
+    create type fishing_session as enum ('saturday_morning', 'saturday_afternoon');
+  end if;
+  if not exists (select 1 from pg_type where typname = 'signup_role') then
+    create type signup_role as enum ('breakfast_cook', 'coffee_maker');
+  end if;
+  if not exists (select 1 from pg_type where typname = 'ride_direction') then
+    create type ride_direction as enum ('to_trip', 'from_trip');
+  end if;
+end
+$enums$;
 
 -- ---------------------------------------------------------------------------
 -- Cabins
@@ -161,12 +162,15 @@ create table if not exists admins (
 -- ---------------------------------------------------------------------------
 -- updated_at trigger for attendees
 -- ---------------------------------------------------------------------------
-create or replace function set_updated_at() returns trigger as $$
+create or replace function set_updated_at()
+returns trigger
+language plpgsql
+as $set_updated_at$
 begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$set_updated_at$;
 
 drop trigger if exists attendees_set_updated_at on attendees;
 create trigger attendees_set_updated_at
@@ -175,10 +179,10 @@ create trigger attendees_set_updated_at
 
 -- ---------------------------------------------------------------------------
 -- Row Level Security
--- All app access goes through the server using the service_role key, which
--- BYPASSES RLS. We enable RLS with NO permissive policies so that the public
--- anon key cannot read or write these tables directly. This keeps phone
--- numbers, emergency contacts, and payment status private.
+-- All app access goes through the server using the SECRET API key, which
+-- BYPASSES RLS. We enable RLS with NO permissive policies so that the
+-- publishable (browser) key cannot read or write these tables directly. This
+-- keeps phone numbers, emergency contacts, and payment status private.
 -- ---------------------------------------------------------------------------
 alter table cabins          enable row level security;
 alter table fishing_groups  enable row level security;
@@ -196,7 +200,8 @@ alter table admins          enable row level security;
 
 -- Cabins (rename/adjust capacities to match your real cabins)
 insert into cabins (name, capacity, sort_order)
-select * from (values
+select v.name, v.capacity, v.sort_order
+from (values
   ('Cabin 1', 10, 1),
   ('Cabin 2', 10, 2),
   ('Cabin 3', 10, 3),
@@ -206,7 +211,8 @@ where not exists (select 1 from cabins);
 
 -- Fishing groups (one example per session; add more in the admin UI)
 insert into fishing_groups (name, session, guide_name, capacity)
-select * from (values
+select v.name, v.session, v.guide_name, v.capacity
+from (values
   ('Morning Group A', 'saturday_morning'::fishing_session, 'TBD', 4),
   ('Afternoon Group A', 'saturday_afternoon'::fishing_session, 'TBD', 4)
 ) as v(name, session, guide_name, capacity)
@@ -214,8 +220,9 @@ where not exists (select 1 from fishing_groups);
 
 -- Agenda
 insert into agenda_items (trip_day, start_time, sort_order, title, description, location)
-select * from (values
-  ('friday',   '3:00 PM',  10, 'Arrive & Check In', 'Find your cabin, settle in.', null),
+select v.trip_day, v.start_time, v.sort_order, v.title, v.description, v.location
+from (values
+  ('friday',   '3:00 PM',  10, 'Arrive & Check In', 'Find your cabin, settle in.', null::text),
   ('friday',   '6:30 PM',  20, 'Group Dinner', 'Dinner together in Broken Bow.', 'Broken Bow'),
   ('friday',   '8:00 PM',  30, 'Friday Night Speaker', 'Guest speaker for the evening.', null),
   ('saturday', '6:30 AM',  10, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers — thank you!', 'Cabins'),
@@ -230,7 +237,8 @@ where not exists (select 1 from agenda_items);
 
 -- Locations (fill in real addresses / map links in the admin UI or here)
 insert into locations (name, category, address, notes, sort_order)
-select * from (values
+select v.name, v.category, v.address, v.notes, v.sort_order
+from (values
   ('Cabins', 'Lodging', 'Broken Bow, OK', 'Our cabins for the weekend.', 10),
   ('Friday Dinner', 'Dinner', 'Broken Bow, OK', 'Friday night group dinner spot.', 20),
   ('Saturday Dinner', 'Dinner', 'Broken Bow, OK', 'Saturday night group dinner spot.', 30),
@@ -239,5 +247,7 @@ select * from (values
 where not exists (select 1 from locations);
 
 -- IMPORTANT: add your admin email(s) here so you can use the admin dashboard.
--- insert into admins (email, name) values ('you@example.com', 'Your Name')
---   on conflict (email) do nothing;
+-- Already added for ryan.l.hendrickson@gmail.com below — edit/add as needed.
+insert into admins (email, name)
+values ('ryan.l.hendrickson@gmail.com', 'Ryan Hendrickson')
+on conflict (email) do nothing;
