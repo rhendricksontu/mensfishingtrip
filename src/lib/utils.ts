@@ -30,3 +30,14 @@ export const PHONE_EMAIL_DOMAIN = "phone.mensfishingtrip.com";
 export function authEmailForPhone(phone: string): string {
   return `${phoneKey(phone)}@${PHONE_EMAIL_DOMAIN}`;
 }
+
+// Clean a "Venue · 123 St, City, ST" display string into a maps search query.
+function mapsQuery(place: string): string {
+  return encodeURIComponent(place.replace(/·/g, " ").replace(/\s+/g, " ").trim());
+}
+export function googleMapsUrl(place: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${mapsQuery(place)}`;
+}
+export function appleMapsUrl(place: string): string {
+  return `https://maps.apple.com/?q=${mapsQuery(place)}`;
+}

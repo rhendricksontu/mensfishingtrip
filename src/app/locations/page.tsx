@@ -1,5 +1,6 @@
 import { getLocations } from "@/lib/data";
 import type { LocationItem } from "@/lib/types";
+import MapLink from "@/components/MapLink";
 
 export const metadata = { title: "Locations · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
@@ -30,11 +31,7 @@ export default async function LocationsPage() {
 }
 
 function LocationCard({ loc }: { loc: LocationItem }) {
-  const mapHref =
-    loc.map_url ||
-    (loc.address
-      ? `https://maps.google.com/?q=${encodeURIComponent(loc.address)}`
-      : null);
+  const place = loc.address || loc.name;
 
   return (
     <div className="card">
@@ -50,16 +47,15 @@ function LocationCard({ loc }: { loc: LocationItem }) {
       {loc.address && (
         <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
       )}
-      {mapHref && (
-        <a
-          href={mapHref}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn-secondary mt-3"
-        >
+      {loc.map_url ? (
+        <a href={loc.map_url} target="_blank" rel="noopener noreferrer" className="btn-secondary mt-3">
           🧭 Get directions
         </a>
-      )}
+      ) : loc.address ? (
+        <MapLink place={place} className="btn-secondary mt-3">
+          🧭 Get directions
+        </MapLink>
+      ) : null}
     </div>
   );
 }
