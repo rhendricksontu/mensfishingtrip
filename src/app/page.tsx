@@ -1,7 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
+import { getSessionUser } from "@/lib/auth";
+import AgendaView from "@/components/AgendaView";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  // Signed-in members land on the agenda; everyone else sees the welcome screen.
+  const isAuthed = Boolean(await getSessionUser());
+  if (isAuthed) return <AgendaView />;
+
   return (
     <div className="flex flex-col items-center text-center">
       <div className="w-full max-w-md overflow-hidden rounded-3xl bg-cream p-4 shadow-xl ring-1 ring-black/5 sm:p-6">
@@ -16,10 +24,7 @@ export default function HomePage() {
       </div>
 
       <div className="mt-9 flex flex-col items-center gap-4">
-        <Link
-          href="/rsvp"
-          className="btn-primary px-12 py-3 text-base shadow-sm"
-        >
+        <Link href="/rsvp" className="btn-primary px-12 py-3 text-base shadow-sm">
           RSVP
         </Link>
 
