@@ -23,12 +23,12 @@ export default async function HomePage() {
         />
       </div>
 
-      <div className="mt-9 flex flex-col items-center gap-4">
-        <Link href="/rsvp" className="btn-primary px-12 py-3 text-base shadow-sm">
+      <div className="mt-9 inline-flex flex-col items-stretch gap-4">
+        <Link href="/rsvp" className="btn-primary w-full py-3 text-base shadow-sm">
           RSVP
         </Link>
 
-        <p className="text-sm text-brand-600">
+        <p className="text-center text-sm text-brand-600">
           Already RSVP&apos;d?{" "}
           <Link
             href="/login"
