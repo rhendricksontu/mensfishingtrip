@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
-import Link from "next/link";
 import { TRIP } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -29,11 +28,6 @@ export default function RootLayout({
         <footer className="border-t border-brand-100 bg-white">
           <div className="mx-auto max-w-3xl px-4 py-6 text-center text-sm text-brand-500">
             <p>{TRIP.name} · {TRIP.location}</p>
-            <p className="mt-1">
-              <Link href="/admin" className="underline hover:text-brand-700">
-                Organizer login
-              </Link>
-            </p>
           </div>
         </footer>
       </body>
