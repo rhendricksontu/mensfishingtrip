@@ -29,7 +29,7 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Nav isAuthed={isAuthed} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
-        <footer className="border-t border-brand-100 bg-white">
+        <footer className="bg-cream">
           <div className="mx-auto max-w-3xl px-4 py-6 text-center text-sm text-brand-500">
             <p>{TRIP.name} · {TRIP.location}</p>
           </div>
