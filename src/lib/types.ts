@@ -1,6 +1,6 @@
 export type RidePreference = "driving" | "riding" | "either";
 export type FishingSession = "saturday_morning" | "saturday_afternoon";
-export type SignupRole = "breakfast_cook" | "coffee_maker";
+export type SignupRole = "breakfast_cook" | "coffee_maker" | "guide_lunch";
 export type RideDirection = "to_trip" | "from_trip";
 
 export interface Cabin {
@@ -51,6 +51,7 @@ export interface Signup {
   id: string;
   role: SignupRole;
   trip_day: string;
+  quantity: number;
   attendee_id: string | null;
   name: string;
   created_at: string;

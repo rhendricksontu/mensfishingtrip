@@ -22,7 +22,7 @@ begin
     create type fishing_session as enum ('saturday_morning', 'saturday_afternoon');
   end if;
   if not exists (select 1 from pg_type where typname = 'signup_role') then
-    create type signup_role as enum ('breakfast_cook', 'coffee_maker');
+    create type signup_role as enum ('breakfast_cook', 'coffee_maker', 'guide_lunch');
   end if;
   if not exists (select 1 from pg_type where typname = 'ride_direction') then
     create type ride_direction as enum ('to_trip', 'from_trip');
@@ -104,6 +104,7 @@ create table if not exists signups (
   id           uuid primary key default gen_random_uuid(),
   role         signup_role not null,
   trip_day     text not null,        -- 'saturday' | 'sunday'
+  quantity     int not null default 1, -- # of guide lunches (for guide_lunch role)
   attendee_id  uuid references attendees(id) on delete cascade,
   name         text not null,        -- denormalized for easy display
   created_at   timestamptz not null default now()

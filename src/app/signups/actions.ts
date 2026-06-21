@@ -6,8 +6,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 const AddSchema = z.object({
   name: z.string().trim().min(2, "Enter your name."),
-  role: z.enum(["breakfast_cook", "coffee_maker"]),
+  role: z.enum(["breakfast_cook", "coffee_maker", "guide_lunch"]),
   trip_day: z.enum(["saturday", "sunday"]),
+  quantity: z.coerce.number().int().min(1).max(50).default(1),
 });
 
 export interface SignupState {
@@ -23,6 +24,7 @@ export async function addSignup(
     name: formData.get("name"),
     role: formData.get("role"),
     trip_day: formData.get("trip_day"),
+    quantity: formData.get("quantity") || 1,
   });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid signup." };
@@ -33,6 +35,7 @@ export async function addSignup(
     name: parsed.data.name,
     role: parsed.data.role,
     trip_day: parsed.data.trip_day,
+    quantity: parsed.data.quantity,
   });
   if (error) return { ok: false, error: "Could not save your signup. Try again." };
 
