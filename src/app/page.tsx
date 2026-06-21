@@ -12,7 +12,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="w-full max-w-md overflow-hidden rounded-3xl bg-cream p-4 shadow-xl ring-1 ring-black/5 sm:p-6">
+      <div className="w-full max-w-md overflow-hidden rounded-3xl bg-cream p-4 shadow-xl ring-4 ring-brand-600 sm:p-6">
         <Image
           src="/logo.png"
           alt="11th Annual Men's Fishing Trip — Mountain Fork River, Broken Bow, Oklahoma — September 25–27, 2026"
