@@ -103,7 +103,7 @@ export default async function MyTripPage() {
             <>
               <p className="mt-1 text-lg font-semibold text-brand-700">{cabin.name}</p>
               {me.is_cabin_host && (
-                <span className="badge mt-1 bg-brand-600 text-white">★ You&apos;re a cabin host</span>
+                <span className="badge mt-1 bg-olive-600 text-white">★ You&apos;re a cabin host</span>
               )}
               {hosts.length > 0 && !me.is_cabin_host && (
                 <p className="mt-1 text-sm text-brand-600">

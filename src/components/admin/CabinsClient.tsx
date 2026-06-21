@@ -72,7 +72,7 @@ export default function CabinsClient({
                       onClick={() => toggleHost(a)}
                       className={`badge ${
                         a.is_cabin_host
-                          ? "bg-brand-600 text-white"
+                          ? "bg-olive-600 text-white"
                           : "bg-brand-50 text-brand-500 ring-1 ring-brand-200"
                       }`}
                     >

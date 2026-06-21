@@ -8,19 +8,38 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Blue/white palette drawn from crossings.church's button ribbon
-        // (primary #337ab7, light #cde1f1, navy #142f46).
+        // Palette sampled from the trip logo:
+        // navy #24343f · olive #5f644b · cream #f9f6f1
+        cream: {
+          DEFAULT: "#f9f6f1",
+          100: "#f2eee4",
+          200: "#e7e1d3",
+        },
+        // Primary (navy) — text, nav, buttons
         brand: {
-          50: "#f5f9fc",
-          100: "#e1edf7",
-          200: "#cde1f1",
-          300: "#92bce0",
-          400: "#5697d0",
-          500: "#337ab7",
-          600: "#2a6396",
-          700: "#245682",
-          800: "#1b3f60",
-          900: "#142f46",
+          50: "#f3f5f7",
+          100: "#e3e8ed",
+          200: "#c4ccd6",
+          300: "#97a4b3",
+          400: "#5f7185",
+          500: "#3a4d62",
+          600: "#2c3e52",
+          700: "#263545",
+          800: "#202d3a",
+          900: "#1a2430",
+        },
+        // Accent (olive green)
+        olive: {
+          50: "#f2f4ea",
+          100: "#e2e6d1",
+          200: "#c7cdaa",
+          300: "#a6ae7c",
+          400: "#838c54",
+          500: "#666f3e",
+          600: "#525a31",
+          700: "#414728",
+          800: "#353a23",
+          900: "#2c301d",
         },
       },
       fontFamily: {

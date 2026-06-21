@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { classNames } from "@/lib/utils";
@@ -25,7 +26,13 @@ export default function Nav() {
     <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
-          <span aria-hidden className="text-lg">🎣</span>
+          <Image
+            src="/logo.png"
+            alt=""
+            width={32}
+            height={32}
+            className="h-8 w-8 rounded-full bg-cream object-cover ring-1 ring-white/30"
+          />
           <span>Men&apos;s Fishing Trip</span>
         </Link>
 
