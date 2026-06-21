@@ -24,16 +24,16 @@ export default function AdminAuthForm() {
 
   return (
     <div className="card space-y-4">
-      <div className="flex rounded-lg bg-pine-50 p-1 text-sm font-medium">
+      <div className="flex rounded-lg bg-brand-50 p-1 text-sm font-medium">
         <button
           onClick={() => setMode("signin")}
-          className={`flex-1 rounded-md py-2 ${mode === "signin" ? "bg-white text-pine-800 shadow-sm" : "text-pine-500"}`}
+          className={`flex-1 rounded-md py-2 ${mode === "signin" ? "bg-white text-brand-800 shadow-sm" : "text-brand-500"}`}
         >
           Sign in
         </button>
         <button
           onClick={() => setMode("signup")}
-          className={`flex-1 rounded-md py-2 ${mode === "signup" ? "bg-white text-pine-800 shadow-sm" : "text-pine-500"}`}
+          className={`flex-1 rounded-md py-2 ${mode === "signup" ? "bg-white text-brand-800 shadow-sm" : "text-brand-500"}`}
         >
           Create account
         </button>
@@ -44,7 +44,7 @@ export default function AdminAuthForm() {
           <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
         )}
         {state.info && (
-          <div className="rounded-lg bg-pine-50 px-4 py-2 text-sm text-pine-700">{state.info}</div>
+          <div className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-700">{state.info}</div>
         )}
         <div>
           <span className="label">Email</span>
@@ -64,7 +64,7 @@ export default function AdminAuthForm() {
       </form>
 
       {mode === "signup" && (
-        <p className="text-xs text-pine-400">
+        <p className="text-xs text-brand-400">
           Only emails on the organizer allowlist can create an account.
         </p>
       )}

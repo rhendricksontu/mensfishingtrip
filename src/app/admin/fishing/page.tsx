@@ -11,8 +11,8 @@ export default async function FishingAdminPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-bold text-pine-800">Fishing Sessions & Groups</h2>
-        <p className="text-sm text-pine-600">
+        <h2 className="text-lg font-bold text-brand-800">Fishing Sessions & Groups</h2>
+        <p className="text-sm text-brand-600">
           Saturday morning and afternoon. Set each group&apos;s guide; assign men to sessions and
           groups on the Roster tab.
         </p>

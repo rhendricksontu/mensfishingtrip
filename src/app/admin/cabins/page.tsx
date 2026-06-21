@@ -11,8 +11,8 @@ export default async function CabinsAdminPage() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-lg font-bold text-pine-800">Cabins & Hosts</h2>
-        <p className="text-sm text-pine-600">
+        <h2 className="text-lg font-bold text-brand-800">Cabins & Hosts</h2>
+        <p className="text-sm text-brand-600">
           Each occupied cabin needs at least one host. Assign men to cabins on the Roster tab.
         </p>
       </div>

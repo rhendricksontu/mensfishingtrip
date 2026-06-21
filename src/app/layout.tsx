@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#264d3e",
+  themeColor: "#142f46",
 };
 
 export default function RootLayout({
@@ -26,11 +26,11 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Nav />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
-        <footer className="border-t border-pine-100 bg-white">
-          <div className="mx-auto max-w-3xl px-4 py-6 text-center text-sm text-pine-500">
+        <footer className="border-t border-brand-100 bg-white">
+          <div className="mx-auto max-w-3xl px-4 py-6 text-center text-sm text-brand-500">
             <p>{TRIP.name} · {TRIP.location}</p>
             <p className="mt-1">
-              <Link href="/admin" className="underline hover:text-pine-700">
+              <Link href="/admin" className="underline hover:text-brand-700">
                 Organizer login
               </Link>
             </p>

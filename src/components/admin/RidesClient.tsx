@@ -57,7 +57,7 @@ export default function RidesClient({
 
         return (
           <section key={dir.key} className="space-y-3">
-            <h2 className="text-lg font-bold text-pine-700">
+            <h2 className="text-lg font-bold text-brand-700">
               {dir.emoji} {dir.label}
             </h2>
 
@@ -76,16 +76,16 @@ export default function RidesClient({
                 <div key={ride.id} className="card space-y-3">
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <h3 className="font-bold text-pine-800">
+                      <h3 className="font-bold text-brand-800">
                         {driver ? driver.name : "Unknown driver"}&apos;s car
                       </h3>
                       {driver && (
-                        <a href={`tel:${driver.phone}`} className="text-sm text-pine-600 underline">
+                        <a href={`tel:${driver.phone}`} className="text-sm text-brand-600 underline">
                           {formatPhone(driver.phone)}
                         </a>
                       )}
                       {seatsLeft !== null && (
-                        <span className="ml-2 text-xs text-pine-500">
+                        <span className="ml-2 text-xs text-brand-500">
                           {seatsLeft} seat{seatsLeft === 1 ? "" : "s"} left
                         </span>
                       )}
@@ -94,7 +94,7 @@ export default function RidesClient({
                       onClick={() => {
                         if (confirm("Delete this ride?")) refresh(() => deleteRide(ride.id));
                       }}
-                      className="text-xs text-pine-400 underline hover:text-red-600"
+                      className="text-xs text-brand-400 underline hover:text-red-600"
                     >
                       delete
                     </button>
@@ -116,15 +116,15 @@ export default function RidesClient({
                   <div>
                     <span className="label">Passengers</span>
                     {passengers.length === 0 ? (
-                      <p className="text-sm text-pine-400">No passengers yet.</p>
+                      <p className="text-sm text-brand-400">No passengers yet.</p>
                     ) : (
                       <ul className="flex flex-wrap gap-1.5">
                         {passengers.map((p) => (
-                          <li key={p.id} className="badge bg-pine-100 text-pine-700">
+                          <li key={p.id} className="badge bg-brand-100 text-brand-700">
                             {p.name}
                             <button
                               onClick={() => refresh(() => removePassenger(ride.id, p.id))}
-                              className="ml-1.5 text-pine-400 hover:text-red-600"
+                              className="ml-1.5 text-brand-400 hover:text-red-600"
                               aria-label={`Remove ${p.name}`}
                             >
                               ✕
@@ -159,7 +159,7 @@ export default function RidesClient({
                 <span className="font-semibold text-amber-800">
                   {unaccounted.length} not in a car for this trip:
                 </span>{" "}
-                <span className="text-pine-600">
+                <span className="text-brand-600">
                   {unaccounted
                     .map((a) => a.name + (a.needs_ride ? " (needs ride)" : ""))
                     .join(", ")}

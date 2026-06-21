@@ -45,8 +45,8 @@ export default function CabinsClient({
         return (
           <div key={c.id} className="card">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-pine-800">{c.name}</h3>
-              <span className={`text-sm ${over ? "text-red-600 font-semibold" : "text-pine-500"}`}>
+              <h3 className="font-bold text-brand-800">{c.name}</h3>
+              <span className={`text-sm ${over ? "text-red-600 font-semibold" : "text-brand-500"}`}>
                 {people.length}
                 {c.capacity > 0 ? ` / ${c.capacity}` : ""} men
               </span>
@@ -59,21 +59,21 @@ export default function CabinsClient({
             )}
 
             {people.length === 0 ? (
-              <p className="mt-2 text-sm text-pine-400">Empty. Assign men from the Roster tab.</p>
+              <p className="mt-2 text-sm text-brand-400">Empty. Assign men from the Roster tab.</p>
             ) : (
-              <ul className="mt-2 divide-y divide-pine-50">
+              <ul className="mt-2 divide-y divide-brand-50">
                 {people.map((a) => (
                   <li key={a.id} className="flex items-center justify-between gap-2 py-2">
                     <div>
-                      <span className="text-sm font-medium text-pine-800">{a.name}</span>
-                      <span className="ml-2 text-xs text-pine-400">{formatPhone(a.phone)}</span>
+                      <span className="text-sm font-medium text-brand-800">{a.name}</span>
+                      <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
                     </div>
                     <button
                       onClick={() => toggleHost(a)}
                       className={`badge ${
                         a.is_cabin_host
-                          ? "bg-pine-600 text-white"
-                          : "bg-pine-50 text-pine-500 ring-1 ring-pine-200"
+                          ? "bg-brand-600 text-white"
+                          : "bg-brand-50 text-brand-500 ring-1 ring-brand-200"
                       }`}
                     >
                       {a.is_cabin_host ? "★ Host" : "Make host"}
@@ -91,15 +91,15 @@ export default function CabinsClient({
           <h3 className="font-semibold text-amber-800">
             {unassigned.length} not yet in a cabin
           </h3>
-          <p className="mt-1 text-sm text-pine-600">
+          <p className="mt-1 text-sm text-brand-600">
             {unassigned.map((a) => a.name).join(", ")}
           </p>
-          <p className="mt-2 text-xs text-pine-500">Assign them on the Roster tab.</p>
+          <p className="mt-2 text-xs text-brand-500">Assign them on the Roster tab.</p>
         </div>
       )}
 
       <div className="card">
-        <h3 className="font-semibold text-pine-800">Add a cabin</h3>
+        <h3 className="font-semibold text-brand-800">Add a cabin</h3>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input
             className="input flex-1"

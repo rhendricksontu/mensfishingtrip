@@ -31,15 +31,15 @@ export default function RsvpForm({ attendee }: { attendee?: Attendee }) {
     return (
       <div className="card text-center">
         <div className="text-4xl">✅</div>
-        <h2 className="mt-2 text-xl font-bold text-pine-800">
+        <h2 className="mt-2 text-xl font-bold text-brand-800">
           {state.edited ? "Your RSVP is updated!" : "You're signed up!"}
         </h2>
-        <p className="mt-1 text-pine-600">
+        <p className="mt-1 text-brand-600">
           Thanks for RSVPing. We&apos;ll assign cabins and fishing groups soon.
         </p>
-        <div className="mt-4 rounded-lg bg-pine-50 p-4 text-left">
-          <p className="font-semibold text-pine-800">Don&apos;t forget the ${PAYMENT.amount} trip cost</p>
-          <p className="mt-1 text-sm text-pine-600">
+        <div className="mt-4 rounded-lg bg-brand-50 p-4 text-left">
+          <p className="font-semibold text-brand-800">Don&apos;t forget the ${PAYMENT.amount} trip cost</p>
+          <p className="mt-1 text-sm text-brand-600">
             Send ${PAYMENT.amount} on Venmo to{" "}
             <span className="font-semibold">{PAYMENT.venmoHandle}</span>.
           </p>
@@ -78,8 +78,8 @@ export default function RsvpForm({ attendee }: { attendee?: Attendee }) {
         <input name="phone" type="tel" inputMode="tel" className="input" defaultValue={attendee?.phone} autoComplete="tel" placeholder="(555) 123-4567" required />
       </Field>
 
-      <fieldset className="rounded-lg border border-pine-100 p-4">
-        <legend className="px-1 text-sm font-semibold text-pine-700">Emergency contact</legend>
+      <fieldset className="rounded-lg border border-brand-100 p-4">
+        <legend className="px-1 text-sm font-semibold text-brand-700">Emergency contact</legend>
         <div className="space-y-4">
           <Field label="Contact name" error={err("emergency_contact_name")}>
             <input name="emergency_contact_name" className="input" defaultValue={attendee?.emergency_contact_name} required />
@@ -107,16 +107,16 @@ export default function RsvpForm({ attendee }: { attendee?: Attendee }) {
         </select>
       </Field>
 
-      <div className="rounded-lg bg-pine-50 p-4 space-y-4">
+      <div className="rounded-lg bg-brand-50 p-4 space-y-4">
         <label className="flex items-start gap-3">
           <input
             type="checkbox"
             name="willing_to_drive"
             defaultChecked={willingToDrive}
             onChange={(e) => setWillingToDrive(e.target.checked)}
-            className="mt-1 h-5 w-5 rounded border-pine-300 text-pine-600 focus:ring-pine-500"
+            className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
           />
-          <span className="text-sm text-pine-800">
+          <span className="text-sm text-brand-800">
             <span className="font-semibold">I&apos;m willing to drive others.</span> I can offer seats in my vehicle.
           </span>
         </label>
@@ -140,9 +140,9 @@ export default function RsvpForm({ attendee }: { attendee?: Attendee }) {
             type="checkbox"
             name="needs_ride"
             defaultChecked={attendee?.needs_ride ?? false}
-            className="mt-1 h-5 w-5 rounded border-pine-300 text-pine-600 focus:ring-pine-500"
+            className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
           />
-          <span className="text-sm text-pine-800">
+          <span className="text-sm text-brand-800">
             <span className="font-semibold">I&apos;d like to be partnered with a driver.</span> Match me with someone who has room.
           </span>
         </label>

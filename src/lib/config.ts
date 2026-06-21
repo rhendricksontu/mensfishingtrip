@@ -3,12 +3,13 @@
 // ----------------------------------------------------------------------------
 
 export const TRIP = {
-  name: "Men's Fishing Trip 2026",
+  name: "2026 Men's Fishing Trip",
   shortName: "Fishing Trip",
-  location: "Broken Bow, OK",
+  edition: "11th Annual",
+  location: "Broken Bow, Oklahoma",
   startDate: "2026-09-25", // Friday
   endDate: "2026-09-27", // Sunday
-  datesLabel: "Friday, September 25 – Sunday, September 27, 2026",
+  datesLabel: "Friday, September 25, 2026 – Sunday, September 27, 2026",
 };
 
 export const PAYMENT = {

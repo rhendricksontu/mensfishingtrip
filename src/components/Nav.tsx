@@ -21,7 +21,7 @@ export default function Nav() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-40 bg-pine-700 text-white shadow">
+    <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
           <span aria-hidden className="text-lg">🎣</span>
@@ -34,8 +34,8 @@ export default function Nav() {
               key={l.href}
               href={l.href}
               className={classNames(
-                "rounded-md px-3 py-1.5 text-sm font-medium hover:bg-pine-600",
-                isActive(l.href) && "bg-pine-600"
+                "rounded-md px-3 py-1.5 text-sm font-medium hover:bg-brand-600",
+                isActive(l.href) && "bg-brand-600"
               )}
             >
               {l.label}
@@ -44,7 +44,7 @@ export default function Nav() {
         </nav>
 
         <button
-          className="sm:hidden rounded-md p-2 hover:bg-pine-600"
+          className="sm:hidden rounded-md p-2 hover:bg-brand-600"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
           aria-expanded={open}
@@ -60,15 +60,15 @@ export default function Nav() {
       </div>
 
       {open && (
-        <nav className="sm:hidden border-t border-pine-600 bg-pine-700 px-2 pb-3">
+        <nav className="sm:hidden border-t border-brand-600 bg-brand-700 px-2 pb-3">
           {LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
               className={classNames(
-                "block rounded-md px-3 py-2.5 text-base font-medium hover:bg-pine-600",
-                isActive(l.href) && "bg-pine-600"
+                "block rounded-md px-3 py-2.5 text-base font-medium hover:bg-brand-600",
+                isActive(l.href) && "bg-brand-600"
               )}
             >
               {l.label}

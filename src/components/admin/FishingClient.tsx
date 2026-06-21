@@ -28,8 +28,8 @@ export default function FishingClient({
         return (
           <section key={session}>
             <div className="mb-2 flex items-baseline justify-between">
-              <h2 className="text-lg font-bold text-pine-700">{SESSION_LABELS[session]}</h2>
-              <span className="text-sm text-pine-500">{inSession.length} men</span>
+              <h2 className="text-lg font-bold text-brand-700">{SESSION_LABELS[session]}</h2>
+              <span className="text-sm text-brand-500">{inSession.length} men</span>
             </div>
 
             <div className="space-y-3">
@@ -55,10 +55,10 @@ export default function FishingClient({
                   <span className="font-semibold text-amber-800">
                     {unassignedToGroup.length} in this session without a group:
                   </span>{" "}
-                  <span className="text-pine-600">
+                  <span className="text-brand-600">
                     {unassignedToGroup.map((a) => a.name).join(", ")}
                   </span>
-                  <p className="mt-1 text-xs text-pine-500">Assign groups on the Roster tab.</p>
+                  <p className="mt-1 text-xs text-brand-500">Assign groups on the Roster tab.</p>
                 </div>
               )}
 
@@ -94,8 +94,8 @@ function GroupCard({
   return (
     <div className="card">
       <div className="flex items-center justify-between">
-        <h3 className="font-bold text-pine-800">{group.name}</h3>
-        <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-pine-500"}`}>
+        <h3 className="font-bold text-brand-800">{group.name}</h3>
+        <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
           {members.length}
           {group.capacity > 0 ? ` / ${group.capacity}` : ""}
         </span>
@@ -115,7 +115,7 @@ function GroupCard({
       {members.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {members.map((m) => (
-            <li key={m.id} className="badge bg-pine-100 text-pine-700">
+            <li key={m.id} className="badge bg-brand-100 text-brand-700">
               {m.name}
             </li>
           ))}

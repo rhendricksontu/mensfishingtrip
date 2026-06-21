@@ -3,89 +3,84 @@ import { TRIP, PAYMENT } from "@/lib/config";
 
 export default function HomePage() {
   return (
-    <div className="space-y-6">
-      <section className="rounded-2xl bg-gradient-to-br from-pine-700 to-pine-600 p-7 text-white shadow">
-        <p className="text-sm font-semibold uppercase tracking-wide text-pine-100">
+    <div className="flex flex-col items-center text-center">
+      {/* Hero */}
+      <section className="w-full overflow-hidden rounded-3xl bg-gradient-to-b from-brand-600 via-brand-700 to-brand-900 px-6 py-14 text-white shadow-xl sm:py-20">
+        <span className="inline-flex items-center rounded-full bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] ring-1 ring-inset ring-white/25">
+          {TRIP.edition}
+        </span>
+
+        <h1 className="mt-6 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
+          2026 Men&apos;s<br className="sm:hidden" /> Fishing Trip
+        </h1>
+
+        <p className="mx-auto mt-5 max-w-md text-base font-medium text-brand-100 sm:text-lg">
+          Friday, September&nbsp;25, 2026
+          <span className="mx-2 text-brand-300">–</span>
+          Sunday, September&nbsp;27, 2026
+        </p>
+
+        <p className="mt-2 text-sm font-medium uppercase tracking-widest text-brand-200">
           {TRIP.location}
         </p>
-        <h1 className="mt-1 text-3xl font-bold leading-tight">{TRIP.name}</h1>
-        <p className="mt-2 text-pine-100">{TRIP.datesLabel}</p>
-        <div className="mt-5 flex flex-wrap gap-3">
-          <Link href="/rsvp" className="btn bg-white text-pine-700 hover:bg-pine-50">
+
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            href="/rsvp"
+            className="btn w-full bg-white px-7 text-brand-700 shadow-sm hover:bg-brand-50 sm:w-auto"
+          >
             RSVP Now
           </Link>
-          <Link href="/agenda" className="btn bg-pine-800/40 text-white ring-1 ring-inset ring-white/30 hover:bg-pine-800/60">
+          <Link
+            href="/agenda"
+            className="btn w-full bg-white/10 px-7 text-white ring-1 ring-inset ring-white/30 hover:bg-white/20 sm:w-auto"
+          >
             View Agenda
           </Link>
         </div>
       </section>
 
-      <section className="card">
-        <h2 className="text-lg font-bold text-pine-800">💵 Trip Cost — ${PAYMENT.amount}</h2>
-        <p className="mt-1 text-sm text-pine-600">{PAYMENT.description}</p>
-        <p className="mt-3 text-sm">
-          Send <span className="font-semibold">${PAYMENT.amount}</span> on Venmo to{" "}
-          <span className="font-semibold text-pine-700">{PAYMENT.venmoHandle}</span>.
-        </p>
+      {/* Quiet payment line */}
+      <p className="mt-6 text-sm text-brand-600">
+        Trip cost{" "}
+        <span className="font-semibold text-brand-800">${PAYMENT.amount}</span> ·{" "}
         <a
           href={PAYMENT.venmoUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="btn-primary mt-3"
+          className="font-semibold text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-700"
         >
-          Pay ${PAYMENT.amount} on Venmo
+          Venmo {PAYMENT.venmoHandle}
         </a>
-        <p className="mt-2 text-xs text-pine-400">
-          After you pay, please still submit your RSVP so we can plan cabins and rides.
-        </p>
-      </section>
+      </p>
 
-      <section className="grid gap-4 sm:grid-cols-2">
-        <HomeCard
-          href="/rsvp"
-          emoji="📝"
-          title="RSVP"
-          body="Tell us you're coming, your ride preference, and emergency contact."
-        />
-        <HomeCard
-          href="/agenda"
-          emoji="🗓️"
-          title="Daily Agenda"
-          body="Speakers, fishing sessions, dinners, and Sunday's river sermon."
-        />
-        <HomeCard
-          href="/signups"
-          emoji="🍳"
-          title="Signups"
-          body="Volunteer to cook breakfast or make the morning coffee."
-        />
-        <HomeCard
-          href="/locations"
-          emoji="📍"
-          title="Locations"
-          body="Cabins, dinner spots, and the river — with map links."
-        />
-      </section>
+      {/* Minimal quick links */}
+      <nav className="mt-8 grid w-full grid-cols-2 gap-3 sm:grid-cols-4">
+        <QuickLink href="/rsvp" emoji="📝" label="RSVP" />
+        <QuickLink href="/agenda" emoji="🗓️" label="Agenda" />
+        <QuickLink href="/signups" emoji="🍳" label="Signups" />
+        <QuickLink href="/locations" emoji="📍" label="Locations" />
+      </nav>
     </div>
   );
 }
 
-function HomeCard({
+function QuickLink({
   href,
   emoji,
-  title,
-  body,
+  label,
 }: {
   href: string;
   emoji: string;
-  title: string;
-  body: string;
+  label: string;
 }) {
   return (
-    <Link href={href} className="card transition hover:shadow-md hover:ring-pine-200">
-      <div className="text-2xl">{emoji}</div>
-      <h3 className="mt-2 font-bold text-pine-800">{title}</h3>
-      <p className="mt-1 text-sm text-pine-600">{body}</p>
+    <Link
+      href={href}
+      className="flex flex-col items-center gap-1 rounded-2xl bg-white px-4 py-5 font-semibold text-brand-700 shadow-sm ring-1 ring-brand-100 transition hover:-translate-y-0.5 hover:shadow-md hover:ring-brand-200"
+    >
+      <span className="text-2xl">{emoji}</span>
+      <span className="text-sm">{label}</span>
     </Link>
   );
 }

@@ -53,8 +53,8 @@ export default function RosterClient({
               onClick={() => setFilter(key)}
               className={`rounded-full px-3 py-1.5 text-xs font-medium ring-1 ring-inset ${
                 filter === key
-                  ? "bg-pine-600 text-white ring-pine-600"
-                  : "bg-white text-pine-600 ring-pine-200"
+                  ? "bg-brand-600 text-white ring-brand-600"
+                  : "bg-white text-brand-600 ring-brand-200"
               }`}
             >
               {label}
@@ -64,7 +64,7 @@ export default function RosterClient({
         <ExportButton attendees={attendees} cabins={cabins} groups={groups} />
       </div>
 
-      <p className="text-sm text-pine-500">{filtered.length} shown</p>
+      <p className="text-sm text-brand-500">{filtered.length} shown</p>
 
       <div className="space-y-3">
         {filtered.map((a) => (
@@ -101,35 +101,35 @@ function AttendeeCard({
     <div className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
-          <h3 className="font-bold text-pine-800">{a.name}</h3>
-          <a href={`tel:${a.phone}`} className="text-sm text-pine-600 underline">
+          <h3 className="font-bold text-brand-800">{a.name}</h3>
+          <a href={`tel:${a.phone}`} className="text-sm text-brand-600 underline">
             {formatPhone(a.phone)}
           </a>
-          <p className="text-xs text-pine-500">
+          <p className="text-xs text-brand-500">
             ICE: {a.emergency_contact_name} · {formatPhone(a.emergency_contact_phone)}
           </p>
         </div>
-        <label className="flex shrink-0 items-center gap-2 rounded-lg bg-pine-50 px-3 py-2">
+        <label className="flex shrink-0 items-center gap-2 rounded-lg bg-brand-50 px-3 py-2">
           <input
             type="checkbox"
             checked={a.paid}
             onChange={(e) => save({ paid: e.target.checked })}
-            className="h-5 w-5 rounded text-pine-600"
+            className="h-5 w-5 rounded text-brand-600"
           />
-          <span className={`text-sm font-semibold ${a.paid ? "text-pine-700" : "text-amber-700"}`}>
+          <span className={`text-sm font-semibold ${a.paid ? "text-brand-700" : "text-amber-700"}`}>
             {a.paid ? "Paid" : "Unpaid"}
           </span>
         </label>
       </div>
 
       <div className="flex flex-wrap gap-1.5 text-xs">
-        <span className="badge bg-pine-100 text-pine-700">{RIDE_PREF_LABELS[a.ride_preference]}</span>
+        <span className="badge bg-brand-100 text-brand-700">{RIDE_PREF_LABELS[a.ride_preference]}</span>
         {a.willing_to_drive && (
           <span className="badge bg-blue-100 text-blue-700">Driver · {a.seat_capacity} seats</span>
         )}
         {a.needs_ride && <span className="badge bg-amber-100 text-amber-800">Needs ride</span>}
         {a.departure_time && (
-          <span className="badge bg-pine-50 text-pine-600">Leaves: {a.departure_time}</span>
+          <span className="badge bg-brand-50 text-brand-600">Leaves: {a.departure_time}</span>
         )}
       </div>
 
@@ -146,9 +146,9 @@ function AttendeeCard({
             checked={a.is_cabin_host}
             disabled={!a.cabin_id}
             onChange={(e) => save({ is_cabin_host: e.target.checked })}
-            className="h-5 w-5 rounded text-pine-600 disabled:opacity-40"
+            className="h-5 w-5 rounded text-brand-600 disabled:opacity-40"
           />
-          <span className="text-sm text-pine-700">Cabin host</span>
+          <span className="text-sm text-brand-700">Cabin host</span>
         </label>
         <Select
           label="Fishing session"

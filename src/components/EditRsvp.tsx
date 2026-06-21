@@ -21,7 +21,7 @@ export default function EditRsvp() {
   if (state.ok && state.attendee) {
     return (
       <div className="space-y-4">
-        <p className="rounded-lg bg-pine-50 px-4 py-3 text-sm text-pine-700">
+        <p className="rounded-lg bg-brand-50 px-4 py-3 text-sm text-brand-700">
           Editing the RSVP for <span className="font-semibold">{state.attendee.name}</span>.
         </p>
         <RsvpForm attendee={state.attendee} />

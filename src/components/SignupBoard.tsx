@@ -42,12 +42,12 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
   return (
     <div className="space-y-6">
       <form action={formAction} className="card space-y-4">
-        <h2 className="font-bold text-pine-800">Volunteer for a slot</h2>
+        <h2 className="font-bold text-brand-800">Volunteer for a slot</h2>
         {state.error && (
           <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
         )}
         {state.ok && (
-          <div className="rounded-lg bg-pine-50 px-4 py-2 text-sm text-pine-700">
+          <div className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-700">
             Thanks! You&apos;re on the list. 🙌
           </div>
         )}
@@ -78,7 +78,7 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
 
       {ROLES.map((role) => (
         <section key={role.key}>
-          <h2 className="mb-3 text-lg font-bold text-pine-700">
+          <h2 className="mb-3 text-lg font-bold text-brand-700">
             {role.emoji} {role.label}s
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -86,18 +86,18 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
               const people = cell(role.key, day.key);
               return (
                 <div key={day.key} className="card">
-                  <h3 className="font-semibold text-pine-800">{day.label}</h3>
+                  <h3 className="font-semibold text-brand-800">{day.label}</h3>
                   {people.length === 0 ? (
-                    <p className="mt-2 text-sm text-pine-400">No one yet — be the first!</p>
+                    <p className="mt-2 text-sm text-brand-400">No one yet — be the first!</p>
                   ) : (
                     <ul className="mt-2 space-y-1.5">
                       {people.map((p) => (
                         <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
-                          <span className="text-pine-800">{p.name}</span>
+                          <span className="text-brand-800">{p.name}</span>
                           <button
                             onClick={() => handleRemove(p.id)}
                             disabled={removing === p.id}
-                            className="text-xs text-pine-400 underline hover:text-red-600"
+                            className="text-xs text-brand-400 underline hover:text-red-600"
                           >
                             {removing === p.id ? "…" : "remove"}
                           </button>

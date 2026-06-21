@@ -10,14 +10,14 @@ export default async function LocationsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-pine-800">Important Locations</h1>
-        <p className="mt-1 text-pine-600">
+        <h1 className="text-2xl font-bold text-brand-800">Important Locations</h1>
+        <p className="mt-1 text-brand-600">
           Cabins, dinner spots, and the river. Tap an address for directions.
         </p>
       </div>
 
       {locations.length === 0 ? (
-        <div className="card text-pine-600">Locations will be posted here soon.</div>
+        <div className="card text-brand-600">Locations will be posted here soon.</div>
       ) : (
         <div className="space-y-3">
           {locations.map((loc) => (
@@ -40,15 +40,15 @@ function LocationCard({ loc }: { loc: LocationItem }) {
     <div className="card">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-pine-800">{loc.name}</h3>
+          <h3 className="font-semibold text-brand-800">{loc.name}</h3>
           {loc.category && (
-            <span className="badge mt-1 bg-pine-100 text-pine-700">{loc.category}</span>
+            <span className="badge mt-1 bg-brand-100 text-brand-700">{loc.category}</span>
           )}
         </div>
       </div>
-      {loc.notes && <p className="mt-2 text-sm text-pine-600">{loc.notes}</p>}
+      {loc.notes && <p className="mt-2 text-sm text-brand-600">{loc.notes}</p>}
       {loc.address && (
-        <p className="mt-2 text-sm text-pine-600">{loc.address}</p>
+        <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
       )}
       {mapHref && (
         <a

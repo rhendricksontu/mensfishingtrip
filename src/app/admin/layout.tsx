@@ -26,8 +26,8 @@ export default async function AdminLayout({
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-pine-800">Organizer Dashboard</h1>
-          <p className="text-xs text-pine-500">{admin.email}</p>
+          <h1 className="text-xl font-bold text-brand-800">Organizer Dashboard</h1>
+          <p className="text-xs text-brand-500">{admin.email}</p>
         </div>
         <form action={signOut}>
           <button className="btn-secondary text-sm">Sign out</button>
@@ -39,7 +39,7 @@ export default async function AdminLayout({
           <Link
             key={t.href}
             href={t.href}
-            className="whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-sm font-medium text-pine-700 ring-1 ring-pine-100 hover:bg-pine-50"
+            className="whitespace-nowrap rounded-full bg-white px-4 py-1.5 text-sm font-medium text-brand-700 ring-1 ring-brand-100 hover:bg-brand-50"
           >
             {t.label}
           </Link>

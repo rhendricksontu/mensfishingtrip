@@ -41,8 +41,8 @@ export default async function AdminOverviewPage() {
       </div>
 
       <section className="card">
-        <h2 className="font-bold text-pine-800">Money collected</h2>
-        <p className="mt-1 text-sm text-pine-600">
+        <h2 className="font-bold text-brand-800">Money collected</h2>
+        <p className="mt-1 text-sm text-brand-600">
           {paid} of {total} paid · ${paid * PAYMENT.amount} collected ·{" "}
           <span className="font-semibold text-amber-700">${unpaid * PAYMENT.amount}</span> outstanding
         </p>
@@ -52,9 +52,9 @@ export default async function AdminOverviewPage() {
       </section>
 
       <section className="card">
-        <h2 className="font-bold text-pine-800">🏠 Cabin host check</h2>
+        <h2 className="font-bold text-brand-800">🏠 Cabin host check</h2>
         {cabinsNoHost.length === 0 ? (
-          <p className="mt-1 text-sm text-pine-600">
+          <p className="mt-1 text-sm text-brand-600">
             Every occupied cabin has at least one host. ✅
           </p>
         ) : (
@@ -62,7 +62,7 @@ export default async function AdminOverviewPage() {
             <p className="text-sm text-amber-700">
               These cabins have people but <span className="font-semibold">no host assigned</span>:
             </p>
-            <ul className="list-inside list-disc text-sm text-pine-700">
+            <ul className="list-inside list-disc text-sm text-brand-700">
               {cabinsNoHost.map((c) => (
                 <li key={c.id}>{c.name}</li>
               ))}
@@ -88,14 +88,14 @@ function Stat({
 }) {
   const toneClass =
     tone === "good"
-      ? "text-pine-700"
+      ? "text-brand-700"
       : tone === "warn"
         ? "text-amber-700"
-        : "text-pine-800";
+        : "text-brand-800";
   return (
     <div className="card py-4">
       <div className={`text-2xl font-bold ${toneClass}`}>{value}</div>
-      <div className="text-xs font-medium text-pine-500">{label}</div>
+      <div className="text-xs font-medium text-brand-500">{label}</div>
     </div>
   );
 }
