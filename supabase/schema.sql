@@ -2,7 +2,11 @@
 -- Men's Fishing Trip — database schema
 -- Run this in Supabase: SQL Editor -> New query -> paste ALL of it -> Run.
 -- Designed to run in a single pass and to be safe to re-run.
+-- Wrapped in a transaction: it's all-or-nothing, so a failure leaves nothing
+-- half-applied. Re-run the whole file after fixing any issue.
 -- ============================================================================
+
+begin;
 
 create extension if not exists "pgcrypto";
 
@@ -251,3 +255,5 @@ where not exists (select 1 from locations);
 insert into admins (email, name)
 values ('ryan.l.hendrickson@gmail.com', 'Ryan Hendrickson')
 on conflict (email) do nothing;
+
+commit;
