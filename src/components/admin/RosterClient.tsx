@@ -213,7 +213,7 @@ function AttendeeCard({
             <span
               className={`badge ${a.role === "admin" ? "bg-olive-600 text-white" : "bg-brand-100 text-brand-700"}`}
             >
-              {a.role === "admin" ? "★ Admin" : "Member"}
+              {a.role === "admin" ? "Admin" : "Member"}
             </span>
             <button
               onClick={() => {
@@ -320,7 +320,7 @@ function ExportButton({
 
   return (
     <button onClick={exportCsv} className="btn-secondary text-sm sm:ml-auto">
-      ⬇ Export CSV
+      Export CSV
     </button>
   );
 }

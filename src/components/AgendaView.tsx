@@ -55,13 +55,12 @@ function AgendaRow({ item }: { item: AgendaItem }) {
           (/\d/.test(item.location) ? (
             <MapLink
               place={item.location}
-              className="mt-1 inline-flex items-start gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+              className="mt-1 inline-block text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
             >
-              <span aria-hidden>📍</span>
-              <span>{item.location} ›</span>
+              {item.location}
             </MapLink>
           ) : (
-            <p className="mt-1 text-xs font-medium text-brand-500">📍 {item.location}</p>
+            <p className="mt-1 text-xs font-medium text-brand-500">{item.location}</p>
           ))}
       </div>
     </li>

@@ -17,9 +17,9 @@ interface RidePassenger {
   attendee_id: string;
 }
 
-const DIRECTIONS: { key: RideDirection; label: string; emoji: string }[] = [
-  { key: "to_trip", label: "Heading to Broken Bow", emoji: "🚗➡️" },
-  { key: "from_trip", label: "Coming home", emoji: "🏠⬅️" },
+const DIRECTIONS: { key: RideDirection; label: string }[] = [
+  { key: "to_trip", label: "Heading to Broken Bow" },
+  { key: "from_trip", label: "Coming home" },
 ];
 
 export default function RidesClient({
@@ -58,7 +58,7 @@ export default function RidesClient({
         return (
           <section key={dir.key} className="space-y-3">
             <h2 className="text-lg font-bold text-brand-700">
-              {dir.emoji} {dir.label}
+              {dir.label}
             </h2>
 
             {dirRides.map((ride) => {
@@ -124,10 +124,10 @@ export default function RidesClient({
                             {p.name}
                             <button
                               onClick={() => refresh(() => removePassenger(ride.id, p.id))}
-                              className="ml-1.5 text-brand-400 hover:text-red-600"
+                              className="ml-1.5 text-brand-400 underline hover:text-red-600"
                               aria-label={`Remove ${p.name}`}
                             >
-                              ✕
+                              remove
                             </button>
                           </li>
                         ))}

@@ -22,8 +22,7 @@ export default function ResetPasswordForm() {
   if (state.ok) {
     return (
       <div className="card text-center">
-        <div className="text-4xl">✅</div>
-        <h2 className="mt-2 text-xl font-bold text-brand-800">Password updated</h2>
+        <h2 className="text-xl font-bold text-brand-800">Password updated</h2>
         <p className="mt-1 text-brand-600">You can now sign in with your new password.</p>
         <Link href="/login" className="btn-primary mt-4">Go to sign in</Link>
       </div>

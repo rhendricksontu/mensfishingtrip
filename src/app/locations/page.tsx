@@ -49,11 +49,11 @@ function LocationCard({ loc }: { loc: LocationItem }) {
       )}
       {loc.map_url ? (
         <a href={loc.map_url} target="_blank" rel="noopener noreferrer" className="btn-secondary mt-3">
-          🧭 Get directions
+          Get directions
         </a>
       ) : loc.address ? (
         <MapLink place={place} className="btn-secondary mt-3">
-          🧭 Get directions
+          Get directions
         </MapLink>
       ) : null}
     </div>

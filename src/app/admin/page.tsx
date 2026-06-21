@@ -52,10 +52,10 @@ export default async function AdminOverviewPage() {
       </section>
 
       <section className="card">
-        <h2 className="font-bold text-brand-800">🏠 Cabin host check</h2>
+        <h2 className="font-bold text-brand-800">Cabin host check</h2>
         {cabinsNoHost.length === 0 ? (
           <p className="mt-1 text-sm text-brand-600">
-            Every occupied cabin has at least one host. ✅
+            Every occupied cabin has at least one host.
           </p>
         ) : (
           <div className="mt-2 space-y-2">

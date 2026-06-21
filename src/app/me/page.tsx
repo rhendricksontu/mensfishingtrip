@@ -74,15 +74,14 @@ export default async function MyTripPage() {
 
       {me.role === "admin" && (
         <Link href="/admin" className="card flex items-center justify-between bg-olive-50 ring-olive-200 hover:bg-olive-100">
-          <span className="font-semibold text-olive-800">★ You&apos;re an organizer</span>
+          <span className="font-semibold text-olive-800">You&apos;re an organizer</span>
           <span className="text-sm font-medium text-olive-700">Open dashboard →</span>
         </Link>
       )}
 
       {/* Payment */}
       {me.paid ? (
-        <div className="card flex items-center gap-3 bg-brand-50">
-          <span className="text-2xl">✅</span>
+        <div className="card bg-brand-50">
           <div>
             <p className="font-semibold text-brand-800">You&apos;re paid up — thank you!</p>
             <p className="text-sm text-brand-600">${PAYMENT.amount} received.</p>
@@ -106,12 +105,12 @@ export default async function MyTripPage() {
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Cabin */}
         <div className="card">
-          <h2 className="font-bold text-brand-800">🏠 Cabin</h2>
+          <h2 className="font-bold text-brand-800">Cabin</h2>
           {cabin ? (
             <>
               <p className="mt-1 text-lg font-semibold text-brand-700">{cabin.name}</p>
               {me.is_cabin_host && (
-                <span className="badge mt-1 bg-olive-600 text-white">★ You&apos;re a cabin host</span>
+                <span className="badge mt-1 bg-olive-600 text-white">You&apos;re a cabin host</span>
               )}
               {hosts.length > 0 && !me.is_cabin_host && (
                 <p className="mt-1 text-sm text-brand-600">
@@ -132,7 +131,7 @@ export default async function MyTripPage() {
 
         {/* Fishing */}
         <div className="card">
-          <h2 className="font-bold text-brand-800">🎣 Fishing</h2>
+          <h2 className="font-bold text-brand-800">Fishing</h2>
           {me.assigned_session ? (
             <p className="mt-1 text-lg font-semibold text-brand-700">
               {SESSION_LABELS[me.assigned_session]}
@@ -159,7 +158,7 @@ export default async function MyTripPage() {
 
       {/* Rides */}
       <div className="card">
-        <h2 className="font-bold text-brand-800">🚗 Your rides</h2>
+        <h2 className="font-bold text-brand-800">Your rides</h2>
         <div className="mt-2 space-y-4">
           <RideBlock title="To Broken Bow" info={rideInfo("to_trip")} meId={me.id} />
           <RideBlock title="Coming home" info={rideInfo("from_trip")} meId={me.id} />

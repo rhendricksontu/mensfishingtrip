@@ -7,9 +7,9 @@ import type { Signup, SignupRole } from "@/lib/types";
 
 const initial: SignupState = { ok: false };
 
-const ROLES: { key: SignupRole; label: string; emoji: string }[] = [
-  { key: "breakfast_cook", label: "Breakfast Cook", emoji: "🍳" },
-  { key: "coffee_maker", label: "Coffee Maker", emoji: "☕" },
+const ROLES: { key: SignupRole; label: string }[] = [
+  { key: "breakfast_cook", label: "Breakfast Cook" },
+  { key: "coffee_maker", label: "Coffee Maker" },
 ];
 const DAYS = [
   { key: "saturday", label: "Saturday" },
@@ -48,7 +48,7 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
         )}
         {state.ok && (
           <div className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-700">
-            Thanks! You&apos;re on the list. 🙌
+            Thanks! You&apos;re on the list.
           </div>
         )}
         <div>
@@ -79,7 +79,7 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
       {ROLES.map((role) => (
         <section key={role.key}>
           <h2 className="mb-3 text-lg font-bold text-brand-700">
-            {role.emoji} {role.label}s
+            {role.label}s
           </h2>
           <div className="grid gap-3 sm:grid-cols-2">
             {DAYS.map((day) => {

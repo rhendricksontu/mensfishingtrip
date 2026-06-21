@@ -54,7 +54,7 @@ export default function CabinsClient({
 
             {people.length > 0 && !hasHost && (
               <p className="mt-1 text-sm font-medium text-amber-700">
-                ⚠ No cabin host assigned — pick one below.
+                No cabin host assigned — pick one below.
               </p>
             )}
 
@@ -76,7 +76,7 @@ export default function CabinsClient({
                           : "bg-brand-50 text-brand-500 ring-1 ring-brand-200"
                       }`}
                     >
-                      {a.is_cabin_host ? "★ Host" : "Make host"}
+                      {a.is_cabin_host ? "Host" : "Make host"}
                     </button>
                   </li>
                 ))}

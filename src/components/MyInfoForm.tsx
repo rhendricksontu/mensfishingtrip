@@ -52,7 +52,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
       </div>
 
       {state.ok && (
-        <div className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-700">Saved! ✅</div>
+        <div className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-700">Saved!</div>
       )}
       {state.error && (
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
