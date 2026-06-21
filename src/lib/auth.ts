@@ -54,6 +54,25 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   }
 }
 
+// The logged-in Supabase user (any role), or null. Cheap session check.
+export async function getSessionUser() {
+  if (
+    !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+  ) {
+    return null;
+  }
+  try {
+    const supabase = createSupabaseServerClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user ?? null;
+  } catch {
+    return null;
+  }
+}
+
 // True if the email is allowed to register as an admin (env allowlist).
 export function isEmailAllowlisted(email: string): boolean {
   const list = (process.env.ADMIN_ALLOWLIST || "")

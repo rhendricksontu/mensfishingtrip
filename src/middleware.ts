@@ -29,7 +29,21 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Public pages anyone can see without logging in. Everything else requires auth.
+  const path = request.nextUrl.pathname;
+  const PUBLIC = ["/", "/login", "/rsvp", "/admin/login"];
+  const isPublic = PUBLIC.includes(path);
+
+  if (!user && !isPublic) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    return NextResponse.redirect(url);
+  }
+
   return response;
 }
 
