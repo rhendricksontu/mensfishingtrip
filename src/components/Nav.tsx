@@ -70,9 +70,9 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
         ) : (
           <Link
             href="/login"
-            className="rounded-md px-3 py-1.5 text-sm font-semibold ring-1 ring-inset ring-white/30 hover:bg-brand-600"
+            className="rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-brand-700 hover:bg-brand-50"
           >
-            Log in
+            Sign In
           </Link>
         )}
       </div>
