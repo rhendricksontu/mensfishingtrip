@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
 
   // Public pages anyone can see without logging in. Everything else requires auth.
   const path = request.nextUrl.pathname;
-  const PUBLIC = ["/", "/login", "/rsvp", "/admin/login"];
+  const PUBLIC = ["/", "/login", "/rsvp", "/reset", "/admin/login"];
   const isPublic = PUBLIC.includes(path);
 
   if (!user && !isPublic) {

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import AttendeeLoginForm from "@/components/AttendeeLoginForm";
 import { getCurrentAttendee } from "@/lib/attendee";
@@ -18,8 +19,10 @@ export default async function LoginPage() {
         </p>
       </div>
       <AttendeeLoginForm />
-      <p className="text-center text-xs text-brand-400">
-        Forgot your password? Text a trip organizer and they can reset it for you.
+      <p className="text-center text-sm text-brand-500">
+        <Link href="/reset" className="font-semibold text-brand-600 underline">
+          Forgot your password?
+        </Link>
       </p>
     </div>
   );
