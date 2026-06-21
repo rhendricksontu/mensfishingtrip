@@ -1,0 +1,23 @@
+import { requireAdmin } from "@/lib/require-admin";
+import { getAttendees, getFishingGroups } from "@/lib/data";
+import FishingClient from "@/components/admin/FishingClient";
+
+export const dynamic = "force-dynamic";
+
+export default async function FishingAdminPage() {
+  await requireAdmin();
+  const [groups, attendees] = await Promise.all([getFishingGroups(), getAttendees()]);
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <h2 className="text-lg font-bold text-pine-800">Fishing Sessions & Groups</h2>
+        <p className="text-sm text-pine-600">
+          Saturday morning and afternoon. Set each group&apos;s guide; assign men to sessions and
+          groups on the Roster tab.
+        </p>
+      </div>
+      <FishingClient groups={groups} attendees={attendees} />
+    </div>
+  );
+}
