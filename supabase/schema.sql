@@ -230,13 +230,13 @@ where not exists (select 1 from fishing_groups);
 insert into agenda_items (trip_day, start_time, sort_order, title, description, location)
 select v.trip_day, v.start_time, v.sort_order, v.title, v.description, v.location
 from (values
-  ('friday',   '3:00 PM',  10, 'Arrive & Check In', 'Find your cabin, settle in.', null::text),
-  ('friday',   '6:30 PM',  20, 'Group Dinner', 'Dinner together in Broken Bow.', 'Broken Bow'),
+  ('friday',   '3:00 PM',  10, 'Arrive & Check In', 'Find your cabin, check in with your host, settle in.', null::text),
+  ('friday',   '6:00 PM',  20, 'Group Dinner', 'Dinner together at Hochatown Saloon.', 'Hochatown Saloon · 28 Old Hochatown Rd, Broken Bow, OK 74728'),
   ('friday',   '8:00 PM',  30, 'Friday Night Speaker', 'Guest speaker for the evening.', null),
   ('saturday', '6:30 AM',  10, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers — thank you!', 'Cabins'),
-  ('saturday', '8:00 AM',  20, 'Morning Fishing Session', 'Saturday morning fishing groups depart with guides.', 'River'),
-  ('saturday', '1:00 PM',  30, 'Afternoon Fishing Session', 'Saturday afternoon fishing groups depart with guides.', 'River'),
-  ('saturday', '6:30 PM',  40, 'Group Dinner', 'Dinner together in Broken Bow.', 'Broken Bow'),
+  ('saturday', '8:00 AM',  20, 'Morning Fishing Session', 'Morning groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
+  ('saturday', '1:00 PM',  30, 'Afternoon Fishing Session', 'Afternoon groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
+  ('saturday', '6:00 PM',  40, 'Group Dinner', 'Dinner together at Mountain Fork Brewery.', 'Mountain Fork Brewery · 89 N Lukfata Trl Rd, Broken Bow, OK 74728'),
   ('saturday', '8:00 PM',  50, 'Saturday Night Speaker', 'Guest speaker for the evening.', null),
   ('sunday',   '7:30 AM',  10, 'Sermon on the River', 'Worship and a word before we head home.', 'River'),
   ('sunday',   '9:00 AM',  20, 'Pack Up & Depart', 'Clean cabins, load up, and travel safe.', 'Cabins')
@@ -248,8 +248,9 @@ insert into locations (name, category, address, notes, sort_order)
 select v.name, v.category, v.address, v.notes, v.sort_order
 from (values
   ('Cabins', 'Lodging', 'Broken Bow, OK', 'Our cabins for the weekend.', 10),
-  ('Friday Dinner', 'Dinner', 'Broken Bow, OK', 'Friday night group dinner spot.', 20),
-  ('Saturday Dinner', 'Dinner', 'Broken Bow, OK', 'Saturday night group dinner spot.', 30),
+  ('Friday Dinner — Hochatown Saloon', 'Dinner', '28 Old Hochatown Rd, Broken Bow, OK 74728', 'Friday 6:00 PM', 20),
+  ('Saturday Dinner — Mountain Fork Brewery', 'Dinner', '89 N Lukfata Trl Rd, Broken Bow, OK 74728', 'Saturday 6:00 PM', 30),
+  ('Beavers Bend Fly Shop & Professional Guide Service', 'Fishing', '545 Beavers Bend Rd, Broken Bow, OK 74728', 'Fishing sessions meet here.', 35),
   ('River / Sermon Spot', 'River', 'Broken Bow, OK', 'Sunday 7:30 AM sermon on the river.', 40)
 ) as v(name, category, address, notes, sort_order)
 where not exists (select 1 from locations);
