@@ -15,3 +15,18 @@ export function formatPhone(phone: string): string {
 export function classNames(...xs: Array<string | false | null | undefined>): string {
   return xs.filter(Boolean).join(" ");
 }
+
+// Canonical key for a phone number: US 10-digit when possible, else all digits.
+// Used so the same person maps to the same login regardless of formatting.
+export function phoneKey(phone: string): string {
+  const d = normalizePhone(phone);
+  if (d.length === 11 && d.startsWith("1")) return d.slice(1);
+  return d;
+}
+
+// Attendees log in with their phone. Under the hood we key a Supabase Auth
+// account to a synthetic email derived from the phone — no SMS, no real email.
+export const PHONE_EMAIL_DOMAIN = "phone.mensfishingtrip.com";
+export function authEmailForPhone(phone: string): string {
+  return `${phoneKey(phone)}@${PHONE_EMAIL_DOMAIN}`;
+}

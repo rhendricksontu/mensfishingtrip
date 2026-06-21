@@ -12,10 +12,14 @@ Deploys to **Vercel**.
 
 ## What's in here
 
-**Public (no login):**
+**Public:**
 - **Home** – trip overview + Venmo payment.
 - **RSVP** – name, phone, emergency contact, ride preference, departure time, and
-  whether they'll drive (and how many seats). Edit later by looking up name + phone.
+  whether they'll drive (and how many seats). Creates a login account keyed to the
+  attendee's **cell phone + a password** (no SMS — see "How accounts work" below).
+- **My Trip** (`/me`, login required) – attendees log in with phone + password to
+  see their cabin + cabinmates + host, fishing session/group + guide, who they're
+  riding with (and when), payment status, and to edit their own details.
 - **Agenda** – Friday–Sunday schedule (speakers, fishing sessions, dinners, Sunday
   7:30 AM river sermon).
 - **Signups** – volunteer to cook breakfast or make coffee (Saturday/Sunday).
@@ -42,6 +46,16 @@ Go to [supabase.com](https://supabase.com) → **New project**. Pick a password 
 In Supabase: **SQL Editor → New query**, paste the contents of
 [`supabase/schema.sql`](supabase/schema.sql), and click **Run**. This creates all
 tables, security rules, and seed data (cabins, a sample agenda, and locations).
+
+If you set up the database before attendee logins were added, also run
+[`supabase/migrations/0002_attendee_accounts.sql`](supabase/migrations/0002_attendee_accounts.sql)
+once (it adds the `user_id` column that links an RSVP to its login account).
+
+> **How accounts work:** attendees log in with their **cell phone number + a
+> password** they choose at RSVP. Under the hood each account is a pre-confirmed
+> Supabase Auth user keyed to a synthetic email derived from the phone, so there's
+> **no SMS cost and no email step**. Password resets are done by an organizer from
+> the admin Roster tab.
 
 ### 3. Add yourself as an admin
 At the bottom of `schema.sql` there's a commented-out line. Run this in the SQL

@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/agenda", label: "Agenda" },
   { href: "/signups", label: "Signups" },
   { href: "/locations", label: "Locations" },
+  { href: "/me", label: "My Trip" },
 ];
 
 export default function Nav() {

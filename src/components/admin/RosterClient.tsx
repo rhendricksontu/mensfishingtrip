@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateAttendee, deleteAttendee } from "@/app/admin/actions";
+import { updateAttendee, deleteAttendee, setAttendeePassword } from "@/app/admin/actions";
 import { formatPhone } from "@/lib/utils";
 import { RIDE_PREF_LABELS, SESSION_LABELS } from "@/lib/config";
 import type { Attendee, Cabin, FishingGroup } from "@/lib/types";
@@ -194,7 +194,7 @@ function AttendeeCard({
         </div>
         <button
           onClick={() => {
-            if (confirm(`Delete ${a.name}'s RSVP? This cannot be undone.`)) {
+            if (confirm(`Delete ${a.name}'s RSVP and login? This cannot be undone.`)) {
               start(async () => {
                 await deleteAttendee(a.id);
                 router.refresh();
@@ -205,6 +205,27 @@ function AttendeeCard({
         >
           Delete
         </button>
+      </div>
+
+      <div className="flex items-center gap-2 border-t border-brand-50 pt-2 text-xs">
+        {a.user_id ? (
+          <>
+            <span className="badge bg-brand-100 text-brand-700">Has login</span>
+            <button
+              onClick={async () => {
+                const pw = prompt(`Set a new password for ${a.name} (min 8 chars):`);
+                if (!pw) return;
+                const res = await setAttendeePassword(a.id, pw);
+                alert(res.ok ? "Password updated." : res.error || "Failed.");
+              }}
+              className="text-brand-500 underline hover:text-brand-700"
+            >
+              Reset password
+            </button>
+          </>
+        ) : (
+          <span className="badge bg-amber-100 text-amber-800">No login account</span>
+        )}
       </div>
     </div>
   );

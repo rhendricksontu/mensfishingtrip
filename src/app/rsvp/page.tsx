@@ -1,32 +1,34 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import RsvpForm from "@/components/RsvpForm";
-import { PAYMENT } from "@/lib/config";
+import { getCurrentAttendee } from "@/lib/attendee";
 
 export const metadata = { title: "RSVP · Men's Fishing Trip" };
+export const dynamic = "force-dynamic";
 
-export default function RsvpPage() {
+export default async function RsvpPage() {
+  // Already logged in? Send them to their dashboard.
+  const me = await getCurrentAttendee();
+  if (me) redirect("/me");
+
   return (
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-brand-800">RSVP</h1>
         <p className="mt-1 text-brand-600">
-          Let us know you&apos;re coming. It takes about a minute.
+          Sign up for the trip and create your account. It takes about a minute.
         </p>
       </div>
 
       <div className="rounded-lg bg-white px-4 py-3 text-sm text-brand-700 ring-1 ring-brand-100">
-        Already RSVP&apos;d and need to change something?{" "}
-        <Link href="/rsvp/edit" className="font-semibold text-brand-700 underline">
-          Edit your RSVP
-        </Link>
-        .
+        Already RSVP&apos;d?{" "}
+        <Link href="/login" className="font-semibold text-brand-700 underline">
+          Log in
+        </Link>{" "}
+        to see your cabin, ride, and fishing group.
       </div>
 
       <RsvpForm />
-
-      <p className="text-center text-xs text-brand-400">
-        Remember: ${PAYMENT.amount} on Venmo to {PAYMENT.venmoHandle} covers your spot.
-      </p>
     </div>
   );
 }

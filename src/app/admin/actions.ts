@@ -38,8 +38,33 @@ export async function updateAttendee(id: string, patch: AttendeePatch) {
 export async function deleteAttendee(id: string) {
   await requireAdmin();
   const db = createAdminClient();
+  // Remove their login account too, if any.
+  const { data } = await db.from("attendees").select("user_id").eq("id", id).maybeSingle();
+  if (data?.user_id) {
+    await db.auth.admin.deleteUser(data.user_id).catch(() => {});
+  }
   await db.from("attendees").delete().eq("id", id);
   revalidatePath("/admin/roster");
+}
+
+// Organizer resets an attendee's login password.
+export async function setAttendeePassword(attendeeId: string, password: string) {
+  await requireAdmin();
+  if (!password || password.length < 8) {
+    return { ok: false, error: "Password must be at least 8 characters." };
+  }
+  const db = createAdminClient();
+  const { data } = await db
+    .from("attendees")
+    .select("user_id")
+    .eq("id", attendeeId)
+    .maybeSingle();
+  if (!data?.user_id) {
+    return { ok: false, error: "This person doesn't have a login account." };
+  }
+  const { error } = await db.auth.admin.updateUserById(data.user_id, { password });
+  if (error) return { ok: false, error: "Could not reset the password." };
+  return { ok: true };
 }
 
 // ---- Cabins ----------------------------------------------------------------

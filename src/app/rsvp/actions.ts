@@ -1,17 +1,19 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { normalizePhone } from "@/lib/utils";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { normalizePhone, authEmailForPhone } from "@/lib/utils";
 import type { Attendee } from "@/lib/types";
 
 const RsvpSchema = z.object({
-  id: z.string().uuid().optional().or(z.literal("")),
   name: z.string().trim().min(2, "Please enter your full name."),
   phone: z
     .string()
     .trim()
     .refine((v) => normalizePhone(v).length >= 10, "Enter a valid phone number."),
+  password: z.string().min(8, "Password must be at least 8 characters."),
   emergency_contact_name: z.string().trim().min(2, "Emergency contact name is required."),
   emergency_contact_phone: z
     .string()
@@ -29,8 +31,6 @@ export interface RsvpState {
   ok: boolean;
   error?: string;
   fieldErrors?: Record<string, string>;
-  attendeeId?: string;
-  edited?: boolean;
 }
 
 function bool(formData: FormData, key: string): boolean {
@@ -43,9 +43,9 @@ export async function submitRsvp(
   formData: FormData
 ): Promise<RsvpState> {
   const parsed = RsvpSchema.safeParse({
-    id: (formData.get("id") as string) || "",
     name: formData.get("name"),
     phone: formData.get("phone"),
+    password: formData.get("password"),
     emergency_contact_name: formData.get("emergency_contact_name"),
     emergency_contact_phone: formData.get("emergency_contact_phone"),
     ride_preference: formData.get("ride_preference"),
@@ -67,6 +67,7 @@ export async function submitRsvp(
 
   const d = parsed.data;
   const db = createAdminClient();
+  const authEmail = authEmailForPhone(d.phone);
 
   const record = {
     name: d.name,
@@ -81,32 +82,60 @@ export async function submitRsvp(
     notes: d.notes || null,
   };
 
-  // Editing an existing record.
-  if (d.id) {
-    const { error } = await db.from("attendees").update(record).eq("id", d.id);
-    if (error) return { ok: false, error: "Could not save your changes. Try again." };
-    return { ok: true, attendeeId: d.id, edited: true };
-  }
-
-  // New RSVP — but if a matching name+phone already exists, update it so we
-  // don't create duplicates (matches the unique index in the schema).
+  // Is there already a row for this person (e.g. admin pre-added them)?
   const existing = await findAttendee(d.name, d.phone);
+  if (existing?.user_id) {
+    return {
+      ok: false,
+      error: "An account already exists for this name and phone. Please log in instead.",
+    };
+  }
+
+  // Create the login account (pre-confirmed, so no SMS/email needed).
+  const { data: created, error: createErr } = await db.auth.admin.createUser({
+    email: authEmail,
+    password: d.password,
+    email_confirm: true,
+    user_metadata: { name: d.name, phone: d.phone },
+  });
+
+  if (createErr || !created?.user) {
+    const msg = createErr?.message?.toLowerCase() ?? "";
+    if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+      return {
+        ok: false,
+        error: "An account already exists for this phone number. Please log in instead.",
+      };
+    }
+    return { ok: false, error: "Could not create your account. Please try again." };
+  }
+
+  const userId = created.user.id;
+
+  // Attach the account to a new or existing attendee row.
+  let dbErr;
   if (existing) {
-    const { error } = await db.from("attendees").update(record).eq("id", existing.id);
-    if (error) return { ok: false, error: "Could not save your RSVP. Try again." };
-    return { ok: true, attendeeId: existing.id, edited: true };
+    ({ error: dbErr } = await db
+      .from("attendees")
+      .update({ ...record, user_id: userId })
+      .eq("id", existing.id));
+  } else {
+    ({ error: dbErr } = await db
+      .from("attendees")
+      .insert({ ...record, user_id: userId }));
   }
 
-  const { data, error } = await db
-    .from("attendees")
-    .insert(record)
-    .select("id")
-    .single();
-
-  if (error || !data) {
-    return { ok: false, error: "Could not submit your RSVP. Try again." };
+  if (dbErr) {
+    // Roll back the orphaned auth user so they can retry cleanly.
+    await db.auth.admin.deleteUser(userId);
+    return { ok: false, error: "Could not save your RSVP. Please try again." };
   }
-  return { ok: true, attendeeId: data.id, edited: false };
+
+  // Sign them in (sets the session cookie) and send them to their dashboard.
+  const supabase = createSupabaseServerClient();
+  await supabase.auth.signInWithPassword({ email: authEmail, password: d.password });
+
+  redirect("/me");
 }
 
 // Look up an attendee by name + phone (case-insensitive, digits-only phone).
@@ -125,29 +154,4 @@ export async function findAttendee(
   if (!data) return null;
   const match = data.find((a) => normalizePhone(a.phone) === digits);
   return (match as Attendee) || null;
-}
-
-export interface LookupState {
-  ok: boolean;
-  error?: string;
-  attendee?: Attendee;
-}
-
-export async function lookupRsvp(
-  _prev: LookupState,
-  formData: FormData
-): Promise<LookupState> {
-  const name = String(formData.get("name") || "").trim();
-  const phone = String(formData.get("phone") || "").trim();
-  if (name.length < 2 || normalizePhone(phone).length < 10) {
-    return { ok: false, error: "Enter the name and phone you used to RSVP." };
-  }
-  const attendee = await findAttendee(name, phone);
-  if (!attendee) {
-    return {
-      ok: false,
-      error: "We couldn't find an RSVP with that name and phone. Try the exact name you used.",
-    };
-  }
-  return { ok: true, attendee };
 }

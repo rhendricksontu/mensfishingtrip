@@ -60,6 +60,7 @@ create table if not exists fishing_groups (
 -- ---------------------------------------------------------------------------
 create table if not exists attendees (
   id                       uuid primary key default gen_random_uuid(),
+  user_id                  uuid references auth.users(id) on delete set null, -- linked login account
   name                     text not null,
   phone                    text not null,
   emergency_contact_name   text not null,
@@ -92,6 +93,8 @@ create index if not exists attendees_cabin_idx on attendees (cabin_id);
 create index if not exists attendees_group_idx on attendees (fishing_group_id);
 create unique index if not exists attendees_name_phone_uniq
   on attendees (lower(name), regexp_replace(phone, '\D', '', 'g'));
+create unique index if not exists attendees_user_id_uniq
+  on attendees (user_id) where user_id is not null;
 
 -- ---------------------------------------------------------------------------
 -- Signups (breakfast cook / coffee maker), scoped to a day

@@ -22,6 +22,7 @@ export interface FishingGroup {
 
 export interface Attendee {
   id: string;
+  user_id: string | null;
   name: string;
   phone: string;
   emergency_contact_name: string;
