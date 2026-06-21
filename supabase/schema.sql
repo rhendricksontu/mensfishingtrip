@@ -238,7 +238,7 @@ from (values
   ('saturday', '1:00 PM',  30, 'Afternoon Fishing Session', 'Afternoon groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
   ('saturday', '6:00 PM',  40, 'Group Dinner', 'Dinner together at Mountain Fork Brewery.', 'Mountain Fork Brewery · 89 N Lukfata Trl Rd, Broken Bow, OK 74728'),
   ('saturday', '8:00 PM',  50, 'Saturday Night Speaker', 'Guest speaker for the evening.', null),
-  ('sunday',   '7:30 AM',  10, 'Sermon on the River', 'Worship and a word before we head home.', 'River'),
+  ('sunday',   '7:30 AM',  10, 'Sermon on the River', 'Worship and a word before we head home.', 'Mountain Fork Park · Beavers Bend Rd, Broken Bow, OK 74728'),
   ('sunday',   '9:00 AM',  20, 'Pack Up & Depart', 'Clean cabins, load up, and travel safe.', 'Cabins')
 ) as v(trip_day, start_time, sort_order, title, description, location)
 where not exists (select 1 from agenda_items);
@@ -251,7 +251,7 @@ from (values
   ('Friday Dinner — Hochatown Saloon', 'Dinner', '28 Old Hochatown Rd, Broken Bow, OK 74728', 'Friday 6:00 PM', 20),
   ('Saturday Dinner — Mountain Fork Brewery', 'Dinner', '89 N Lukfata Trl Rd, Broken Bow, OK 74728', 'Saturday 6:00 PM', 30),
   ('Beavers Bend Fly Shop & Professional Guide Service', 'Fishing', '545 Beavers Bend Rd, Broken Bow, OK 74728', 'Fishing sessions meet here.', 35),
-  ('River / Sermon Spot', 'River', 'Broken Bow, OK', 'Sunday 7:30 AM sermon on the river.', 40)
+  ('Sermon on the River — Mountain Fork Park', 'River', 'Beavers Bend Rd, Broken Bow, OK 74728', 'Sunday 7:30 AM sermon on the river.', 40)
 ) as v(name, category, address, notes, sort_order)
 where not exists (select 1 from locations);
 
