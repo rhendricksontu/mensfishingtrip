@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { classNames } from "@/lib/utils";
+import { signOutAttendee } from "@/app/me/actions";
 
 const LINKS = [
   { href: "/", label: "Home" },
@@ -49,6 +50,14 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
                   {l.label}
                 </Link>
               ))}
+              <form action={signOutAttendee}>
+                <button
+                  type="submit"
+                  className="rounded-md px-3 py-1.5 text-sm font-medium hover:bg-brand-600"
+                >
+                  Sign Out
+                </button>
+              </form>
             </nav>
 
             <button
@@ -69,7 +78,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
         ) : (
           <Link
             href="/login"
-            className="rounded-md bg-white px-3 py-1.5 text-sm font-semibold text-brand-700 hover:bg-brand-50"
+            className="rounded-md bg-cream px-3 py-1.5 text-sm font-semibold text-brand-700 hover:bg-cream-200"
           >
             Sign In
           </Link>
@@ -91,6 +100,14 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
               {l.label}
             </Link>
           ))}
+          <form action={signOutAttendee}>
+            <button
+              type="submit"
+              className="block w-full rounded-md px-3 py-2.5 text-left text-base font-medium hover:bg-brand-600"
+            >
+              Sign Out
+            </button>
+          </form>
         </nav>
       )}
     </header>
