@@ -47,6 +47,19 @@ export async function deleteAttendee(id: string) {
   revalidatePath("/admin/roster");
 }
 
+// Promote/demote a member to/from organizer (admin).
+export async function setAttendeeRole(attendeeId: string, role: "member" | "admin") {
+  await requireAdmin();
+  const db = createAdminClient();
+  const { error } = await db
+    .from("attendees")
+    .update({ role })
+    .eq("id", attendeeId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/roster");
+  return { ok: true };
+}
+
 // Organizer resets an attendee's login password.
 export async function setAttendeePassword(attendeeId: string, password: string) {
   await requireAdmin();

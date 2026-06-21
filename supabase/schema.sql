@@ -61,6 +61,7 @@ create table if not exists fishing_groups (
 create table if not exists attendees (
   id                       uuid primary key default gen_random_uuid(),
   user_id                  uuid references auth.users(id) on delete set null, -- linked login account
+  role                     text not null default 'member' check (role in ('member', 'admin')),
   name                     text not null,
   phone                    text not null,
   emergency_contact_name   text not null,

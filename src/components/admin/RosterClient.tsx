@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateAttendee, deleteAttendee, setAttendeePassword } from "@/app/admin/actions";
+import { updateAttendee, deleteAttendee, setAttendeePassword, setAttendeeRole } from "@/app/admin/actions";
 import { formatPhone } from "@/lib/utils";
 import { RIDE_PREF_LABELS, SESSION_LABELS } from "@/lib/config";
 import type { Attendee, Cabin, FishingGroup } from "@/lib/types";
@@ -207,10 +207,30 @@ function AttendeeCard({
         </button>
       </div>
 
-      <div className="flex items-center gap-2 border-t border-brand-50 pt-2 text-xs">
+      <div className="flex flex-wrap items-center gap-2 border-t border-brand-50 pt-2 text-xs">
         {a.user_id ? (
           <>
-            <span className="badge bg-brand-100 text-brand-700">Has login</span>
+            <span
+              className={`badge ${a.role === "admin" ? "bg-olive-600 text-white" : "bg-brand-100 text-brand-700"}`}
+            >
+              {a.role === "admin" ? "★ Admin" : "Member"}
+            </span>
+            <button
+              onClick={() => {
+                const next = a.role === "admin" ? "member" : "admin";
+                const verb = next === "admin" ? "Make this person an organizer (Admin)?" : "Remove organizer access (make Member)?";
+                if (confirm(`${a.name}: ${verb}`)) {
+                  start(async () => {
+                    await setAttendeeRole(a.id, next);
+                    router.refresh();
+                  });
+                }
+              }}
+              className="text-brand-500 underline hover:text-brand-700"
+            >
+              {a.role === "admin" ? "Make member" : "Make admin"}
+            </button>
+            <span className="text-brand-200">·</span>
             <button
               onClick={async () => {
                 const pw = prompt(`Set a new password for ${a.name} (min 8 chars):`);

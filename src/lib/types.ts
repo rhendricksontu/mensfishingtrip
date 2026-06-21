@@ -20,9 +20,12 @@ export interface FishingGroup {
   notes: string | null;
 }
 
+export type Role = "member" | "admin";
+
 export interface Attendee {
   id: string;
   user_id: string | null;
+  role: Role;
   name: string;
   phone: string;
   emergency_contact_name: string;

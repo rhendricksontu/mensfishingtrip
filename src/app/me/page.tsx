@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireAttendee } from "@/lib/attendee";
 import {
   getAttendees,
@@ -70,6 +71,13 @@ export default async function MyTripPage() {
           <button className="btn-secondary text-sm">Log out</button>
         </form>
       </div>
+
+      {me.role === "admin" && (
+        <Link href="/admin" className="card flex items-center justify-between bg-olive-50 ring-olive-200 hover:bg-olive-100">
+          <span className="font-semibold text-olive-800">★ You&apos;re an organizer</span>
+          <span className="text-sm font-medium text-olive-700">Open dashboard →</span>
+        </Link>
+      )}
 
       {/* Payment */}
       {me.paid ? (

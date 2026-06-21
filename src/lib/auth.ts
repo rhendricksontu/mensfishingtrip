@@ -25,18 +25,30 @@ export async function getAdminUser(): Promise<AdminUser | null> {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user?.email) return null;
-
-    const email = user.email.toLowerCase();
+    if (!user) return null;
     const db = createAdminClient();
-    const { data } = await db
-      .from("admins")
-      .select("email, name")
-      .eq("email", email)
-      .maybeSingle();
 
-    if (!data) return null;
-    return { email: data.email, name: data.name };
+    // (a) Email-based organizer (the bootstrap/backup login).
+    if (user.email) {
+      const { data } = await db
+        .from("admins")
+        .select("email, name")
+        .eq("email", user.email.toLowerCase())
+        .maybeSingle();
+      if (data) return { email: data.email, name: data.name };
+    }
+
+    // (b) A member promoted to the 'admin' role, logged in with their phone.
+    const { data: att } = await db
+      .from("attendees")
+      .select("name, role")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    if (att?.role === "admin") {
+      return { email: user.email ?? "", name: att.name };
+    }
+
+    return null;
   } catch {
     return null;
   }
