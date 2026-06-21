@@ -25,7 +25,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
         <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
           <Image
-            src="/logo.png"
+            src="/trout.png"
             alt=""
             width={32}
             height={32}
