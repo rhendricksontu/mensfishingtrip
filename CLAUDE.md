@@ -8,11 +8,14 @@ Broken Bow, Sep 25–27 2026. Next.js 14 (App Router, TS) + Tailwind + Supabase,
 deployed on Vercel at mensfishingtrip.com.
 
 ## Architecture rules
-- **All app data access is server-side** via the Supabase `service_role` key
-  (`src/lib/supabase/admin.ts`). Never import that client into a client component,
-  and never expose the service-role key to the browser.
-- The anon/SSR client (`src/lib/supabase/server.ts`) is used **only** for admin
-  auth sessions, not for reading app data.
+- **All app data access is server-side** via the Supabase **secret** key
+  (`SUPABASE_SECRET_KEY`, in `src/lib/supabase/admin.ts`). Never import that client
+  into a client component, and never expose the secret key to the browser.
+- The publishable-key SSR client (`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`,
+  `src/lib/supabase/server.ts`) is used **only** for admin auth sessions, not for
+  reading app data.
+- Supabase's current keys are **Publishable** (`sb_publishable_…`) and **Secret**
+  (`sb_secret_…`), which replaced the legacy `anon` / `service_role` keys.
 - Tables have RLS enabled with **no public policies** on purpose — direct anon
   access is meant to fail; the server is the only door in.
 - Every admin server action must call `requireAdmin()` (`src/lib/require-admin.ts`)

@@ -1,19 +1,20 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
-// Service-role client. SERVER ONLY — bypasses Row Level Security.
+// Secret-key client. SERVER ONLY — bypasses Row Level Security.
+// Uses the Supabase "secret" API key (formerly the service_role key).
 // Never import this into a client component.
 export function createAdminClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const secretKey = process.env.SUPABASE_SECRET_KEY;
 
-  if (!url || !serviceKey) {
+  if (!url || !secretKey) {
     throw new Error(
-      "Missing Supabase env vars. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY."
+      "Missing Supabase env vars. Set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SECRET_KEY."
     );
   }
 
-  return createClient(url, serviceKey, {
+  return createClient(url, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 }

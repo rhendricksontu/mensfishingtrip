@@ -13,8 +13,8 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   // Before Supabase env vars are set, there is no session — treat as logged out.
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    !process.env.SUPABASE_SERVICE_ROLE_KEY
+    !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    !process.env.SUPABASE_SECRET_KEY
   ) {
     return null;
   }

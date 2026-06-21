@@ -53,10 +53,12 @@ insert into admins (email, name) values ('you@example.com', 'Your Name')
 ```
 
 ### 4. Get your API keys
-Supabase → **Settings → API**. You'll need:
-- **Project URL**
-- **anon public** key
-- **service_role** key (secret — server only)
+Supabase → **Settings → API Keys**. You'll need:
+- **Project URL** (Settings → API)
+- **Publishable key** — starts with `sb_publishable_…` (browser-safe; replaced the
+  old "anon" key)
+- **Secret key** — starts with `sb_secret_…` (server only; replaced the old
+  "service_role" key). Click to reveal or create one under **Secret keys**.
 
 ### 5. Configure environment variables
 Copy `.env.example` to `.env.local` and fill it in:
@@ -67,8 +69,8 @@ cp .env.example .env.local
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR-PROJECT.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-public-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-secret-key
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_xxx
+SUPABASE_SECRET_KEY=sb_secret_xxx
 ADMIN_ALLOWLIST=you@example.com,buddy@example.com
 ```
 
@@ -118,7 +120,7 @@ in Supabase's Table Editor (agenda items, locations).
 
 There's no public list of attendees. RSVP data (phones, emergency contacts) and
 payment/ride status are only reachable through server code using the Supabase
-`service_role` key, which never reaches the browser. The tables have Row Level
-Security on with no public policies, so the anon key can't read them directly.
-The organizer dashboard additionally checks that the logged-in user's email is in
-the `admins` table.
+**secret** key, which never reaches the browser. The tables have Row Level
+Security on with no public policies, so the publishable key can't read them
+directly. The organizer dashboard additionally checks that the logged-in user's
+email is in the `admins` table.
