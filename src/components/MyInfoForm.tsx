@@ -67,13 +67,20 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
       )}
 
-      <Field label="First & Last Name" error={err("name")}>
-        <input name="name" className="input" defaultValue={attendee.name} required />
-      </Field>
-
-      <p className="rounded-lg bg-brand-50 px-3 py-2 text-xs text-brand-500">
-        Your login phone is {formatPhone(attendee.phone)}. To change it, ask a fishing trip organizer.
-      </p>
+      <fieldset className="rounded-lg border border-brand-100 p-4">
+        <legend className="px-1 text-sm font-semibold text-brand-700">User Information</legend>
+        <div className="space-y-4">
+          <Field label="First & Last Name" error={err("name")}>
+            <input name="name" className="input" defaultValue={attendee.name} required />
+          </Field>
+          <Field label="Cell Phone (Your Username)" error={err("phone")}>
+            <PhoneInput name="phone" defaultValue={attendee.phone} required />
+          </Field>
+          <Field label="Password" error={err("password")}>
+            <input name="password" type="password" className="input" autoComplete="new-password" placeholder="Leave blank to keep current password" minLength={8} />
+          </Field>
+        </div>
+      </fieldset>
 
       <fieldset className="rounded-lg border border-brand-100 p-4 space-y-4">
         <legend className="px-1 text-sm font-semibold text-brand-700">Emergency Contact</legend>

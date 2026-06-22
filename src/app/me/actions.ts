@@ -6,10 +6,18 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentAttendee } from "@/lib/attendee";
-import { normalizePhone, formatPhone } from "@/lib/utils";
+import { normalizePhone, formatPhone, phoneKey, authEmailForPhone } from "@/lib/utils";
 
 const EditSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name."),
+  phone: z
+    .string()
+    .trim()
+    .refine((v) => normalizePhone(v).length >= 10, "Enter a valid phone number."),
+  // Optional on edit — blank means keep the current password.
+  password: z
+    .string()
+    .refine((v) => v === "" || v.length >= 8, "Password must be at least 8 characters."),
   emergency_contact_name: z.string().trim().min(2, "Emergency contact name is required."),
   emergency_contact_phone: z
     .string()
@@ -44,6 +52,8 @@ export async function updateMyRsvp(
 
   const parsed = EditSchema.safeParse({
     name: formData.get("name"),
+    phone: formData.get("phone"),
+    password: formData.get("password") ?? "",
     emergency_contact_name: formData.get("emergency_contact_name"),
     emergency_contact_phone: formData.get("emergency_contact_phone"),
     ride_preference: formData.get("ride_preference"),
@@ -65,10 +75,36 @@ export async function updateMyRsvp(
   const d = parsed.data;
   const willingToDrive = d.ride_preference === "driving" && d.willing_to_drive;
   const db = createAdminClient();
+
+  // Sync the login account when the phone (their username) or password changes.
+  if (me.user_id) {
+    const authUpdate: { email?: string; email_confirm?: boolean; password?: string } = {};
+    if (phoneKey(d.phone) !== phoneKey(me.phone)) {
+      authUpdate.email = authEmailForPhone(d.phone);
+      authUpdate.email_confirm = true;
+    }
+    if (d.password) authUpdate.password = d.password;
+    if (Object.keys(authUpdate).length > 0) {
+      const { error: authErr } = await db.auth.admin.updateUserById(me.user_id, authUpdate);
+      if (authErr) {
+        const msg = authErr.message?.toLowerCase() ?? "";
+        if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+          return {
+            ok: false,
+            error: "That phone number is already linked to another account.",
+            fieldErrors: { phone: "Already in use." },
+          };
+        }
+        return { ok: false, error: "Could not update your login. Try again." };
+      }
+    }
+  }
+
   const { error } = await db
     .from("attendees")
     .update({
       name: d.name,
+      phone: formatPhone(d.phone),
       emergency_contact_name: d.emergency_contact_name,
       emergency_contact_phone: formatPhone(d.emergency_contact_phone),
       ride_preference: d.ride_preference,
