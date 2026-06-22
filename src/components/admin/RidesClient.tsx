@@ -105,7 +105,13 @@ export default function RidesClient({
                   {unplaced.length} not in a car yet:
                 </span>{" "}
                 <span className="text-brand-600">
-                  {unplaced.map((a) => a.name + (a.needs_ride ? " (needs ride)" : "")).join(", ")}
+                  {unplaced
+                    .map(
+                      (a) =>
+                        `${a.name} ${formatPhone(a.phone)}` +
+                        (a.needs_ride ? " (needs ride)" : "")
+                    )
+                    .join(", ")}
                 </span>
               </div>
             )}
@@ -192,8 +198,9 @@ function RideCard({
           {passengers.length > 0 ? (
             <ul className="divide-y divide-brand-50">
               {passengers.map((p) => (
-                <li key={p.id} className="py-2 text-sm font-medium text-brand-800">
-                  {p.name}
+                <li key={p.id} className="py-2 text-sm">
+                  <span className="font-medium text-brand-800">{p.name}</span>
+                  <span className="ml-2 text-xs text-brand-400">{formatPhone(p.phone)}</span>
                 </li>
               ))}
             </ul>
@@ -238,7 +245,7 @@ function RideCard({
               <option value="">+ Add a passenger…</option>
               {candidates.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.name}
+                  {a.name} · {formatPhone(a.phone)}
                   {a.needs_ride ? " (needs ride)" : ""}
                 </option>
               ))}

@@ -97,7 +97,10 @@ function CabinCard({
             <ul className="divide-y divide-brand-50">
               {occupants.map((a) => (
                 <li key={a.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                  <span className="font-medium text-brand-800">{a.name}</span>
+                  <span>
+                    <span className="font-medium text-brand-800">{a.name}</span>
+                    <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                  </span>
                   {a.is_cabin_host && (
                     <span className="badge bg-olive-600 text-white">Host</span>
                   )}
@@ -199,7 +202,7 @@ function CabinCard({
               <option value="">+ Add a member…</option>
               {unassigned.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.name}
+                  {a.name} · {formatPhone(a.phone)}
                 </option>
               ))}
             </select>

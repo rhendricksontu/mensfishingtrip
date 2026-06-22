@@ -108,8 +108,9 @@ function GuideCard({
           {members.length > 0 && (
             <ul className="divide-y divide-brand-50">
               {members.map((a) => (
-                <li key={a.id} className="py-2 text-sm font-medium text-brand-800">
-                  {a.name}
+                <li key={a.id} className="py-2 text-sm">
+                  <span className="font-medium text-brand-800">{a.name}</span>
+                  <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
                 </li>
               ))}
             </ul>
@@ -208,7 +209,7 @@ function GuideCard({
               <option value="">+ Add a member…</option>
               {unassigned.map((a) => (
                 <option key={a.id} value={a.id}>
-                  {a.name}
+                  {a.name} · {formatPhone(a.phone)}
                 </option>
               ))}
             </select>
