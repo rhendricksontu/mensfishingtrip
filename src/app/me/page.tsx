@@ -11,7 +11,6 @@ import { addressLines, addressOneLine } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
-import VenmoButton from "@/components/VenmoButton";
 import TripRides from "@/components/trip/TripRides";
 import type {
   Attendee,
@@ -109,9 +108,14 @@ export default async function MyTripPage() {
             Send ${PAYMENT.amount} on Venmo to{" "}
             <span className="font-semibold">{PAYMENT.venmoHandle}</span>.
           </p>
-          <VenmoButton className="btn-primary mt-3">
+          <a
+            href={PAYMENT.venmoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary mt-3"
+          >
             Pay ${PAYMENT.amount} on Venmo
-          </VenmoButton>
+          </a>
           <p className="mt-2 text-xs text-brand-400">Already paid? It&apos;ll update once an organizer confirms it.</p>
         </div>
       )}
