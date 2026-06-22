@@ -44,3 +44,9 @@ export function appleMapsUrl(place: string): string {
 export function wazeUrl(place: string): string {
   return `https://waze.com/ul?q=${mapsQuery(place)}&navigate=yes`;
 }
+
+// Display-only shortening. The full business name is kept in the data so maps
+// resolve correctly; this trims the wordy suffix for cleaner display.
+export function shortenPlace(s: string): string {
+  return s.replace(" & Professional Guide Service", "");
+}

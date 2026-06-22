@@ -2,6 +2,7 @@ import { getAgenda } from "@/lib/data";
 import { DAY_LABELS, TRIP_DAYS } from "@/lib/config";
 import type { AgendaItem } from "@/lib/types";
 import MapLink from "@/components/MapLink";
+import { shortenPlace } from "@/lib/utils";
 
 export default async function AgendaView() {
   const items = await getAgenda();
@@ -57,10 +58,10 @@ function AgendaRow({ item }: { item: AgendaItem }) {
               place={item.location}
               className="mt-1 inline-block text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
             >
-              {item.location}
+              {shortenPlace(item.location)}
             </MapLink>
           ) : (
-            <p className="mt-1 text-xs font-medium text-brand-500">{item.location}</p>
+            <p className="mt-1 text-xs font-medium text-brand-500">{shortenPlace(item.location)}</p>
           ))}
       </div>
     </li>

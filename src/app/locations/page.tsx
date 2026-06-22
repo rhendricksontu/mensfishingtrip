@@ -1,6 +1,7 @@
 import { getLocations } from "@/lib/data";
 import type { LocationItem } from "@/lib/types";
 import MapLink from "@/components/MapLink";
+import { shortenPlace } from "@/lib/utils";
 
 export const metadata = { title: "Locations · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
@@ -31,12 +32,13 @@ export default async function LocationsPage() {
 }
 
 function LocationCard({ loc }: { loc: LocationItem }) {
-  // Destination = name + address so the maps app lands on the right spot.
+  // Query uses the full name + address so the maps app lands on the right spot;
+  // the display name is shortened.
   const place = [loc.name, loc.address].filter(Boolean).join(", ");
 
   return (
     <div className="card">
-      <h3 className="font-semibold text-brand-800">{loc.name}</h3>
+      <h3 className="font-semibold text-brand-800">{shortenPlace(loc.name)}</h3>
       {loc.address && (
         <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
       )}
