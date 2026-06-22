@@ -190,7 +190,7 @@ function RideCard({
           ) : (
             <p className="text-sm text-brand-400">No passengers assigned.</p>
           )}
-          {(ride?.depart_time || ride?.arrive_time) && (
+          {direction === "to_trip" && (ride?.depart_time || ride?.arrive_time) && (
             <p className="text-xs text-brand-500">
               {ride?.depart_time ? `Leaves ${ride.depart_time}` : ""}
               {ride?.depart_time && ride?.arrive_time ? " · " : ""}
@@ -242,18 +242,20 @@ function RideCard({
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <TimeField
-              label="Departs"
-              value={ride?.depart_time ?? ""}
-              onSave={(v) => run(() => setRideField(driver.id, direction, { depart_time: v || null }))}
-            />
-            <TimeField
-              label="Arrives"
-              value={ride?.arrive_time ?? ""}
-              onSave={(v) => run(() => setRideField(driver.id, direction, { arrive_time: v || null }))}
-            />
-          </div>
+          {direction === "to_trip" && (
+            <div className="grid grid-cols-2 gap-3">
+              <TimeField
+                label="Departs"
+                value={ride?.depart_time ?? ""}
+                onSave={(v) => run(() => setRideField(driver.id, direction, { depart_time: v || null }))}
+              />
+              <TimeField
+                label="Arrives"
+                value={ride?.arrive_time ?? ""}
+                onSave={(v) => run(() => setRideField(driver.id, direction, { arrive_time: v || null }))}
+              />
+            </div>
+          )}
 
           <div className="flex justify-end border-t border-brand-50 pt-3">
             <button onClick={() => setEditing(false)} className="btn-secondary">
