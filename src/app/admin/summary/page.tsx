@@ -25,8 +25,7 @@ export default async function SummaryPage() {
       <div>
         <h2 className="text-lg font-bold text-brand-800">Summary</h2>
         <p className="text-sm text-brand-600">
-          Everyone who has RSVP&apos;d. Tap a name for their cabin, fishing group, driver, and
-          payment.
+          Everyone who has RSVP&apos;d. Tap a name for their fishing trip details.
         </p>
       </div>
       <SummaryClient
