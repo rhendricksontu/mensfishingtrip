@@ -99,7 +99,12 @@ function GuideCard({
   return (
     <div className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-brand-800">{guideName}</h3>
+        <div>
+          <h3 className="font-bold text-brand-800">{guideName}</h3>
+          {!editing && guide.guide_phone && (
+            <p className="text-sm text-brand-600">{formatPhone(guide.guide_phone)}</p>
+          )}
+        </div>
         {!editing && (
           <button
             onClick={() => setEditing(true)}
@@ -114,9 +119,6 @@ function GuideCard({
       {/* Read view */}
       {!editing && (
         <>
-          {guide.guide_phone && (
-            <p className="text-sm text-brand-600">{formatPhone(guide.guide_phone)}</p>
-          )}
           <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
             {members.length}
             {guide.capacity > 0 ? ` / ${guide.capacity}` : ""} anglers
