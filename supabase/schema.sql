@@ -237,8 +237,8 @@ from (values
   ('friday',   '6:00 PM',  20, 'Group Dinner', 'Dinner together at Hochatown Saloon.', 'Hochatown Saloon · 28 Old Hochatown Rd, Broken Bow, OK 74728'),
   ('friday',   '8:00 PM',  30, 'Friday Night Speaker', 'Guest speaker for the evening.', null),
   ('saturday', '6:00 AM',  10, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers, thank you!', 'Cabins'),
-  ('saturday', '7:30 AM',  20, 'Morning Fishing Session', 'Morning groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
-  ('saturday', '12:00 PM', 30, 'Afternoon Fishing Session', 'Afternoon groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
+  ('saturday', '7:30 AM',  20, 'Morning Fishing Session', 'Morning groups meet and depart with guides.', 'Beavers Bend Fly Shop · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
+  ('saturday', '12:00 PM', 30, 'Afternoon Fishing Session', 'Afternoon groups meet and depart with guides.', 'Beavers Bend Fly Shop · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
   ('saturday', '6:00 PM',  40, 'Group Dinner', 'Dinner together at Mountain Fork Brewery.', 'Mountain Fork Brewery · 89 N Lukfata Trl Rd, Broken Bow, OK 74728'),
   ('saturday', '8:00 PM',  50, 'Saturday Night Speaker', 'Guest speaker for the evening.', null),
   ('sunday',   '6:00 AM',   5, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers, thank you!', 'Cabins'),
@@ -254,7 +254,7 @@ from (values
   ('Cabins', 'Lodging', 'Broken Bow, OK', 'Our cabins for the weekend.', 10),
   ('Friday Dinner at Hochatown Saloon', 'Dinner', '28 Old Hochatown Rd, Broken Bow, OK 74728', 'Friday 6:00 PM', 20),
   ('Saturday Dinner at Mountain Fork Brewery', 'Dinner', '89 N Lukfata Trl Rd, Broken Bow, OK 74728', 'Saturday 6:00 PM', 30),
-  ('Beavers Bend Fly Shop & Professional Guide Service', 'Fishing', '545 Beavers Bend Rd, Broken Bow, OK 74728', 'Fishing sessions meet here.', 35),
+  ('Beavers Bend Fly Shop', 'Fishing', '545 Beavers Bend Rd, Broken Bow, OK 74728', 'Fishing sessions meet here.', 35),
   ('Sermon on the River at Mountain Fork Park', 'River', 'Beavers Bend Rd, Broken Bow, OK 74728', 'Sunday 7:30 AM sermon on the river.', 40)
 ) as v(name, category, address, notes, sort_order)
 where not exists (select 1 from locations);
