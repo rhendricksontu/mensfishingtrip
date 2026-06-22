@@ -5,6 +5,7 @@ import {
   getFishingGroups,
   getRides,
   getRidePassengers,
+  getSignups,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { addressLines, addressOneLine } from "@/lib/utils";
@@ -18,20 +19,33 @@ import type {
   FishingGroup,
   FishingSession,
   RideDirection,
+  SignupRole,
 } from "@/lib/types";
+
+const SIGNUP_ROLE_LABELS: Record<SignupRole, string> = {
+  breakfast_cook: "Breakfast Cook",
+  coffee_maker: "Coffee Maker",
+  guide_lunch: "Guide Lunch Maker",
+};
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
-  const [attendees, cabins, groups, rides, ridePassengers] = await Promise.all([
+  const [attendees, cabins, groups, rides, ridePassengers, signups] = await Promise.all([
     getAttendees(),
     getCabins(),
     getFishingGroups(),
     getRides(),
     getRidePassengers(),
+    getSignups(),
   ]);
+
+  // This member's volunteer signups (breakfast/coffee/guide lunch).
+  const mySignups = signups
+    .filter((s) => s.attendee_id === me.id)
+    .sort((a, b) => a.trip_day.localeCompare(b.trip_day));
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
 
@@ -176,6 +190,25 @@ export default async function MyTripPage() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Volunteer signups */}
+      {mySignups.length > 0 && (
+        <div className="card">
+          <h2 className="font-bold text-brand-800">Your Signups</h2>
+          <ul className="mt-2 divide-y divide-brand-50">
+            {mySignups.map((s) => (
+              <li key={s.id} className="py-2 text-sm">
+                <span className="font-medium text-brand-800">
+                  {SIGNUP_ROLE_LABELS[s.role]}
+                </span>
+                <span className="ml-2 text-xs text-brand-400">
+                  {s.trip_day.charAt(0).toUpperCase() + s.trip_day.slice(1)}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
