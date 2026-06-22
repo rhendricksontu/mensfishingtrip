@@ -399,9 +399,26 @@ function CabinCard({
             >
               Delete
             </button>
-            <button onClick={() => setEditing(false)} className="btn-secondary">
-              Done
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setShowAddress(false);
+                  setEditing(false);
+                }}
+                className="btn-secondary"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  setShowAddress(false);
+                  setEditing(false);
+                }}
+                className="btn-primary"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </>
       )}
