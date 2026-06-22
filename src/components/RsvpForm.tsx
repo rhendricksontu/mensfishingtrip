@@ -1,17 +1,17 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, PAYMENT } from "@/lib/config";
 
 const initialState: RsvpState = { ok: false };
 
-function SubmitButton() {
+function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-primary w-full" disabled={pending}>
+    <button type="submit" className="btn-primary w-full" disabled={pending || disabled}>
       {pending ? "Creating Your Account…" : "Submit RSVP & Create Account"}
     </button>
   );
@@ -22,10 +22,16 @@ export default function RsvpForm() {
   const [ridePref, setRidePref] = useState("");
   const [willingToDrive, setWillingToDrive] = useState(false);
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formValid, setFormValid] = useState(false);
+  const recheck = () => setFormValid(formRef.current?.checkValidity() ?? false);
+  // Re-check when conditional fields (driver options) appear or disappear.
+  useEffect(recheck, [ridePref, willingToDrive]);
+
   const err = (k: string) => state.fieldErrors?.[k];
 
   return (
-    <form action={formAction} className="card space-y-5">
+    <form ref={formRef} action={formAction} onInput={recheck} className="card space-y-5">
       {state.error && (
         <div className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100">
           {state.error}{" "}
@@ -129,7 +135,7 @@ export default function RsvpForm() {
         </div>
       </fieldset>
 
-      <SubmitButton />
+      <SubmitButton disabled={!formValid} />
 
       <p className="text-center text-xs text-brand-400">
         After you submit, remember the ${PAYMENT.amount} fishing trip cost. Venmo {PAYMENT.venmoHandle}.
