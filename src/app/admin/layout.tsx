@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getAdminUser } from "@/lib/auth";
-import { signOut } from "@/app/admin/auth-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -24,15 +23,7 @@ export default async function AdminLayout({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-brand-800">Organizer Dashboard</h1>
-          <p className="text-xs text-brand-500">{admin.email}</p>
-        </div>
-        <form action={signOut}>
-          <button className="btn-secondary text-sm">Log Out</button>
-        </form>
-      </div>
+      <h1 className="text-xl font-bold text-brand-800">Organizer Dashboard</h1>
 
       <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1">
         {TABS.map((t) => (
