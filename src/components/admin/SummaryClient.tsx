@@ -85,8 +85,26 @@ export default function SummaryClient({
     return <div className="card text-sm text-brand-400">No RSVPs yet.</div>;
   }
 
+  const needsCount = attendees.filter((a) => {
+    const s = summaryFor(a);
+    return s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned || !s.paid;
+  }).length;
+  const readyCount = attendees.length - needsCount;
+
   return (
-    <ul className="space-y-2">
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <div className="card border-l-4 border-olive-500 py-3">
+          <div className="text-2xl font-bold text-olive-600">{readyCount}</div>
+          <div className="text-xs font-medium text-brand-500">Ready</div>
+        </div>
+        <div className="card border-l-4 border-amber-400 py-3">
+          <div className="text-2xl font-bold text-amber-600">{needsCount}</div>
+          <div className="text-xs font-medium text-brand-500">Needs Attention</div>
+        </div>
+      </div>
+
+      <ul className="space-y-2">
       {sorted.map((a) => {
         const open = openId === a.id;
         const s = summaryFor(a);
@@ -165,7 +183,8 @@ export default function SummaryClient({
           </li>
         );
       })}
-    </ul>
+      </ul>
+    </div>
   );
 }
 
