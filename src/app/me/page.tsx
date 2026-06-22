@@ -319,7 +319,10 @@ function GuideView({
           Fishing Guide
         </span>
         <div className="flex flex-wrap items-baseline gap-2">
-          <h3 className="font-bold text-brand-800">{guideName}</h3>
+          <h3 className="font-bold text-brand-800">
+            {guideName}
+            {group.guide_attendee_id === meId && " (You)"}
+          </h3>
           {group.guide_phone && <PhoneLink phone={group.guide_phone} />}
         </div>
         {session && <p className="text-sm text-brand-600">{SESSION_LABELS[session]}</p>}
