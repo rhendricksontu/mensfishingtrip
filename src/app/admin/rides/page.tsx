@@ -18,7 +18,7 @@ export default async function RidesAdminPage() {
         <h2 className="text-lg font-bold text-brand-800">Ride Tracking</h2>
         <p className="text-sm text-brand-600">
           Drivers (who offered seats at RSVP) appear automatically. Tap the edit icon to
-          assign passengers and set times, both directions. Organizer-only.
+          assign passengers.
         </p>
       </div>
       <RidesClient attendees={attendees} rides={rides} ridePassengers={ridePassengers} />
