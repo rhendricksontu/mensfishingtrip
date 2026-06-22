@@ -1,13 +1,15 @@
-import { getLocations } from "@/lib/data";
-import type { LocationItem } from "@/lib/types";
+import { getLocations, getCabins } from "@/lib/data";
+import type { LocationItem, Cabin } from "@/lib/types";
 import MapLink from "@/components/MapLink";
-import { shortenPlace } from "@/lib/utils";
+import { shortenPlace, addressLines, addressOneLine } from "@/lib/utils";
 
 export const metadata = { title: "Locations · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
 
 export default async function LocationsPage() {
-  const locations = await getLocations();
+  const [locations, cabins] = await Promise.all([getLocations(), getCabins()]);
+
+  const empty = locations.length === 0 && cabins.length === 0;
 
   return (
     <div className="space-y-5">
@@ -18,14 +20,53 @@ export default async function LocationsPage() {
         </p>
       </div>
 
-      {locations.length === 0 ? (
+      {empty ? (
         <div className="card text-brand-600">Locations will be posted here soon.</div>
       ) : (
-        <div className="space-y-3">
-          {locations.map((loc) => (
-            <LocationCard key={loc.id} loc={loc} />
+        <>
+          {cabins.length > 0 && (
+            <div className="space-y-3">
+              <h2 className="text-lg font-bold text-brand-700">Cabins</h2>
+              {cabins.map((c) => (
+                <CabinCard key={c.id} cabin={c} />
+              ))}
+            </div>
+          )}
+
+          {locations.length > 0 && (
+            <div className="space-y-3">
+              {cabins.length > 0 && (
+                <h2 className="text-lg font-bold text-brand-700">Around Broken Bow</h2>
+              )}
+              {locations.map((loc) => (
+                <LocationCard key={loc.id} loc={loc} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function CabinCard({ cabin }: { cabin: Cabin }) {
+  const lines = addressLines(cabin);
+  const query = addressOneLine(cabin);
+
+  return (
+    <div className="card">
+      <h3 className="font-semibold text-brand-800">{cabin.name}</h3>
+      {lines.length > 0 && (
+        <div className="mt-2 text-sm text-brand-600">
+          {lines.map((line, i) => (
+            <p key={i}>{line}</p>
           ))}
         </div>
+      )}
+      {query && (
+        <MapLink place={query} className="btn-secondary mt-3">
+          Get directions
+        </MapLink>
       )}
     </div>
   );
