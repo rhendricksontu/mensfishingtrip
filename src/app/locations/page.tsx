@@ -35,14 +35,7 @@ function LocationCard({ loc }: { loc: LocationItem }) {
 
   return (
     <div className="card">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h3 className="font-semibold text-brand-800">{loc.name}</h3>
-          {loc.category && (
-            <span className="badge mt-1 bg-brand-100 text-brand-700">{loc.category}</span>
-          )}
-        </div>
-      </div>
+      <h3 className="font-semibold text-brand-800">{loc.name}</h3>
       {loc.notes && <p className="mt-2 text-sm text-brand-600">{loc.notes}</p>}
       {loc.address && (
         <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
