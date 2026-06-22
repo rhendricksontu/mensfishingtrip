@@ -14,9 +14,18 @@ const LINKS = [
   { href: "/me", label: "My Trip" },
 ];
 
-export default function Nav({ isAuthed }: { isAuthed: boolean }) {
+export default function Nav({
+  isAuthed,
+  isAdmin,
+}: {
+  isAuthed: boolean;
+  isAdmin: boolean;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const links = isAdmin
+    ? [...LINKS, { href: "/admin", label: "Organizer" }]
+    : LINKS;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -38,7 +47,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
         {isAuthed ? (
           <>
             <nav className="hidden sm:flex items-center gap-1">
-              {LINKS.map((l) => (
+              {links.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
@@ -87,7 +96,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
 
       {isAuthed && open && (
         <nav className="sm:hidden border-t border-brand-600 bg-brand-700 px-2 pb-3">
-          {LINKS.map((l) => (
+          {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}

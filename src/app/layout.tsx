@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
-import { getSessionUser } from "@/lib/auth";
+import { getSessionUser, getAdminUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
@@ -22,11 +22,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const isAuthed = Boolean(await getSessionUser());
+  const [user, admin] = await Promise.all([getSessionUser(), getAdminUser()]);
+  const isAuthed = Boolean(user);
+  const isAdmin = Boolean(admin);
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        <Nav isAuthed={isAuthed} />
+        <Nav isAuthed={isAuthed} isAdmin={isAdmin} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       </body>
     </html>
