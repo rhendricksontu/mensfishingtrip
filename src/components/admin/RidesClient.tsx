@@ -4,7 +4,6 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   assignPassenger,
-  setRideField,
   removePassenger,
   seedReturnFromDown,
 } from "@/app/admin/actions";
@@ -173,6 +172,17 @@ function RideCard({
         )}
       </div>
 
+      {((direction === "to_trip" && driver.departure_time) || driver.departure_location) && (
+        <div className="space-y-0.5 text-xs text-brand-500">
+          {direction === "to_trip" && driver.departure_time && (
+            <p>Preferred departure: {driver.departure_time}</p>
+          )}
+          {driver.departure_location && (
+            <p>Departure/return location: {driver.departure_location}</p>
+          )}
+        </div>
+      )}
+
       {/* Read view */}
       {!editing && (
         <>
@@ -189,9 +199,6 @@ function RideCard({
             </ul>
           ) : (
             <p className="text-sm text-brand-400">No passengers assigned.</p>
-          )}
-          {direction === "to_trip" && ride?.depart_time && (
-            <p className="text-xs text-brand-500">Leaves {ride.depart_time}</p>
           )}
         </>
       )}
@@ -238,14 +245,6 @@ function RideCard({
             </select>
           </div>
 
-          {direction === "to_trip" && (
-            <TimeField
-              label="Departs"
-              value={ride?.depart_time ?? ""}
-              onSave={(v) => run(() => setRideField(driver.id, direction, { depart_time: v || null }))}
-            />
-          )}
-
           <div className="flex justify-end border-t border-brand-50 pt-3">
             <button onClick={() => setEditing(false)} className="btn-secondary">
               Done
@@ -253,30 +252,6 @@ function RideCard({
           </div>
         </>
       )}
-    </div>
-  );
-}
-
-function TimeField({
-  label,
-  value,
-  onSave,
-}: {
-  label: string;
-  value: string;
-  onSave: (v: string) => void;
-}) {
-  const [v, setV] = useState(value);
-  return (
-    <div>
-      <span className="label">{label}</span>
-      <input
-        className="input"
-        value={v}
-        placeholder="e.g. Fri 3:00 PM"
-        onChange={(e) => setV(e.target.value)}
-        onBlur={() => v !== value && onSave(v)}
-      />
     </div>
   );
 }
