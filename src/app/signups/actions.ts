@@ -7,7 +7,6 @@ import { getCurrentAttendee } from "@/lib/attendee";
 import { getAdminUser } from "@/lib/auth";
 
 const AddSchema = z.object({
-  name: z.string().trim().min(2, "Enter your name."),
   role: z.enum(["breakfast_cook", "coffee_maker", "guide_lunch"]),
   trip_day: z.enum(["saturday", "sunday"]),
   quantity: z.coerce.number().int().min(1).max(50).default(1),
@@ -23,7 +22,6 @@ export async function addSignup(
   formData: FormData
 ): Promise<SignupState> {
   const parsed = AddSchema.safeParse({
-    name: formData.get("name"),
     role: formData.get("role"),
     trip_day: formData.get("trip_day"),
     quantity: formData.get("quantity") || 1,
@@ -32,14 +30,17 @@ export async function addSignup(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid signup." };
   }
 
+  // We use the logged-in member's name; no need to ask for it.
   const me = await getCurrentAttendee();
+  if (!me) return { ok: false, error: "Please log in to sign up." };
+
   const db = createAdminClient();
   const { error } = await db.from("signups").insert({
-    name: parsed.data.name,
+    name: me.name,
     role: parsed.data.role,
     trip_day: parsed.data.trip_day,
     quantity: parsed.data.quantity,
-    attendee_id: me?.id ?? null, // ownership: who can remove it later
+    attendee_id: me.id, // ownership: who can remove it later
   });
   if (error) return { ok: false, error: "Could not save your signup. Try again." };
 

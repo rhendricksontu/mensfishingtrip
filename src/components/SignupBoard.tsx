@@ -83,10 +83,6 @@ export default function SignupBoard({
             Thanks! You&apos;re on the list.
           </div>
         )}
-        <div>
-          <span className="label">Your Name</span>
-          <input name="name" className="input" required autoComplete="name" />
-        </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <span className="label">Role</span>
