@@ -134,6 +134,25 @@ export default async function MyTripPage() {
         </div>
       )}
 
+      {/* Volunteer signups */}
+      {mySignups.length > 0 && (
+        <div className="card">
+          <h2 className="font-bold text-brand-800">Volunteer Signups</h2>
+          <ul className="mt-2 divide-y divide-brand-50">
+            {mySignups.map((s) => (
+              <li key={s.id} className="py-2 text-sm">
+                <span className="font-medium text-brand-800">
+                  {SIGNUP_ROLE_LABELS[s.role]}
+                </span>
+                <span className="ml-2 text-xs text-brand-400">
+                  {s.trip_day.charAt(0).toUpperCase() + s.trip_day.slice(1)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Assignments */}
       <div className="space-y-4">
         {/* Cabin */}
@@ -190,25 +209,6 @@ export default async function MyTripPage() {
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      {/* Volunteer signups */}
-      {mySignups.length > 0 && (
-        <div className="card">
-          <h2 className="font-bold text-brand-800">Your Signups</h2>
-          <ul className="mt-2 divide-y divide-brand-50">
-            {mySignups.map((s) => (
-              <li key={s.id} className="py-2 text-sm">
-                <span className="font-medium text-brand-800">
-                  {SIGNUP_ROLE_LABELS[s.role]}
-                </span>
-                <span className="ml-2 text-xs text-brand-400">
-                  {s.trip_day.charAt(0).toUpperCase() + s.trip_day.slice(1)}
-                </span>
-              </li>
-            ))}
-          </ul>
         </div>
       )}
 
