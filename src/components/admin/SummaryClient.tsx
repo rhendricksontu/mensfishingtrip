@@ -30,6 +30,7 @@ export default function SummaryClient({
     const cabin = cabins.find((c) => c.id === me.cabin_id) || null;
     const group = groups.find((g) => g.id === me.fishing_group_id) || null;
     const session = group?.session ?? me.assigned_session ?? null;
+    const isGuide = groups.some((g) => g.guide_attendee_id === me.id);
 
     // Driver for the trip down. Only rides whose driver is a willing driver
     // count, so stale rows don't show a bogus assignment.
@@ -39,7 +40,7 @@ export default function SummaryClient({
     );
     let driver: string;
     if (me.willing_to_drive) {
-      driver = "Driving themselves";
+      driver = "Self";
     } else {
       const link = ridePassengers.find(
         (p) => p.attendee_id === me.id && dirRides.some((r) => r.id === p.ride_id)
@@ -49,11 +50,19 @@ export default function SummaryClient({
       driver = d ? d.name : "Not assigned";
     }
 
-    const fishing = group
-      ? `${group.guide_name || group.name}${session ? ` · ${SESSION_LABELS[session]}` : ""}`
-      : session
-        ? SESSION_LABELS[session]
-        : "Not assigned";
+    // Guides show "Guide"; non-guides only show fishing if they want a guide.
+    let fishing: string | null;
+    if (isGuide) {
+      fishing = "Guide";
+    } else if (!me.fish_with_guide) {
+      fishing = null;
+    } else {
+      fishing = group
+        ? `${group.guide_name || group.name}${session ? ` · ${SESSION_LABELS[session]}` : ""}`
+        : session
+          ? SESSION_LABELS[session]
+          : "Not assigned";
+    }
 
     return {
       cabin: cabin ? cabin.name : "Not assigned",
@@ -87,7 +96,7 @@ export default function SummaryClient({
             {open && s && (
               <dl className="mt-3 space-y-1.5 border-t border-brand-50 pt-3 text-sm">
                 <Row label="Cabin" value={s.cabin} />
-                <Row label="Fishing" value={s.fishing} />
+                {s.fishing && <Row label="Fishing" value={s.fishing} />}
                 <Row label="Driver" value={s.driver} />
                 <Row
                   label="Payment"
