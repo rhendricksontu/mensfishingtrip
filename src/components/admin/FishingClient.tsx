@@ -40,6 +40,9 @@ export default function FishingClient({
         return (
           <section key={session} className="space-y-3">
             <h2 className="text-lg font-bold text-brand-700">{SESSION_LABELS[session]}</h2>
+            {guides.length === 0 && (
+              <p className="text-sm text-brand-400">No guides yet.</p>
+            )}
             {guides.map((g) => (
               <GuideCard
                 key={g.id}
@@ -49,10 +52,11 @@ export default function FishingClient({
                 session={session}
               />
             ))}
-            <AddGuide session={session} />
           </section>
         );
       })}
+
+      <AddGuide />
 
       {unassigned.length > 0 && (
         <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
@@ -124,7 +128,7 @@ function GuideCard({
         <>
           <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
             {members.length}
-            {guide.capacity > 0 ? ` / ${guide.capacity}` : ""} anglers
+            {guide.capacity > 0 ? ` / ${guide.capacity}` : ""} Anglers
           </span>
           {members.length > 0 && (
             <ul className="divide-y divide-brand-50">
@@ -180,11 +184,11 @@ function GuideCard({
         <>
           <div className="flex items-end gap-3">
             <div className="flex-1">
-              <span className="label">Guide name</span>
+              <span className="label">Guide Name</span>
               <input
                 className="input"
                 defaultValue={guideName}
-                placeholder="Guide name"
+                placeholder="Guide Name"
                 onBlur={(e) => {
                   const v = e.target.value.trim();
                   if (v && v !== guideName)
@@ -207,7 +211,7 @@ function GuideCard({
             </div>
           </div>
           <div>
-            <span className="label">Guide phone</span>
+            <span className="label">Guide Phone</span>
             <input
               className="input"
               type="tel"
@@ -249,7 +253,7 @@ function GuideCard({
           )}
 
           <div>
-            <span className="label">Assign a member</span>
+            <span className="label">Assign a Member</span>
             <select
               className="input"
               value=""
@@ -263,7 +267,7 @@ function GuideCard({
                   );
               }}
             >
-              <option value="">+ Add a member…</option>
+              <option value="">+ Add a Member…</option>
               {unassigned.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name} · {formatPhone(a.phone)}
@@ -298,26 +302,30 @@ function GuideCard({
   );
 }
 
-function AddGuide({ session }: { session: FishingSession }) {
+type GuideWhen = FishingSession | "both";
+
+function AddGuide() {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [cap, setCap] = useState(4);
+  const [when, setWhen] = useState<GuideWhen>("saturday_morning");
 
   function add() {
     if (name.trim().length < 1) return;
+    const phoneArg = phone.trim() ? formatPhone(phone.trim()) : undefined;
+    const sessions: FishingSession[] =
+      when === "both" ? ["saturday_morning", "saturday_afternoon"] : [when];
     start(async () => {
-      await createFishingGroup(
-        name.trim(),
-        session,
-        name.trim(),
-        cap,
-        phone.trim() ? formatPhone(phone.trim()) : undefined
-      );
+      for (const s of sessions) {
+        await createFishingGroup(name.trim(), s, name.trim(), cap, phoneArg);
+      }
       setName("");
       setPhone("");
+      setCap(4);
+      setWhen("saturday_morning");
       setOpen(false);
       router.refresh();
     });
@@ -332,31 +340,44 @@ function AddGuide({ session }: { session: FishingSession }) {
   }
 
   return (
-    <div className="card flex flex-wrap items-end gap-3">
-      <div className="flex-1">
-        <span className="label">Guide name</span>
-        <input className="input" placeholder="Guide name" value={name} onChange={(e) => setName(e.target.value)} />
-      </div>
-      <div className="flex-1">
-        <span className="label">Guide phone</span>
-        <input className="input" type="tel" inputMode="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+    <div className="card space-y-3">
+      <h3 className="font-semibold text-brand-800">Add a Guide</h3>
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex-1">
+          <span className="label">Guide Name</span>
+          <input className="input" placeholder="Guide Name" value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
+        <div className="flex-1">
+          <span className="label">Guide Phone</span>
+          <input className="input" type="tel" inputMode="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </div>
+        <div>
+          <span className="label">Capacity</span>
+          <input
+            className="input w-24"
+            type="number"
+            min={0}
+            value={cap}
+            onChange={(e) => setCap(Number(e.target.value))}
+          />
+        </div>
       </div>
       <div>
-        <span className="label">Capacity</span>
-        <input
-          className="input w-24"
-          type="number"
-          min={0}
-          value={cap}
-          onChange={(e) => setCap(Number(e.target.value))}
-        />
+        <span className="label">Guiding</span>
+        <select className="input" value={when} onChange={(e) => setWhen(e.target.value as GuideWhen)}>
+          <option value="saturday_morning">Morning Session</option>
+          <option value="saturday_afternoon">Afternoon Session</option>
+          <option value="both">Both Sessions</option>
+        </select>
       </div>
-      <button onClick={add} className="btn-primary" disabled={pending}>
-        Add Guide
-      </button>
-      <button onClick={() => setOpen(false)} className="btn-secondary">
-        Cancel
-      </button>
+      <div className="flex gap-2">
+        <button onClick={add} className="btn-primary" disabled={pending}>
+          Add Guide
+        </button>
+        <button onClick={() => setOpen(false)} className="btn-secondary">
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
