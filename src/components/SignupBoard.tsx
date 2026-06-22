@@ -146,7 +146,10 @@ export default function SignupBoard({
                       {people.map((p) => (
                         <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
                           <span>
-                            <span className="text-brand-800">{p.name}</span>
+                            <span className="text-brand-800">
+                              {p.name}
+                              {p.attendee_id && p.attendee_id === currentAttendeeId && " (You)"}
+                            </span>
                             {p.attendee_id && phoneById[p.attendee_id] && (
                               <span className="ml-2 text-xs text-brand-400">
                                 {formatPhone(phoneById[p.attendee_id])}
