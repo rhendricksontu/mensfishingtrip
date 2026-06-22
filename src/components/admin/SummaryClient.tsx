@@ -26,7 +26,15 @@ export default function SummaryClient({
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
   const byId = new Map(attendees.map((a) => [a.id, a]));
-  const sorted = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
+  const needsAttn = (a: Attendee) => {
+    const s = summaryFor(a);
+    return s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned || !s.paid;
+  };
+
+  // Needs-attention (amber) bubbles to the top; good standing (green) sinks.
+  const sorted = [...attendees].sort(
+    (a, b) => Number(needsAttn(b)) - Number(needsAttn(a)) || a.name.localeCompare(b.name)
+  );
 
   function summaryFor(me: Attendee) {
     const cabin = cabins.find((c) => c.id === me.cabin_id) || null;
@@ -85,10 +93,7 @@ export default function SummaryClient({
     return <div className="card text-sm text-brand-400">No RSVPs yet.</div>;
   }
 
-  const needsCount = attendees.filter((a) => {
-    const s = summaryFor(a);
-    return s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned || !s.paid;
-  }).length;
+  const needsCount = attendees.filter(needsAttn).length;
   const readyCount = attendees.length - needsCount;
 
   return (
@@ -96,7 +101,7 @@ export default function SummaryClient({
       <div className="grid grid-cols-2 gap-3">
         <div className="card border-l-4 border-olive-500 py-3">
           <div className="text-2xl font-bold text-olive-600">{readyCount}</div>
-          <div className="text-xs font-medium text-brand-500">Ready</div>
+          <div className="text-xs font-medium text-brand-500">Good Standing</div>
         </div>
         <div className="card border-l-4 border-amber-400 py-3">
           <div className="text-2xl font-bold text-amber-600">{needsCount}</div>
