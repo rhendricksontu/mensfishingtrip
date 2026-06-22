@@ -51,16 +51,14 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
             label="Cell Phone"
             value={<PhoneLink phone={attendee.phone} className="font-medium text-brand-800 underline" />}
           />
+          <Row label="Emergency Contact" value={attendee.emergency_contact_name} />
           <Row
-            label="Emergency Contact"
+            label="Emergency Phone"
             value={
-              <>
-                {attendee.emergency_contact_name} ·{" "}
-                <PhoneLink
-                  phone={attendee.emergency_contact_phone}
-                  className="font-medium text-brand-800 underline"
-                />
-              </>
+              <PhoneLink
+                phone={attendee.emergency_contact_phone}
+                className="font-medium text-brand-800 underline"
+              />
             }
           />
           <Row label="Fish with a Guide" value={attendee.fish_with_guide ? "Yes" : "No"} />
