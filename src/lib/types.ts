@@ -6,6 +6,7 @@ export type RideDirection = "to_trip" | "from_trip";
 export interface Cabin {
   id: string;
   name: string;
+  address: string | null;
   capacity: number;
   notes: string | null;
   sort_order: number;

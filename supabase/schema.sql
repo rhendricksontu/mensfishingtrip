@@ -36,6 +36,7 @@ $enums$;
 create table if not exists cabins (
   id          uuid primary key default gen_random_uuid(),
   name        text not null,
+  address     text,
   capacity    int  not null default 0,
   notes       text,
   sort_order  int  not null default 0,

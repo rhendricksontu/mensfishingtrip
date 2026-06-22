@@ -82,10 +82,28 @@ export async function setAttendeePassword(attendeeId: string, password: string) 
 
 // ---- Cabins ----------------------------------------------------------------
 
-export async function createCabin(name: string, capacity: number) {
+export async function createCabin(name: string, capacity: number, address?: string) {
   await requireAdmin();
   const db = createAdminClient();
-  await db.from("cabins").insert({ name, capacity });
+  await db.from("cabins").insert({ name, capacity, address: address || null });
+  revalidatePath("/admin/cabins");
+}
+
+export async function updateCabin(
+  id: string,
+  patch: { name?: string; address?: string | null; capacity?: number }
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+  await db.from("cabins").update(patch).eq("id", id);
+  revalidatePath("/admin/cabins");
+}
+
+export async function deleteCabin(id: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  // attendees.cabin_id is ON DELETE SET NULL, so occupants are auto-unassigned.
+  await db.from("cabins").delete().eq("id", id);
   revalidatePath("/admin/cabins");
 }
 
