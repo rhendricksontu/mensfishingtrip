@@ -68,7 +68,8 @@ create table if not exists attendees (
   emergency_contact_phone  text not null,
 
   ride_preference          ride_preference not null default 'either',
-  departure_time           text,                 -- e.g. "Fri 3:00 PM"
+  departure_time           text,                 -- e.g. "Friday Morning (8am-12pm)"
+  departure_location       text,                 -- preferred departure/return spot
   willing_to_drive         boolean not null default false,
   seat_capacity            int not null default 0, -- passenger seats available (excludes driver)
   needs_ride               boolean not null default false, -- wants to be partnered with a driver

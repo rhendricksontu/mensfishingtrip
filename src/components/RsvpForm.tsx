@@ -4,7 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { useState } from "react";
 import Link from "next/link";
 import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
-import { DEPARTURE_TIME_OPTIONS, PAYMENT } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, PAYMENT } from "@/lib/config";
 
 const initialState: RsvpState = { ok: false };
 
@@ -36,7 +36,7 @@ export default function RsvpForm() {
         </div>
       )}
 
-      <Field label="Full name" error={err("name")}>
+      <Field label="First & Last Name" error={err("name")}>
         <input name="name" className="input" autoComplete="name" required />
       </Field>
 
@@ -76,6 +76,14 @@ export default function RsvpForm() {
         <select name="departure_time" className="input" defaultValue="">
           <option value="">No preference</option>
           {DEPARTURE_TIME_OPTIONS.map((o) => (
+            <option key={o} value={o}>{o}</option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
+        <select name="departure_location" className="input" defaultValue="No Preference">
+          {DEPARTURE_LOCATION_OPTIONS.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
         </select>

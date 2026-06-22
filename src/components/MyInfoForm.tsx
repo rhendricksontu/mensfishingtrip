@@ -3,7 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { useState } from "react";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
-import { DEPARTURE_TIME_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
 import type { Attendee } from "@/lib/types";
 
@@ -39,6 +39,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           {attendee.willing_to_drive && <Row label="Willing to drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.needs_ride && <Row label="Needs a ride" value="Yes, match me with a driver" />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
+          {attendee.departure_location && <Row label="Departure/return location" value={attendee.departure_location} />}
         </dl>
       </div>
     );
@@ -58,7 +59,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
       )}
 
-      <Field label="Full name" error={err("name")}>
+      <Field label="First & Last Name" error={err("name")}>
         <input name="name" className="input" defaultValue={attendee.name} required />
       </Field>
 
@@ -88,6 +89,14 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         <select name="departure_time" className="input" defaultValue={attendee.departure_time ?? ""}>
           <option value="">No preference</option>
           {DEPARTURE_TIME_OPTIONS.map((o) => (
+            <option key={o} value={o}>{o}</option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
+        <select name="departure_location" className="input" defaultValue={attendee.departure_location ?? "No Preference"}>
+          {DEPARTURE_LOCATION_OPTIONS.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
         </select>

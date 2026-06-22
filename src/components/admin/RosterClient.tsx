@@ -131,6 +131,9 @@ function AttendeeCard({
         {a.departure_time && (
           <span className="badge bg-brand-50 text-brand-600">Leaves: {a.departure_time}</span>
         )}
+        {a.departure_location && (
+          <span className="badge bg-brand-50 text-brand-600">From: {a.departure_location}</span>
+        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
@@ -297,13 +300,14 @@ function ExportButton({
     const groupName = (id: string | null) => groups.find((g) => g.id === id)?.name ?? "";
     const headers = [
       "Name", "Phone", "Emergency Contact", "Emergency Phone", "Ride Pref",
-      "Willing To Drive", "Seats", "Needs Ride", "Departure", "Cabin", "Cabin Host",
-      "Session", "Group", "Paid", "Payment Note",
+      "Willing To Drive", "Seats", "Needs Ride", "Departure", "Departure Location",
+      "Cabin", "Cabin Host", "Session", "Group", "Paid", "Payment Note",
     ];
     const rows = attendees.map((a) => [
       a.name, a.phone, a.emergency_contact_name, a.emergency_contact_phone,
       a.ride_preference, a.willing_to_drive ? "yes" : "no", a.seat_capacity,
-      a.needs_ride ? "yes" : "no", a.departure_time ?? "", cabinName(a.cabin_id),
+      a.needs_ride ? "yes" : "no", a.departure_time ?? "", a.departure_location ?? "",
+      cabinName(a.cabin_id),
       a.is_cabin_host ? "yes" : "no", a.assigned_session ?? "", groupName(a.fishing_group_id),
       a.paid ? "yes" : "no", a.payment_note ?? "",
     ]);

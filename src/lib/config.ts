@@ -22,11 +22,19 @@ export const PAYMENT = {
 };
 
 export const DEPARTURE_TIME_OPTIONS = [
-  "Friday morning",
-  "Friday early afternoon (12–3 PM)",
-  "Friday late afternoon (3–6 PM)",
-  "Friday evening (after 6 PM)",
-  "Flexible / whenever my ride leaves",
+  "Early Friday Morning (Before 8am)",
+  "Friday Morning (8am-12pm)",
+  "Friday early afternoon (12pm-3pm)",
+  "Friday afternoon (After 3pm)",
+];
+
+export const DEPARTURE_LOCATION_OPTIONS = [
+  "My House",
+  "Someone Else's House",
+  "Crossings - OKC",
+  "Crossings - Edmond",
+  "Other",
+  "No Preference",
 ];
 
 export const TRIP_DAYS = ["friday", "saturday", "sunday"] as const;
