@@ -15,10 +15,10 @@ export const TRIP = {
 export const PAYMENT = {
   amount: 90,
   venmoHandle: "@yomikeywhitey",
-  // Venmo's pay URL. Universal link: opens the app on mobile and the web pay
-  // page on desktop. Pre-fills recipient, amount, and note.
+  // Venmo web link (reliably opens the app on mobile). The memo is camel case
+  // with no spaces, so Venmo doesn't render spaces as "+".
   venmoUrl:
-    "https://account.venmo.com/pay?txn=pay&recipients=yomikeywhitey&amount=90&note=Men%27s%20Fishing%20Trip%202026",
+    "https://venmo.com/yomikeywhitey?txn=pay&amount=90&note=MensFishingTrip2026",
   description: "Covers cabins, guides, and meals for the weekend.",
 };
 
