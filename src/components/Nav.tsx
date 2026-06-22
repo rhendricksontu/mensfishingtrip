@@ -52,8 +52,10 @@ export default function Nav({
                   key={l.href}
                   href={l.href}
                   className={classNames(
-                    "rounded-md px-3 py-1.5 text-sm font-medium hover:bg-brand-600",
-                    isActive(l.href) && "bg-brand-600"
+                    "rounded-md px-3 py-1.5 text-sm font-medium",
+                    isActive(l.href)
+                      ? "bg-cream text-brand-700"
+                      : "text-white hover:bg-brand-600"
                   )}
                 >
                   {l.label}
@@ -102,8 +104,10 @@ export default function Nav({
               href={l.href}
               onClick={() => setOpen(false)}
               className={classNames(
-                "block rounded-md px-3 py-2.5 text-base font-medium hover:bg-brand-600",
-                isActive(l.href) && "bg-brand-600"
+                "block rounded-md px-3 py-2.5 text-base font-medium",
+                isActive(l.href)
+                  ? "bg-cream text-brand-700"
+                  : "text-white hover:bg-brand-600"
               )}
             >
               {l.label}
