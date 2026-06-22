@@ -91,7 +91,7 @@ export default function CabinsClient({
 function UnassignedNote({ people }: { people: Attendee[] }) {
   return (
     <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
-      <p className="font-semibold text-amber-800">Unassigned</p>
+      <p className="font-semibold text-amber-800">Unassigned Travelers</p>
       <ul className="mt-1.5 space-y-1">
         {people.map((a) => (
           <li key={a.id}>

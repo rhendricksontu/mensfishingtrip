@@ -56,7 +56,7 @@ export default function FishingClient({
 
       {unassigned.length > 0 && (
         <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
-          <p className="font-semibold text-amber-800">Unassigned</p>
+          <p className="font-semibold text-amber-800">Unassigned Anglers</p>
           <ul className="mt-1.5 space-y-1">
             {unassigned.map((a) => (
               <li key={a.id}>
