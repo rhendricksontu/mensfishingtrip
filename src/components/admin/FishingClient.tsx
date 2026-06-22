@@ -399,7 +399,7 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
         <div>
           <span className="label">Capacity</span>
           <input
-            className="input w-24"
+            className="input h-11 w-24"
             type="number"
             min={0}
             value={cap}
@@ -408,7 +408,7 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
         </div>
         <div className="flex-1">
           <span className="label">Guiding</span>
-          <select className="input" value={when} onChange={(e) => setWhen(e.target.value as GuideWhen)}>
+          <select className="input h-11" value={when} onChange={(e) => setWhen(e.target.value as GuideWhen)}>
             <option value="saturday_morning">Morning Session</option>
             <option value="saturday_afternoon">Afternoon Session</option>
             <option value="both">Both Sessions</option>
