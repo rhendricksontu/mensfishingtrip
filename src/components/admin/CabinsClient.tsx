@@ -9,6 +9,7 @@ import {
   updateAttendee,
 } from "@/app/admin/actions";
 import { formatPhone } from "@/lib/utils";
+import MapLink from "@/components/MapLink";
 import type { Attendee, Cabin } from "@/lib/types";
 
 function EditIcon() {
@@ -98,13 +99,18 @@ function CabinCard({
       router.refresh();
     });
 
-  const hasHost = occupants.some((a) => a.is_cabin_host);
+  const host = occupants.find((a) => a.is_cabin_host) ?? null;
   const over = cabin.capacity > 0 && occupants.length > cabin.capacity;
 
   return (
     <div className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-bold text-brand-800">{cabin.name}</h3>
+        <div>
+          <h3 className="font-bold text-brand-800">{cabin.name}</h3>
+          {!editing && cabin.address && (
+            <p className="whitespace-pre-line text-sm text-brand-600">{cabin.address}</p>
+          )}
+        </div>
         {!editing && (
           <button
             onClick={() => setEditing(true)}
@@ -119,16 +125,33 @@ function CabinCard({
       {/* Read view */}
       {!editing && (
         <>
-          {cabin.address && <p className="text-sm text-brand-600">{cabin.address}</p>}
-          <div className="flex items-center justify-between text-sm">
-            <span className={over ? "font-semibold text-red-600" : "text-brand-500"}>
-              {occupants.length}
-              {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
-            </span>
-            {occupants.length > 0 && !hasHost && (
-              <span className="font-medium text-amber-700">No cabin host assigned</span>
-            )}
-          </div>
+          {cabin.address && (
+            <MapLink place={cabin.address} className="btn-secondary">
+              Get directions
+            </MapLink>
+          )}
+
+          {/* Host, elevated like the guide on the fishing page */}
+          {host ? (
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-400">
+                Cabin Host
+              </p>
+              <p className="text-sm">
+                <span className="font-medium text-brand-800">{host.name}</span>
+                <span className="ml-2 text-xs text-brand-400">{formatPhone(host.phone)}</span>
+              </p>
+            </div>
+          ) : (
+            occupants.length > 0 && (
+              <p className="text-sm font-medium text-amber-700">No cabin host assigned</p>
+            )
+          )}
+
+          <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+            {occupants.length}
+            {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
+          </span>
           {occupants.length > 0 && (
             <ul className="divide-y divide-brand-50">
               {occupants.map((a) => (
@@ -162,32 +185,31 @@ function CabinCard({
               }
             />
           </div>
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-            <div>
-              <span className="label">Address</span>
-              <input
-                className="input"
-                defaultValue={cabin.address ?? ""}
-                placeholder="Cabin address"
-                onBlur={(e) =>
-                  e.target.value !== (cabin.address ?? "") &&
-                  run(() => updateCabin(cabin.id, { address: e.target.value || null }))
-                }
-              />
-            </div>
-            <div>
-              <span className="label">Capacity</span>
-              <input
-                type="number"
-                min={0}
-                className="input sm:w-28"
-                defaultValue={cabin.capacity}
-                onBlur={(e) =>
-                  Number(e.target.value) !== cabin.capacity &&
-                  run(() => updateCabin(cabin.id, { capacity: Number(e.target.value) }))
-                }
-              />
-            </div>
+          <div>
+            <span className="label">Address</span>
+            <textarea
+              className="input min-h-[4.5rem]"
+              rows={3}
+              defaultValue={cabin.address ?? ""}
+              placeholder="Full street address, e.g. 123 Beavers Bend Rd, Broken Bow, OK 74728"
+              onBlur={(e) =>
+                e.target.value !== (cabin.address ?? "") &&
+                run(() => updateCabin(cabin.id, { address: e.target.value.trim() || null }))
+              }
+            />
+          </div>
+          <div>
+            <span className="label">Capacity</span>
+            <input
+              type="number"
+              min={0}
+              className="input sm:w-28"
+              defaultValue={cabin.capacity}
+              onBlur={(e) =>
+                Number(e.target.value) !== cabin.capacity &&
+                run(() => updateCabin(cabin.id, { capacity: Number(e.target.value) }))
+              }
+            />
           </div>
 
           {occupants.length > 0 && (
@@ -295,9 +317,15 @@ function AddCabin() {
   return (
     <div className="card space-y-3">
       <h3 className="font-semibold text-brand-800">Add a Cabin</h3>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="space-y-3">
         <input className="input" placeholder="Cabin name" value={name} onChange={(e) => setName(e.target.value)} />
-        <input className="input" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+        <textarea
+          className="input min-h-[4.5rem]"
+          rows={3}
+          placeholder="Full street address, e.g. 123 Beavers Bend Rd, Broken Bow, OK 74728"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+        />
       </div>
       <div className="flex items-end gap-3">
         <div>

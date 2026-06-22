@@ -9,6 +9,7 @@ import {
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { formatPhone, normalizePhone } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
+import MapLink from "@/components/MapLink";
 import type { Attendee, RideDirection } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -100,8 +101,16 @@ export default async function MyTripPage() {
           {cabin ? (
             <>
               <p className="mt-1 text-lg font-semibold text-brand-700">{cabin.name}</p>
+              {cabin.address && (
+                <p className="whitespace-pre-line text-sm text-brand-600">{cabin.address}</p>
+              )}
+              {cabin.address && (
+                <MapLink place={cabin.address} className="btn-secondary mt-2">
+                  Get directions
+                </MapLink>
+              )}
               {me.is_cabin_host && (
-                <span className="badge mt-1 bg-olive-600 text-white">You&apos;re a cabin host</span>
+                <span className="badge mt-2 bg-olive-600 text-white">You&apos;re a cabin host</span>
               )}
               {hosts.length > 0 && !me.is_cabin_host && (
                 <p className="mt-1 text-sm text-brand-600">
