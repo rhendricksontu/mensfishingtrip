@@ -107,9 +107,6 @@ export default function RidesClient({
                     <li key={a.id}>
                       <span className="font-medium text-brand-800">{a.name}</span>
                       <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
-                      {a.needs_ride && (
-                        <span className="ml-2 text-xs text-amber-700">(needs ride)</span>
-                      )}
                     </li>
                   ))}
                 </ul>
