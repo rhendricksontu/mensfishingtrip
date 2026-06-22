@@ -11,7 +11,7 @@ const LINKS = [
   { href: "/", label: "Home" },
   { href: "/signups", label: "Signups" },
   { href: "/locations", label: "Locations" },
-  { href: "/me", label: "My Trip" },
+  { href: "/me", label: "My Fishing Trip" },
 ];
 
 export default function Nav({

@@ -64,7 +64,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
       </Field>
 
       <p className="rounded-lg bg-brand-50 px-3 py-2 text-xs text-brand-500">
-        Your login phone is {formatPhone(attendee.phone)}. To change it, ask a trip organizer.
+        Your login phone is {formatPhone(attendee.phone)}. To change it, ask a fishing trip organizer.
       </p>
 
       <fieldset className="rounded-lg border border-brand-100 p-4 space-y-4">

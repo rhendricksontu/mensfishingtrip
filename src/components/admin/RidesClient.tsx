@@ -157,7 +157,7 @@ export default function RidesClient({
             {unaccounted.length > 0 && (
               <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
                 <span className="font-semibold text-amber-800">
-                  {unaccounted.length} not in a car for this trip:
+                  {unaccounted.length} not in a car for this fishing trip:
                 </span>{" "}
                 <span className="text-brand-600">
                   {unaccounted

@@ -14,7 +14,7 @@ export default async function AdminLoginPage() {
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Organizer Login</h1>
         <p className="mt-1 text-brand-600">
-          For trip organizers only. This area shows payments and ride tracking.
+          For fishing trip organizers only. This area shows payments and ride tracking.
         </p>
       </div>
       <AdminAuthForm />

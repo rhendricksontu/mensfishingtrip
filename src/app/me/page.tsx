@@ -13,7 +13,7 @@ import MyInfoForm from "@/components/MyInfoForm";
 import type { Attendee, RideDirection } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "My Trip · Men's Fishing Trip" };
+export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
@@ -63,7 +63,7 @@ export default async function MyTripPage() {
     <div className="space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-brand-800">My Trip</h1>
+          <h1 className="text-2xl font-bold text-brand-800">My Fishing Trip</h1>
           <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
         </div>
         <form action={signOutAttendee}>
@@ -81,7 +81,7 @@ export default async function MyTripPage() {
         </div>
       ) : (
         <div className="card border-l-4 border-amber-400">
-          <p className="font-semibold text-brand-800">Trip cost: ${PAYMENT.amount} (not yet received)</p>
+          <p className="font-semibold text-brand-800">Fishing Trip cost: ${PAYMENT.amount} (not yet received)</p>
           <p className="mt-1 text-sm text-brand-600">
             Send ${PAYMENT.amount} on Venmo to{" "}
             <span className="font-semibold">{PAYMENT.venmoHandle}</span>.

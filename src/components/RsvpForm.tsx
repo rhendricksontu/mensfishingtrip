@@ -44,7 +44,7 @@ export default function RsvpForm() {
             <input name="name" className="input" autoComplete="name" required />
           </Field>
           <p className="rounded-lg bg-brand-50 px-3 py-2 text-xs text-brand-600">
-            You&apos;ll use your cell phone &amp; this password to check your trip info later.
+            You&apos;ll use your cell phone &amp; this password to check your fishing trip info later.
           </p>
           <Field label="Cell Phone (Your Username)" error={err("phone")}>
             <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
@@ -132,7 +132,7 @@ export default function RsvpForm() {
       <SubmitButton />
 
       <p className="text-center text-xs text-brand-400">
-        After you submit, remember the ${PAYMENT.amount} trip cost. Venmo {PAYMENT.venmoHandle}.
+        After you submit, remember the ${PAYMENT.amount} fishing trip cost. Venmo {PAYMENT.venmoHandle}.
       </p>
     </form>
   );
