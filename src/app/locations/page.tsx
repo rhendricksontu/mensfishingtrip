@@ -14,7 +14,7 @@ export default async function LocationsPage() {
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Important Locations</h1>
         <p className="mt-1 text-brand-600">
-          Cabins, dinner spots, and the river. Tap an address for directions.
+          Cabins, dinner spots, and the river.
         </p>
       </div>
 
