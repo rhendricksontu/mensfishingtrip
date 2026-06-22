@@ -11,7 +11,6 @@ export default function ARClient({ attendees }: { attendees: Attendee[] }) {
   const total = attendees.length;
   const paidCount = attendees.filter((a) => a.paid).length;
   const unpaidCount = total - paidCount;
-  const collected = paidCount * PAYMENT.amount;
   const outstanding = unpaidCount * PAYMENT.amount;
 
   // Unpaid first (so outstanding rises to the top), then alphabetical.
@@ -21,10 +20,8 @@ export default function ARClient({ attendees }: { attendees: Attendee[] }) {
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3">
         <Stat label="Paid" value={`${paidCount}/${total}`} tone="good" />
-        <Stat label="Unpaid" value={unpaidCount} tone={unpaidCount ? "warn" : "good"} />
-        <Stat label="Collected" value={`$${collected}`} tone="good" />
         <Stat label="Outstanding" value={`$${outstanding}`} tone={outstanding ? "warn" : "good"} />
       </div>
 
