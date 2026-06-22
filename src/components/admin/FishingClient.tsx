@@ -101,9 +101,9 @@ function GuideCard({
       <div className="flex items-start justify-between gap-2">
         <div>
           {!editing && (
-            <p className="text-xs font-semibold uppercase tracking-wide text-olive-700">
+            <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
               Fishing Guide
-            </p>
+            </span>
           )}
           <h3 className="font-bold text-brand-800">{guideName}</h3>
           {!editing && guide.guide_phone && (

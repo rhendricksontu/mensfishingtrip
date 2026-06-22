@@ -188,9 +188,9 @@ function CabinCard({
               bold name, phone below, capacity under that. */}
           {host ? (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-olive-700">
+              <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
                 Cabin Host
-              </p>
+              </span>
               <h3 className="font-bold text-brand-800">{host.name}</h3>
               <p className="text-sm text-brand-600">{formatPhone(host.phone)}</p>
               <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
