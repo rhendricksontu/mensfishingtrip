@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
-import { TRIP } from "@/lib/config";
 import { getSessionUser } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
@@ -29,11 +28,6 @@ export default async function RootLayout({
       <body className="min-h-screen flex flex-col">
         <Nav isAuthed={isAuthed} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
-        <footer className="bg-cream">
-          <div className="mx-auto max-w-3xl px-4 py-6 text-center text-sm text-brand-500">
-            <p>{TRIP.name} · {TRIP.location}</p>
-          </div>
-        </footer>
       </body>
     </html>
   );
