@@ -30,12 +30,12 @@ export const DEPARTURE_TIME_OPTIONS = [
 ];
 
 export const DEPARTURE_LOCATION_OPTIONS = [
+  "No Preference",
   "My House",
   "Someone Else's House",
   "Crossings - OKC",
   "Crossings - Edmond",
   "Other",
-  "No Preference",
 ];
 
 export const TRIP_DAYS = ["friday", "saturday", "sunday"] as const;
