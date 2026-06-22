@@ -368,7 +368,6 @@ function CabinCard({
                 <li key={a.id} className="flex items-center justify-between gap-2 py-2">
                   <div>
                     <span className="text-sm font-medium text-brand-800">{a.name}</span>
-                    <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                   </div>
                   <div className="flex items-center gap-2">
                     <button
