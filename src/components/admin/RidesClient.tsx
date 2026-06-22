@@ -233,7 +233,7 @@ function RideCard({
             return (
               <option key={a.id} value={a.id}>
                 {a.name} · {formatPhone(a.phone)}
-                {prefs ? ` — ${prefs}` : ""}
+                {prefs ? ` · ${prefs}` : ""}
               </option>
             );
           })}
