@@ -159,7 +159,7 @@ export default function SignupBoard({
                               disabled={removing === p.id}
                               className="text-xs text-brand-400 underline hover:text-red-600"
                             >
-                              {removing === p.id ? "…" : "remove"}
+                              {removing === p.id ? "…" : "Remove"}
                             </button>
                           )}
                         </li>
