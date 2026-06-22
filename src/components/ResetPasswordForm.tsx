@@ -64,7 +64,7 @@ export default function ResetPasswordForm() {
       <p className="text-center text-sm text-brand-500">
         Remembered it?{" "}
         <Link href="/login" className="font-semibold text-brand-600 underline">
-          Back to log in
+          Back to log in.
         </Link>
       </p>
     </form>
