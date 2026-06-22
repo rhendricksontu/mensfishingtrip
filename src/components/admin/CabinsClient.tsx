@@ -173,14 +173,16 @@ function CabinCard({
               <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
                 Cabin Host
               </span>
-              <div className="flex flex-wrap items-baseline gap-2">
-                <h3 className="font-bold text-brand-800">{host.name}</h3>
-                <PhoneLink phone={host.phone} className="text-brand-400 underline" />
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="flex flex-wrap items-baseline gap-2">
+                  <h3 className="font-bold text-brand-800">{host.name}</h3>
+                  <PhoneLink phone={host.phone} className="text-brand-400 underline" />
+                </span>
                 <button
                   onClick={() =>
                     run(() => updateAttendee(host.id, { cabin_id: null, is_cabin_host: false }))
                   }
-                  className="text-xs text-brand-400 underline hover:text-red-600"
+                  className="shrink-0 text-xs text-brand-400 underline hover:text-red-600"
                 >
                   Remove
                 </button>
