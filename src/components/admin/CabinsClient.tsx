@@ -196,15 +196,15 @@ function CabinCard({
               </span>
             </div>
           ) : (
-            <>
-              {occupants.length > 0 && (
-                <p className="text-sm font-medium text-amber-700">No cabin host assigned</p>
-              )}
-              <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+            <div>
+              <span className="mb-1 inline-block rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-900">
+                No Host Yet
+              </span>
+              <p className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
                 {occupants.length}
                 {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
-              </span>
-            </>
+              </p>
+            </div>
           )}
           {occupants.some((a) => !a.is_cabin_host) && (
             <ul className="divide-y divide-brand-50">
