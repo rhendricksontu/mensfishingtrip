@@ -132,6 +132,7 @@ function CabinCard({
   const router = useRouter();
   const [pending, start] = useTransition();
   const [editing, setEditing] = useState(false);
+  const [showAddress, setShowAddress] = useState(false);
   const run = (fn: () => Promise<unknown>) =>
     start(async () => {
       await fn();
@@ -240,7 +241,26 @@ function CabinCard({
               }
             />
           </div>
-          <div className="space-y-3">
+          <div className="rounded-lg border border-brand-100 p-3">
+            <button
+              type="button"
+              onClick={() => setShowAddress((s) => !s)}
+              className="flex w-full items-center justify-between gap-2 text-left"
+            >
+              <span>
+                <span className="block text-sm font-medium text-brand-700">Address</span>
+                {!showAddress && (
+                  <span className="text-sm text-brand-500">
+                    {addressOneLine({ ...cabin, ...legacy }) || "No address set"}
+                  </span>
+                )}
+              </span>
+              <span className="whitespace-nowrap text-xs font-medium text-brand-500 underline">
+                {showAddress ? "Hide" : "Edit"}
+              </span>
+            </button>
+          {showAddress && (
+          <div className="mt-3 space-y-3">
             <div>
               <span className="label">Address 1</span>
               <input
@@ -304,6 +324,8 @@ function CabinCard({
                 />
               </div>
             </div>
+          </div>
+          )}
           </div>
           <div>
             <span className="label">Capacity</span>
