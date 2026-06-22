@@ -79,7 +79,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
 
       <Field label="Ride preference" error={err("ride_preference")}>
         <select name="ride_preference" className="input" defaultValue={attendee.ride_preference} required>
-          <option value="" disabled>Select one</option>
+          <option value="" disabled>Select One</option>
           <option value="driving">Driver</option>
           <option value="riding">Passenger</option>
         </select>
@@ -87,7 +87,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
 
       <Field label="Preferred departure time" error={err("departure_time")}>
         <select name="departure_time" className="input" defaultValue={attendee.departure_time ?? ""}>
-          <option value="">No preference</option>
+          <option value="">No Preference</option>
           {DEPARTURE_TIME_OPTIONS.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}

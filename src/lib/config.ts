@@ -24,8 +24,8 @@ export const PAYMENT = {
 export const DEPARTURE_TIME_OPTIONS = [
   "Early Friday Morning (Before 8am)",
   "Friday Morning (8am-12pm)",
-  "Friday early afternoon (12pm-3pm)",
-  "Friday afternoon (After 3pm)",
+  "Friday Early Afternoon (12pm-3pm)",
+  "Friday Afternoon (After 3pm)",
 ];
 
 export const DEPARTURE_LOCATION_OPTIONS = [

@@ -211,7 +211,7 @@ function AddPassenger({
   return (
     <div className="mt-2 flex gap-2">
       <select className="input" value={val} onChange={(e) => setVal(e.target.value)}>
-        <option value="">+ Add passenger…</option>
+        <option value="">+ Add Passenger…</option>
         {candidates.map((c) => (
           <option key={c.id} value={c.id}>
             {c.name}
@@ -246,7 +246,7 @@ function AddRide({
   return (
     <div className="flex gap-2">
       <select className="input" value={val} onChange={(e) => setVal(e.target.value)}>
-        <option value="">+ New car: choose driver…</option>
+        <option value="">+ New Car: Choose Driver…</option>
         {drivers.map((d) => (
           <option key={d.id} value={d.id}>
             {d.name} ({d.seat_capacity} seats)

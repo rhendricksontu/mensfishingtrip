@@ -175,7 +175,7 @@ function AttendeeCard({
           disabled={!a.assigned_session}
           onChange={(v) => save({ fishing_group_id: v || null })}
           options={[
-            { value: "", label: a.assigned_session ? "Unassigned" : "Pick a session first" },
+            { value: "", label: a.assigned_session ? "Unassigned" : "Pick a Session First" },
             ...sessionGroups.map((g) => ({
               value: g.id,
               label: `${g.name}${g.guide_name ? ` (${g.guide_name})` : ""}`,
