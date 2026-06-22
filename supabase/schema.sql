@@ -259,7 +259,6 @@ where not exists (select 1 from agenda_items);
 insert into locations (name, category, address, notes, sort_order)
 select v.name, v.category, v.address, v.notes, v.sort_order
 from (values
-  ('Cabins', 'Lodging', 'Broken Bow, OK', 'Our cabins for the weekend.', 10),
   ('Friday Dinner at Hochatown Saloon', 'Dinner', '28 Old Hochatown Rd, Broken Bow, OK 74728', 'Friday 6:00 PM', 20),
   ('Saturday Dinner at Mountain Fork Brewery', 'Dinner', '89 N Lukfata Trl Rd, Broken Bow, OK 74728', 'Saturday 6:00 PM', 30),
   ('Beavers Bend Fly Shop & Professional Guide Service', 'Fishing', '545 Beavers Bend Rd, Broken Bow, OK 74728', 'Fishing sessions meet here.', 35),
