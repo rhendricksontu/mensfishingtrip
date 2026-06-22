@@ -15,9 +15,14 @@ export const TRIP = {
 export const PAYMENT = {
   amount: 90,
   venmoHandle: "@yomikeywhitey",
-  // Pre-filled Venmo deep link (works on mobile if the app is installed).
+  // Web link (desktop). The venmo.com web handoff re-encodes spaces as "+",
+  // so on mobile we use the app deep link below instead.
   venmoUrl:
     "https://venmo.com/yomikeywhitey?txn=pay&amount=90&note=Men%27s%20Fishing%20Trip%202026",
+  // App deep link (mobile) — opens the Venmo app directly, preserving the
+  // note's spaces (%20) instead of turning them into "+".
+  venmoDeepLink:
+    "venmo://paycharge?txn=pay&recipients=yomikeywhitey&amount=90&note=Men%27s%20Fishing%20Trip%202026",
   description: "Covers cabins, guides, and meals for the weekend.",
 };
 
