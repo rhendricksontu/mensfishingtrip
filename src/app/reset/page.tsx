@@ -8,7 +8,7 @@ export default function ResetPage() {
     <div className="mx-auto max-w-md space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Reset Password</h1>
-        <p className="mt-1 text-brand-600">No email or texting needed — just verify it&apos;s you.</p>
+        <p className="mt-1 text-brand-600">No email or texting needed. Just verify it&apos;s you.</p>
       </div>
       <ResetPasswordForm />
     </div>

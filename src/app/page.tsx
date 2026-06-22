@@ -15,7 +15,7 @@ export default async function HomePage() {
       <div className="w-full max-w-md">
         <Image
           src="/logo.png"
-          alt="11th Annual Men's Fishing Trip — Mountain Fork River, Broken Bow, Oklahoma — September 25–27, 2026"
+          alt="11th Annual Men's Fishing Trip, Mountain Fork River, Broken Bow, Oklahoma, September 25-27, 2026"
           width={1242}
           height={1242}
           priority

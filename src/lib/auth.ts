@@ -10,7 +10,7 @@ export interface AdminUser {
 // Returns the logged-in admin, or null if not authenticated / not an admin.
 // An "admin" is a Supabase Auth user whose email is in the `admins` table.
 export async function getAdminUser(): Promise<AdminUser | null> {
-  // Before Supabase env vars are set, there is no session — treat as logged out.
+  // Before Supabase env vars are set, there is no session, treat as logged out.
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||

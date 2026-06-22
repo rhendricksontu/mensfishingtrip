@@ -61,7 +61,7 @@ export async function resetPassword(
     (a) => phoneKey(a.phone) === phoneKey(d.phone)
   );
 
-  // Generic message either way — don't reveal which field was wrong.
+  // Generic message either way, don't reveal which field was wrong.
   const FAIL =
     "That cell phone and emergency contact didn't match our records. Double-check both, or ask an organizer to reset it.";
 

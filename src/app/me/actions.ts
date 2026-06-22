@@ -39,7 +39,7 @@ export async function updateMyRsvp(
   formData: FormData
 ): Promise<EditState> {
   const me = await getCurrentAttendee();
-  if (!me) return { ok: false, error: "Your session expired — please log in again." };
+  if (!me) return { ok: false, error: "Your session expired. Please log in again." };
 
   const parsed = EditSchema.safeParse({
     name: formData.get("name"),

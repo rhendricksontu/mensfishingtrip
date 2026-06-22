@@ -1,5 +1,5 @@
 -- ============================================================================
--- Men's Fishing Trip — database schema
+-- Men's Fishing Trip database schema
 -- Run this in Supabase: SQL Editor -> New query -> paste ALL of it -> Run.
 -- Designed to run in a single pass and to be safe to re-run.
 -- Wrapped in a transaction: it's all-or-nothing, so a failure leaves nothing
@@ -234,12 +234,12 @@ from (values
   ('friday',   '3:00 PM',  10, 'Arrive & Check In', 'Find your cabin, check in with your host, settle in.', null::text),
   ('friday',   '6:00 PM',  20, 'Group Dinner', 'Dinner together at Hochatown Saloon.', 'Hochatown Saloon · 28 Old Hochatown Rd, Broken Bow, OK 74728'),
   ('friday',   '8:00 PM',  30, 'Friday Night Speaker', 'Guest speaker for the evening.', null),
-  ('saturday', '6:00 AM',  10, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers — thank you!', 'Cabins'),
+  ('saturday', '6:00 AM',  10, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers, thank you!', 'Cabins'),
   ('saturday', '7:30 AM',  20, 'Morning Fishing Session', 'Morning groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
   ('saturday', '12:00 PM', 30, 'Afternoon Fishing Session', 'Afternoon groups meet and depart with guides.', 'Beavers Bend Fly Shop & Professional Guide Service · 545 Beavers Bend Rd, Broken Bow, OK 74728'),
   ('saturday', '6:00 PM',  40, 'Group Dinner', 'Dinner together at Mountain Fork Brewery.', 'Mountain Fork Brewery · 89 N Lukfata Trl Rd, Broken Bow, OK 74728'),
   ('saturday', '8:00 PM',  50, 'Saturday Night Speaker', 'Guest speaker for the evening.', null),
-  ('sunday',   '6:00 AM',   5, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers — thank you!', 'Cabins'),
+  ('sunday',   '6:00 AM',   5, 'Coffee & Breakfast', 'Breakfast cooks & coffee makers, thank you!', 'Cabins'),
   ('sunday',   '7:30 AM',  10, 'Sermon on the River', 'Worship and a word before we head home.', 'Mountain Fork Park · Beavers Bend Rd, Broken Bow, OK 74728'),
   ('sunday',   '9:00 AM',  20, 'Pack Up & Depart', 'Clean cabins, load up, and travel safe.', 'Cabins')
 ) as v(trip_day, start_time, sort_order, title, description, location)
@@ -250,15 +250,15 @@ insert into locations (name, category, address, notes, sort_order)
 select v.name, v.category, v.address, v.notes, v.sort_order
 from (values
   ('Cabins', 'Lodging', 'Broken Bow, OK', 'Our cabins for the weekend.', 10),
-  ('Friday Dinner — Hochatown Saloon', 'Dinner', '28 Old Hochatown Rd, Broken Bow, OK 74728', 'Friday 6:00 PM', 20),
-  ('Saturday Dinner — Mountain Fork Brewery', 'Dinner', '89 N Lukfata Trl Rd, Broken Bow, OK 74728', 'Saturday 6:00 PM', 30),
+  ('Friday Dinner at Hochatown Saloon', 'Dinner', '28 Old Hochatown Rd, Broken Bow, OK 74728', 'Friday 6:00 PM', 20),
+  ('Saturday Dinner at Mountain Fork Brewery', 'Dinner', '89 N Lukfata Trl Rd, Broken Bow, OK 74728', 'Saturday 6:00 PM', 30),
   ('Beavers Bend Fly Shop & Professional Guide Service', 'Fishing', '545 Beavers Bend Rd, Broken Bow, OK 74728', 'Fishing sessions meet here.', 35),
-  ('Sermon on the River — Mountain Fork Park', 'River', 'Beavers Bend Rd, Broken Bow, OK 74728', 'Sunday 7:30 AM sermon on the river.', 40)
+  ('Sermon on the River at Mountain Fork Park', 'River', 'Beavers Bend Rd, Broken Bow, OK 74728', 'Sunday 7:30 AM sermon on the river.', 40)
 ) as v(name, category, address, notes, sort_order)
 where not exists (select 1 from locations);
 
 -- IMPORTANT: add your admin email(s) here so you can use the admin dashboard.
--- Already added for ryan.l.hendrickson@gmail.com below — edit/add as needed.
+-- Already added for ryan.l.hendrickson@gmail.com below, edit/add as needed.
 insert into admins (email, name)
 values ('ryan.l.hendrickson@gmail.com', 'Ryan Hendrickson')
 on conflict (email) do nothing;

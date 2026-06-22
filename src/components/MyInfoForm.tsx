@@ -37,7 +37,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Row label="Emergency contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
           <Row label="Ride preference" value={attendee.ride_preference === "driving" ? "Driving my own car" : attendee.ride_preference === "riding" ? "Riding with someone" : "Either is fine"} />
           {attendee.willing_to_drive && <Row label="Willing to drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
-          {attendee.needs_ride && <Row label="Needs a ride" value="Yes — match me with a driver" />}
+          {attendee.needs_ride && <Row label="Needs a ride" value="Yes, match me with a driver" />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
         </dl>
       </div>

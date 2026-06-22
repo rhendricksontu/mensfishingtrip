@@ -25,7 +25,7 @@ export function phoneKey(phone: string): string {
 }
 
 // Attendees log in with their phone. Under the hood we key a Supabase Auth
-// account to a synthetic email derived from the phone — no SMS, no real email.
+// account to a synthetic email derived from the phone, no SMS, no real email.
 export const PHONE_EMAIL_DOMAIN = "phone.mensfishingtrip.com";
 export function authEmailForPhone(phone: string): string {
   return `${phoneKey(phone)}@${PHONE_EMAIL_DOMAIN}`;

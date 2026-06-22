@@ -138,7 +138,7 @@ function AttendeeCard({
           label="Cabin"
           value={a.cabin_id ?? ""}
           onChange={(v) => save({ cabin_id: v || null })}
-          options={[{ value: "", label: "— Unassigned —" }, ...cabins.map((c) => ({ value: c.id, label: c.name }))]}
+          options={[{ value: "", label: "Unassigned" }, ...cabins.map((c) => ({ value: c.id, label: c.name }))]}
         />
         <label className="flex items-center gap-2 self-end pb-2.5">
           <input
@@ -161,7 +161,7 @@ function AttendeeCard({
             })
           }
           options={[
-            { value: "", label: "— Unassigned —" },
+            { value: "", label: "Unassigned" },
             { value: "saturday_morning", label: SESSION_LABELS.saturday_morning },
             { value: "saturday_afternoon", label: SESSION_LABELS.saturday_afternoon },
           ]}
@@ -172,7 +172,7 @@ function AttendeeCard({
           disabled={!a.assigned_session}
           onChange={(v) => save({ fishing_group_id: v || null })}
           options={[
-            { value: "", label: a.assigned_session ? "— Unassigned —" : "Pick a session first" },
+            { value: "", label: a.assigned_session ? "Unassigned" : "Pick a session first" },
             ...sessionGroups.map((g) => ({
               value: g.id,
               label: `${g.name}${g.guide_name ? ` (${g.guide_name})` : ""}`,

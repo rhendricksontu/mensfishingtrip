@@ -54,7 +54,7 @@ export default function CabinsClient({
 
             {people.length > 0 && !hasHost && (
               <p className="mt-1 text-sm font-medium text-amber-700">
-                No cabin host assigned — pick one below.
+                No cabin host assigned. Pick one below.
               </p>
             )}
 

@@ -246,7 +246,7 @@ function AddRide({
   return (
     <div className="flex gap-2">
       <select className="input" value={val} onChange={(e) => setVal(e.target.value)}>
-        <option value="">+ New car — choose driver…</option>
+        <option value="">+ New car: choose driver…</option>
         {drivers.map((d) => (
           <option key={d.id} value={d.id}>
             {d.name} ({d.seat_capacity} seats)

@@ -42,7 +42,7 @@ export default async function MyTripPage() {
     ? attendees.filter((a) => a.fishing_group_id === me.fishing_group_id && a.id !== me.id)
     : [];
 
-  // Rides — for each direction, figure out the car I'm in
+  // Rides: for each direction, figure out the car I'm in
   function rideInfo(direction: RideDirection) {
     const dirRides = rides.filter((r) => r.direction === direction);
     const asDriver = dirRides.find((r) => r.driver_id === me.id);
@@ -75,7 +75,7 @@ export default async function MyTripPage() {
       {me.paid ? (
         <div className="card bg-brand-50">
           <div>
-            <p className="font-semibold text-brand-800">You&apos;re paid up — thank you!</p>
+            <p className="font-semibold text-brand-800">You&apos;re paid up. Thank you!</p>
             <p className="text-sm text-brand-600">${PAYMENT.amount} received.</p>
           </div>
         </div>
@@ -117,7 +117,7 @@ export default async function MyTripPage() {
               )}
             </>
           ) : (
-            <p className="mt-1 text-sm text-brand-400">Not assigned yet — check back soon.</p>
+            <p className="mt-1 text-sm text-brand-400">Not assigned yet. Check back soon.</p>
           )}
         </div>
 

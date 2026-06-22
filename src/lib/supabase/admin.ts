@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "@supabase/supabase-js";
 
-// Secret-key client. SERVER ONLY — bypasses Row Level Security.
+// Secret-key client. SERVER ONLY, bypasses Row Level Security.
 // Uses the Supabase "secret" API key (formerly the service_role key).
 // Never import this into a client component.
 export function createAdminClient() {

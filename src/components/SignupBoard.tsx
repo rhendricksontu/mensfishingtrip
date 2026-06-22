@@ -98,7 +98,7 @@ export default function SignupBoard({
                   <div key={day.key} className="card">
                     <h3 className="font-semibold text-brand-800">{day.label}</h3>
                     {people.length === 0 ? (
-                      <p className="mt-2 text-sm text-brand-400">No one yet — be the first!</p>
+                      <p className="mt-2 text-sm text-brand-400">No one yet. Be the first!</p>
                     ) : (
                       <ul className="mt-2 space-y-1.5">
                         {people.map((p) => (
@@ -152,13 +152,13 @@ export default function SignupBoard({
           </div>
 
           {guideLunches.length === 0 ? (
-            <p className="text-sm text-brand-400">No one yet — be the first!</p>
+            <p className="text-sm text-brand-400">No one yet. Be the first!</p>
           ) : (
             <ul className="space-y-1.5">
               {guideLunches.map((p) => (
                 <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
                   <span className="text-brand-800">
-                    {p.name} — <span className="text-brand-600">{p.quantity} lunch{p.quantity === 1 ? "" : "es"}</span>
+                    {p.name}: <span className="text-brand-600">{p.quantity} lunch{p.quantity === 1 ? "" : "es"}</span>
                   </span>
                   <button
                     onClick={() => handleRemove(p.id)}

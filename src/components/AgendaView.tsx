@@ -44,7 +44,7 @@ function AgendaRow({ item }: { item: AgendaItem }) {
   return (
     <li className="card flex gap-4">
       <div className="w-20 shrink-0 text-sm font-semibold text-brand-600">
-        {item.start_time || "—"}
+        {item.start_time || "-"}
       </div>
       <div className="min-w-0">
         <h3 className="font-semibold text-brand-800">{item.title}</h3>
