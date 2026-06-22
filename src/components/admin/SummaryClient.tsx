@@ -95,7 +95,7 @@ export default function SummaryClient({
         return (
           <li
             key={a.id}
-            className={`card ${needsAttention ? "border-l-4 border-amber-400" : ""}`}
+            className={`card border-l-4 ${needsAttention ? "border-amber-400" : "border-olive-500"}`}
           >
             <button
               type="button"
