@@ -7,6 +7,7 @@ import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, PAYMENT } from "@/lib/config";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
+import SelectWithOther from "@/components/SelectWithOther";
 
 const initialState: RsvpState = { ok: false };
 
@@ -128,21 +129,11 @@ export default function RsvpForm() {
       )}
 
       <Field label="Preferred Departure Time" error={err("departure_time")}>
-        <select name="departure_time" className="input" defaultValue="" required>
-          <option value="" disabled>Select One</option>
-          {DEPARTURE_TIME_OPTIONS.map((o) => (
-            <option key={o} value={o}>{o}</option>
-          ))}
-        </select>
+        <SelectWithOther name="departure_time" options={DEPARTURE_TIME_OPTIONS} required />
       </Field>
 
       <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
-        <select name="departure_location" className="input" defaultValue="" required>
-          <option value="" disabled>Select One</option>
-          {DEPARTURE_LOCATION_OPTIONS.map((o) => (
-            <option key={o} value={o}>{o}</option>
-          ))}
-        </select>
+        <SelectWithOther name="departure_location" options={DEPARTURE_LOCATION_OPTIONS} required />
       </Field>
 
       <Field label="Preferred Driver" error={err("preferred_driver")}>

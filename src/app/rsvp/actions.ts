@@ -43,6 +43,12 @@ function bool(formData: FormData, key: string): boolean {
   return v === "on" || v === "true" || v === "1";
 }
 
+// When a select's value is "Other", use the paired free-text "<key>_other".
+function otherOr(formData: FormData, key: string): string {
+  const sel = String(formData.get(key) ?? "");
+  return sel === "Other" ? String(formData.get(`${key}_other`) ?? "").trim() : sel;
+}
+
 export async function submitRsvp(
   _prev: RsvpState,
   formData: FormData
@@ -55,8 +61,8 @@ export async function submitRsvp(
     emergency_contact_name: formData.get("emergency_contact_name"),
     emergency_contact_phone: formData.get("emergency_contact_phone"),
     ride_preference: formData.get("ride_preference"),
-    departure_time: formData.get("departure_time"),
-    departure_location: formData.get("departure_location"),
+    departure_time: otherOr(formData, "departure_time"),
+    departure_location: otherOr(formData, "departure_location"),
     preferred_driver: formData.get("preferred_driver") ?? "",
     willing_to_drive: bool(formData, "willing_to_drive"),
     seat_capacity: formData.get("seat_capacity") || 0,

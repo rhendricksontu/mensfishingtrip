@@ -8,6 +8,7 @@ import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } 
 import { formatPhone } from "@/lib/utils";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
+import SelectWithOther from "@/components/SelectWithOther";
 import type { Attendee } from "@/lib/types";
 
 const initial: EditState = { ok: false };
@@ -137,21 +138,21 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
       )}
 
       <Field label="Preferred Departure Time" error={err("departure_time")}>
-        <select name="departure_time" className="input" defaultValue={attendee.departure_time ?? ""} required>
-          <option value="" disabled>Select One</option>
-          {DEPARTURE_TIME_OPTIONS.map((o) => (
-            <option key={o} value={o}>{o}</option>
-          ))}
-        </select>
+        <SelectWithOther
+          name="departure_time"
+          options={DEPARTURE_TIME_OPTIONS}
+          defaultValue={attendee.departure_time ?? ""}
+          required
+        />
       </Field>
 
       <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
-        <select name="departure_location" className="input" defaultValue={attendee.departure_location ?? ""} required>
-          <option value="" disabled>Select One</option>
-          {DEPARTURE_LOCATION_OPTIONS.map((o) => (
-            <option key={o} value={o}>{o}</option>
-          ))}
-        </select>
+        <SelectWithOther
+          name="departure_location"
+          options={DEPARTURE_LOCATION_OPTIONS}
+          defaultValue={attendee.departure_location ?? ""}
+          required
+        />
       </Field>
 
       <Field label="Preferred Driver" error={err("preferred_driver")}>
