@@ -110,7 +110,6 @@ export default function SummaryClient({
                     />
                   }
                 />
-                <Row label="Fish with Guide" value={a.fish_with_guide ? "Yes" : "No"} />
                 <Row
                   label="Ride Preference"
                   value={RIDE_PREF_LABELS[a.ride_preference] ?? "Not set"}
@@ -120,7 +119,6 @@ export default function SummaryClient({
                   label="Departure/Return Location"
                   value={a.departure_location || "Not set"}
                 />
-                <Row label="Preferred Driver" value={a.preferred_driver || "None"} />
                 <Row label="Cabin" value={s.cabin} />
                 {s.fishing && <Row label="Fishing" value={s.fishing} />}
                 <Row label="Driver" value={s.driver} />
