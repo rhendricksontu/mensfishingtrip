@@ -111,6 +111,28 @@ export async function updateCabin(
   revalidatePath("/admin/cabins");
 }
 
+// A cabin has at most one host. Marking a new host clears any existing one.
+export async function setCabinHost(attendeeId: string, makeHost: boolean) {
+  await requireAdmin();
+  const db = createAdminClient();
+
+  if (makeHost) {
+    const { data } = await db
+      .from("attendees")
+      .select("cabin_id")
+      .eq("id", attendeeId)
+      .maybeSingle();
+    if (data?.cabin_id) {
+      await db.from("attendees").update({ is_cabin_host: false }).eq("cabin_id", data.cabin_id);
+    }
+    await db.from("attendees").update({ is_cabin_host: true }).eq("id", attendeeId);
+  } else {
+    await db.from("attendees").update({ is_cabin_host: false }).eq("id", attendeeId);
+  }
+
+  revalidatePath("/admin/cabins");
+}
+
 export async function deleteCabin(id: string) {
   await requireAdmin();
   const db = createAdminClient();

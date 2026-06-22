@@ -7,6 +7,7 @@ import {
   updateCabin,
   deleteCabin,
   updateAttendee,
+  setCabinHost,
 } from "@/app/admin/actions";
 import { formatPhone, addressLines, addressOneLine } from "@/lib/utils";
 import MapLink from "@/components/MapLink";
@@ -328,9 +329,7 @@ function CabinCard({
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() =>
-                        run(() => updateAttendee(a.id, { is_cabin_host: !a.is_cabin_host }))
-                      }
+                      onClick={() => run(() => setCabinHost(a.id, !a.is_cabin_host))}
                       className={`badge ${
                         a.is_cabin_host
                           ? "bg-olive-600 text-white"
