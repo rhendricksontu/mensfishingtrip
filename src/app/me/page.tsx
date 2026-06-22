@@ -55,10 +55,19 @@ export default async function MyTripPage() {
       anglers: attendees.filter((a) => a.fishing_group_id === g.id),
     }));
 
-  // The car I'm in for a single direction (explicit only).
+  // The car I'm in for a single direction (explicit only). Only rides whose
+  // driver is actually a willing driver count, so stale rows (e.g. a former
+  // driver who switched to passenger) don't show a bogus assignment.
   function findRide(direction: RideDirection) {
-    const dirRides = rides.filter((r) => r.direction === direction);
-    const asDriver = dirRides.find((r) => r.driver_id === me.id);
+    const dirRides = rides.filter(
+      (r) =>
+        r.direction === direction &&
+        r.driver_id &&
+        byId.get(r.driver_id)?.willing_to_drive
+    );
+    const asDriver = me.willing_to_drive
+      ? dirRides.find((r) => r.driver_id === me.id)
+      : undefined;
     const passengerLink = ridePassengers.find(
       (p) => p.attendee_id === me.id && dirRides.some((r) => r.id === p.ride_id)
     );
@@ -107,7 +116,7 @@ export default async function MyTripPage() {
       )}
 
       {/* Assignments */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="space-y-4">
         {/* Cabin */}
         <div className="space-y-2">
           <h2 className="font-bold text-brand-800">Cabin</h2>
