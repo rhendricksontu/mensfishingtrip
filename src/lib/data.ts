@@ -68,7 +68,7 @@ export function getCabins(): Promise<Cabin[]> {
     const { data } = await db
       .from("cabins")
       .select("*")
-      .order("sort_order", { ascending: true });
+      .order("name", { ascending: true });
     return (data as Cabin[]) ?? [];
   }, []);
 }
