@@ -169,7 +169,7 @@ export default async function MyTripPage() {
         <div className="space-y-2">
           <h2 className="font-bold text-brand-800">Fishing</h2>
           {guidingGroups.length > 0 ? (
-            <GuidingView groups={guidingGroups} />
+            <GuidingView groups={guidingGroups} meId={me.id} />
           ) : group ? (
             <GuideView
               group={group}
@@ -279,39 +279,19 @@ function CabinView({
 }
 
 // Read-only fishing group card, mirroring the organizer guide card.
-// For a member who guides: the group(s) they guide, one per session.
+// For a member who guides: one GuideView card per session they guide, so it
+// looks identical to the non-guide fishing card (guide name + phone included).
 function GuidingView({
   groups,
+  meId,
 }: {
   groups: { group: FishingGroup; anglers: Attendee[] }[];
+  meId: string;
 }) {
   return (
-    <div className="card space-y-3">
-      <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
-        Fishing Guide
-      </span>
+    <div className="space-y-3">
       {groups.map(({ group: g, anglers }) => (
-        <div key={g.id}>
-          <p className="text-sm font-semibold text-brand-700">
-            {SESSION_LABELS[g.session]}
-            <span className="ml-2 text-xs font-normal text-brand-500">
-              {anglers.length}
-              {g.capacity > 0 ? ` / ${g.capacity}` : ""} Anglers
-            </span>
-          </p>
-          {anglers.length > 0 ? (
-            <ul className="mt-1 divide-y divide-brand-50">
-              {anglers.map((a) => (
-                <li key={a.id} className="py-2 text-sm">
-                  <span className="font-medium text-brand-800">{a.name}</span>{" "}
-                  <PhoneLink phone={a.phone} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="mt-1 text-sm text-brand-400">No anglers assigned yet.</p>
-          )}
-        </div>
+        <GuideView key={g.id} group={g} anglers={anglers} session={g.session} meId={meId} />
       ))}
     </div>
   );
