@@ -7,7 +7,7 @@ import {
   getRidePassengers,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
-import { formatPhone } from "@/lib/utils";
+import { formatPhone, normalizePhone } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import type { Attendee, RideDirection } from "@/lib/types";
 
@@ -105,13 +105,24 @@ export default async function MyTripPage() {
               )}
               {hosts.length > 0 && !me.is_cabin_host && (
                 <p className="mt-1 text-sm text-brand-600">
-                  Host: {hosts.map((h) => `${h.name} ${formatPhone(h.phone)}`).join(", ")}
+                  Host:{" "}
+                  {hosts.map((h, i) => (
+                    <span key={h.id}>
+                      {i > 0 && ", "}
+                      {h.name} <PhoneLink phone={h.phone} />
+                    </span>
+                  ))}
                 </p>
               )}
               {cabinmates.length > 0 && (
                 <p className="mt-2 text-sm text-brand-600">
                   <span className="font-medium text-brand-700">Cabinmates:</span>{" "}
-                  {cabinmates.map((a) => `${a.name} ${formatPhone(a.phone)}`).join(", ")}
+                  {cabinmates.map((a, i) => (
+                    <span key={a.id}>
+                      {i > 0 && ", "}
+                      {a.name} <PhoneLink phone={a.phone} />
+                    </span>
+                  ))}
                 </p>
               )}
             </>
@@ -134,12 +145,22 @@ export default async function MyTripPage() {
             <>
               <p className="mt-1 text-sm text-brand-700">
                 Guide: <span className="font-medium">{group.guide_name || group.name}</span>
-                {group.guide_phone ? ` ${formatPhone(group.guide_phone)}` : ""}
+                {group.guide_phone && (
+                  <>
+                    {" "}
+                    <PhoneLink phone={group.guide_phone} />
+                  </>
+                )}
               </p>
               {groupmates.length > 0 && (
                 <p className="mt-2 text-sm text-brand-600">
                   <span className="font-medium text-brand-700">With:</span>{" "}
-                  {groupmates.map((a) => `${a.name} ${formatPhone(a.phone)}`).join(", ")}
+                  {groupmates.map((a, i) => (
+                    <span key={a.id}>
+                      {i > 0 && ", "}
+                      {a.name} <PhoneLink phone={a.phone} />
+                    </span>
+                  ))}
                 </p>
               )}
             </>
@@ -206,9 +227,13 @@ function RideDetails({
       ) : (
         <p>
           Riding with{" "}
-          <span className="font-medium">
-            {info.driver ? `${info.driver.name} ${formatPhone(info.driver.phone)}` : "a driver (TBD)"}
-          </span>
+          {info.driver ? (
+            <span className="font-medium">
+              {info.driver.name} <PhoneLink phone={info.driver.phone} />
+            </span>
+          ) : (
+            <span className="font-medium">a driver (TBD)</span>
+          )}
         </p>
       )}
 
@@ -227,7 +252,7 @@ function RideDetails({
           <ul className="mt-0.5 space-y-0.5">
             {others.map((p) => (
               <li key={p.id}>
-                {p.name} {formatPhone(p.phone)}
+                {p.name} <PhoneLink phone={p.phone} />
               </li>
             ))}
           </ul>
@@ -236,5 +261,14 @@ function RideDetails({
         <p className="text-brand-500">No passengers assigned yet.</p>
       ) : null}
     </div>
+  );
+}
+
+// Clickable phone number — tap to call or text.
+function PhoneLink({ phone }: { phone: string }) {
+  return (
+    <a href={`tel:${normalizePhone(phone)}`} className="text-brand-600 underline">
+      {formatPhone(phone)}
+    </a>
   );
 }
