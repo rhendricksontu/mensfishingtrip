@@ -92,7 +92,6 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
               className="input"
               value={day}
               onChange={(e) => setDay(e.target.value)}
-              disabled={role === "guide_lunch"}
             >
               {dayOptions.map((d) => (
                 <option key={d.key} value={d.key}>{d.label}</option>
