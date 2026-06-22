@@ -39,7 +39,43 @@ export default function CabinsClient({
           unassigned={unassigned}
         />
       ))}
+
+      {unassigned.length > 0 && (
+        <UnassignedNote
+          count={unassigned.length}
+          label="not in a cabin yet"
+          people={unassigned}
+        />
+      )}
+
       <AddCabin />
+    </div>
+  );
+}
+
+// Amber exposure of members still needing an assignment, stacked one per line.
+function UnassignedNote({
+  count,
+  label,
+  people,
+}: {
+  count: number;
+  label: string;
+  people: Attendee[];
+}) {
+  return (
+    <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+      <p className="font-semibold text-amber-800">
+        {count} {label}
+      </p>
+      <ul className="mt-1.5 space-y-1">
+        {people.map((a) => (
+          <li key={a.id}>
+            <span className="font-medium text-brand-800">{a.name}</span>
+            <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

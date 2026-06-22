@@ -53,6 +53,22 @@ export default function FishingClient({
           </section>
         );
       })}
+
+      {unassigned.length > 0 && (
+        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+          <p className="font-semibold text-amber-800">
+            {unassigned.length} want a guide, not assigned yet
+          </p>
+          <ul className="mt-1.5 space-y-1">
+            {unassigned.map((a) => (
+              <li key={a.id}>
+                <span className="font-medium text-brand-800">{a.name}</span>
+                <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

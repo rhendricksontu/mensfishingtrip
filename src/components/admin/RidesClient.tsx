@@ -101,18 +101,20 @@ export default function RidesClient({
 
             {unplaced.length > 0 && (
               <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
-                <span className="font-semibold text-amber-800">
-                  {unplaced.length} not in a car yet:
-                </span>{" "}
-                <span className="text-brand-600">
-                  {unplaced
-                    .map(
-                      (a) =>
-                        `${a.name} ${formatPhone(a.phone)}` +
-                        (a.needs_ride ? " (needs ride)" : "")
-                    )
-                    .join(", ")}
-                </span>
+                <p className="font-semibold text-amber-800">
+                  {unplaced.length} not in a car yet
+                </p>
+                <ul className="mt-1.5 space-y-1 text-brand-600">
+                  {unplaced.map((a) => (
+                    <li key={a.id}>
+                      <span className="font-medium text-brand-800">{a.name}</span>
+                      <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                      {a.needs_ride && (
+                        <span className="ml-2 text-xs text-amber-700">(needs ride)</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </section>
