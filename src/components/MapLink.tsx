@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { googleMapsUrl, appleMapsUrl, wazeUrl } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
-// Tapping shows a small chooser so the user can open the place in their
-// preferred maps app. Using each app's deep link (in the same tab, no
-// target=_blank) reliably hands off to the native app when installed.
+function encodePlace(place: string): string {
+  return encodeURIComponent(place.replace(/·/g, " ").replace(/\s+/g, " ").trim());
+}
+
+// One tap opens the device's native maps app with driving directions from the
+// user's current location. Uses platform URL schemes so the app launches
+// directly (instead of a web map). Falls back to web directions on desktop.
 export default function MapLink({
   place,
   className,
@@ -15,52 +18,30 @@ export default function MapLink({
   className?: string;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLSpanElement>(null);
+  const q = encodePlace(place);
+  const webDir = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
+  const [href, setHref] = useState(webDir);
 
   useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("click", onDocClick);
-    return () => document.removeEventListener("click", onDocClick);
-  }, []);
-
-  const options = [
-    { label: "Apple Maps", href: appleMapsUrl(place) },
-    { label: "Google Maps", href: googleMapsUrl(place) },
-    { label: "Waze", href: wazeUrl(place) },
-  ];
+    const ua = navigator.userAgent || "";
+    const isIOS =
+      /iPad|iPhone|iPod/.test(ua) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/.test(ua);
+    if (isIOS) {
+      // Apple Maps app, driving directions from current location.
+      setHref(`maps://?daddr=${q}&dirflg=d`);
+    } else if (isAndroid) {
+      // Google Maps turn-by-turn navigation.
+      setHref(`google.navigation:q=${q}`);
+    } else {
+      setHref(webDir);
+    }
+  }, [q, webDir]);
 
   return (
-    <span ref={ref} className="relative inline-block">
-      <button
-        type="button"
-        className={className}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        onClick={() => setOpen((o) => !o)}
-      >
-        {children}
-      </button>
-      {open && (
-        <span className="absolute left-0 z-50 mt-1 flex w-44 flex-col overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-brand-200">
-          <span className="border-b border-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-500">
-            Open in…
-          </span>
-          {options.map((o) => (
-            <a
-              key={o.label}
-              href={o.href}
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-              className="px-3 py-2.5 text-sm font-medium text-brand-700 hover:bg-brand-50"
-            >
-              {o.label}
-            </a>
-          ))}
-        </span>
-      )}
-    </span>
+    <a href={href} className={className}>
+      {children}
+    </a>
   );
 }
