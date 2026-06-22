@@ -246,7 +246,7 @@ function CabinCard({
                 <span className="block text-sm font-medium text-brand-700">Address</span>
                 {!showAddress && (
                   <span className="text-sm text-brand-500">
-                    {addressOneLine({ ...cabin, ...legacy }) || "No address set"}
+                    {addressOneLine(cabin) || "No address set"}
                   </span>
                 )}
               </span>
