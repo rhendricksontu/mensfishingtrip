@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { SESSION_LABELS } from "@/lib/config";
+import { SESSION_LABELS, RIDE_PREF_LABELS } from "@/lib/config";
+import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Cabin, FishingGroup, Ride } from "@/lib/types";
 
 interface RidePassenger {
@@ -95,6 +96,31 @@ export default function SummaryClient({
             </button>
             {open && s && (
               <dl className="mt-3 space-y-1.5 border-t border-brand-50 pt-3 text-sm">
+                <Row
+                  label="Cell Phone"
+                  value={<PhoneLink phone={a.phone} className="font-medium text-brand-800 underline" />}
+                />
+                <Row label="Emergency Contact" value={a.emergency_contact_name} />
+                <Row
+                  label="Emergency Phone"
+                  value={
+                    <PhoneLink
+                      phone={a.emergency_contact_phone}
+                      className="font-medium text-brand-800 underline"
+                    />
+                  }
+                />
+                <Row label="Fish with Guide" value={a.fish_with_guide ? "Yes" : "No"} />
+                <Row
+                  label="Ride Preference"
+                  value={RIDE_PREF_LABELS[a.ride_preference] ?? "Not set"}
+                />
+                <Row label="Departure" value={a.departure_time || "Not set"} />
+                <Row
+                  label="Departure/Return Location"
+                  value={a.departure_location || "Not set"}
+                />
+                <Row label="Preferred Driver" value={a.preferred_driver || "None"} />
                 <Row label="Cabin" value={s.cabin} />
                 {s.fishing && <Row label="Fishing" value={s.fishing} />}
                 <Row label="Driver" value={s.driver} />
