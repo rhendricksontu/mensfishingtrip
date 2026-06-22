@@ -8,6 +8,7 @@ import {
   seedReturnFromDown,
 } from "@/app/admin/actions";
 import { formatPhone, normalizePhone } from "@/lib/utils";
+import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Ride, RideDirection } from "@/lib/types";
 
 interface RidePassenger {
@@ -117,7 +118,7 @@ export default function RidesClient({
                   {unplaced.map((a) => (
                     <li key={a.id}>
                       <span className="font-medium text-brand-800">{a.name}</span>
-                      <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                      <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                     </li>
                   ))}
                 </ul>
@@ -195,7 +196,7 @@ function RideCard({
             <li key={p.id} className="flex items-center justify-between gap-2 py-2 text-sm">
               <span>
                 <span className="font-medium text-brand-800">{p.name}</span>
-                <span className="ml-2 text-xs text-brand-400">{formatPhone(p.phone)}</span>
+                <PhoneLink phone={p.phone} className="ml-2 text-xs text-brand-400 underline" />
               </span>
               <button
                 onClick={() => run(() => unassignPassenger(driver.id, direction, p.id))}

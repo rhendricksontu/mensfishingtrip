@@ -11,6 +11,7 @@ import {
 } from "@/app/admin/actions";
 import { formatPhone, addressLines, addressOneLine } from "@/lib/utils";
 import MapLink from "@/components/MapLink";
+import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Cabin } from "@/lib/types";
 
 function EditIcon() {
@@ -96,7 +97,7 @@ function UnassignedNote({ people }: { people: Attendee[] }) {
         {people.map((a) => (
           <li key={a.id}>
             <span className="font-medium text-brand-800">{a.name}</span>
-            <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+            <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
           </li>
         ))}
       </ul>
@@ -175,7 +176,7 @@ function CabinCard({
                 </span>
                 <div className="flex flex-wrap items-baseline gap-2">
                   <h3 className="font-bold text-brand-800">{host.name}</h3>
-                  <span className="text-brand-400">{formatPhone(host.phone)}</span>
+                  <PhoneLink phone={host.phone} className="text-brand-400 underline" />
                 </div>
                 <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
                   {occupants.length}
@@ -210,7 +211,7 @@ function CabinCard({
                   <li key={a.id} className="flex items-center justify-between gap-2 py-2 text-sm">
                     <span>
                       <span className="font-medium text-brand-800">{a.name}</span>
-                      <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                      <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                     </span>
                     <button
                       onClick={() =>
@@ -367,7 +368,7 @@ function CabinCard({
                 <li key={a.id} className="flex items-center justify-between gap-2 py-2">
                   <div>
                     <span className="text-sm font-medium text-brand-800">{a.name}</span>
-                    <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                    <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                   </div>
                   <div className="flex items-center gap-2">
                     <button

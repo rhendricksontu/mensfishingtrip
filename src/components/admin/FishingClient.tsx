@@ -10,6 +10,7 @@ import {
 } from "@/app/admin/actions";
 import { SESSION_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
+import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, FishingGroup, FishingSession } from "@/lib/types";
 
 const SESSIONS: FishingSession[] = ["saturday_morning", "saturday_afternoon"];
@@ -65,7 +66,7 @@ export default function FishingClient({
             {unassigned.map((a) => (
               <li key={a.id}>
                 <span className="font-medium text-brand-800">{a.name}</span>
-                <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
               </li>
             ))}
           </ul>
@@ -110,7 +111,7 @@ function GuideCard({
           <div className="flex flex-wrap items-baseline gap-2">
             <h3 className="font-bold text-brand-800">{guideName}</h3>
             {!editing && guide.guide_phone && (
-              <span className="text-brand-400">{formatPhone(guide.guide_phone)}</span>
+              <PhoneLink phone={guide.guide_phone} className="text-brand-400 underline" />
             )}
           </div>
         </div>
@@ -138,7 +139,7 @@ function GuideCard({
                 <li key={a.id} className="flex items-center justify-between gap-2 py-2 text-sm">
                   <span>
                     <span className="font-medium text-brand-800">{a.name}</span>
-                    <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                    <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                   </span>
                   <button
                     onClick={() =>
@@ -237,7 +238,7 @@ function GuideCard({
                 <li key={a.id} className="flex items-center justify-between gap-2 py-2">
                   <div>
                     <span className="text-sm font-medium text-brand-800">{a.name}</span>
-                    <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                    <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                   </div>
                   <button
                     onClick={() =>

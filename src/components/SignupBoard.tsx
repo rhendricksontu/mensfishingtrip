@@ -3,7 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { useState } from "react";
 import { addSignup, removeSignup, type SignupState } from "@/app/signups/actions";
-import { formatPhone } from "@/lib/utils";
+import PhoneLink from "@/components/PhoneLink";
 import type { Signup, SignupRole } from "@/lib/types";
 
 const initial: SignupState = { ok: false };
@@ -151,9 +151,10 @@ export default function SignupBoard({
                               {p.attendee_id && p.attendee_id === currentAttendeeId && " (You)"}
                             </span>
                             {p.attendee_id && phoneById[p.attendee_id] && (
-                              <span className="ml-2 text-xs text-brand-400">
-                                {formatPhone(phoneById[p.attendee_id])}
-                              </span>
+                              <PhoneLink
+                                phone={phoneById[p.attendee_id]}
+                                className="ml-2 text-xs text-brand-400 underline"
+                              />
                             )}
                           </span>
                           {canRemove(p) && (

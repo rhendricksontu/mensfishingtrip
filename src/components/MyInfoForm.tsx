@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
-import { formatPhone } from "@/lib/utils";
+import PhoneLink from "@/components/PhoneLink";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
 import SelectWithOther from "@/components/SelectWithOther";
@@ -47,8 +47,22 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </div>
         <dl className="mt-3 space-y-1.5 text-sm">
           <Row label="Name" value={attendee.name} />
-          <Row label="Cell Phone" value={formatPhone(attendee.phone)} />
-          <Row label="Emergency Contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
+          <Row
+            label="Cell Phone"
+            value={<PhoneLink phone={attendee.phone} className="font-medium text-brand-800 underline" />}
+          />
+          <Row
+            label="Emergency Contact"
+            value={
+              <>
+                {attendee.emergency_contact_name} ·{" "}
+                <PhoneLink
+                  phone={attendee.emergency_contact_phone}
+                  className="font-medium text-brand-800 underline"
+                />
+              </>
+            }
+          />
           <Row label="Fish with a Guide" value={attendee.fish_with_guide ? "Yes" : "No"} />
           <Row label="Ride Preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
           {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
@@ -172,7 +186,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-brand-500">{label}</dt>

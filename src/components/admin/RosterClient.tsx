@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateAttendee, deleteAttendee, setAttendeePassword, setAttendeeRole } from "@/app/admin/actions";
-import { formatPhone } from "@/lib/utils";
+import PhoneLink from "@/components/PhoneLink";
 import { RIDE_PREF_LABELS, SESSION_LABELS } from "@/lib/config";
 import type { Attendee, Cabin, FishingGroup } from "@/lib/types";
 
@@ -102,11 +102,13 @@ function AttendeeCard({
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="font-bold text-brand-800">{a.name}</h3>
-          <a href={`tel:${a.phone}`} className="text-sm text-brand-600 underline">
-            {formatPhone(a.phone)}
-          </a>
+          <PhoneLink phone={a.phone} className="text-sm text-brand-600 underline" />
           <p className="text-xs text-brand-500">
-            ICE: {a.emergency_contact_name} · {formatPhone(a.emergency_contact_phone)}
+            ICE: {a.emergency_contact_name} ·{" "}
+            <PhoneLink
+              phone={a.emergency_contact_phone}
+              className="text-brand-500 underline"
+            />
           </p>
         </div>
         <label className="flex shrink-0 items-center gap-2 rounded-lg bg-brand-50 px-3 py-2">
