@@ -316,7 +316,7 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [cap, setCap] = useState(4);
-  const [when, setWhen] = useState<GuideWhen>("saturday_morning");
+  const [when, setWhen] = useState<GuideWhen>("both");
 
   const members = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -325,7 +325,7 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
     setName("");
     setPhone("");
     setCap(4);
-    setWhen("saturday_morning");
+    setWhen("both");
     setOpen(false);
   }
 
@@ -411,9 +411,9 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
         <div className="flex-1">
           <span className="label">Guiding</span>
           <select className="input h-11" value={when} onChange={(e) => setWhen(e.target.value as GuideWhen)}>
+            <option value="both">Both Sessions</option>
             <option value="saturday_morning">Morning Session</option>
             <option value="saturday_afternoon">Afternoon Session</option>
-            <option value="both">Both Sessions</option>
           </select>
         </div>
       </div>
