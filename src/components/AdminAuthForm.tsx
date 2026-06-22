@@ -3,6 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { useState } from "react";
 import { signIn, signUp, type AuthState } from "@/app/admin/auth-actions";
+import PasswordInput from "@/components/PasswordInput";
 
 const initial: AuthState = {};
 
@@ -52,10 +53,8 @@ export default function AdminAuthForm() {
         </div>
         <div>
           <span className="label">Password</span>
-          <input
+          <PasswordInput
             name="password"
-            type="password"
-            className="input"
             autoComplete={mode === "signin" ? "current-password" : "new-password"}
             required
           />

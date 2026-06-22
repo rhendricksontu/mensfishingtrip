@@ -6,6 +6,7 @@ import Link from "next/link";
 import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, PAYMENT } from "@/lib/config";
 import PhoneInput from "@/components/PhoneInput";
+import PasswordInput from "@/components/PasswordInput";
 
 const initialState: RsvpState = { ok: false };
 
@@ -61,7 +62,7 @@ export default function RsvpForm() {
             <PhoneInput name="phone" required />
           </Field>
           <Field label="Create a Password" error={err("password")}>
-            <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
+            <PasswordInput name="password" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
           </Field>
         </div>
       </fieldset>

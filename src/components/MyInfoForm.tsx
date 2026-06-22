@@ -7,6 +7,7 @@ import { updateMyRsvp, type EditState } from "@/app/me/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
 import PhoneInput from "@/components/PhoneInput";
+import PasswordInput from "@/components/PasswordInput";
 import type { Attendee } from "@/lib/types";
 
 const initial: EditState = { ok: false };
@@ -75,7 +76,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
             <PhoneInput name="phone" defaultValue={attendee.phone} required />
           </Field>
           <Field label="Password" error={err("password")}>
-            <input name="password" type="password" className="input" autoComplete="new-password" placeholder="Leave blank to keep current password" minLength={8} />
+            <PasswordInput name="password" autoComplete="new-password" placeholder="Leave blank to keep current password" minLength={8} />
           </Field>
         </div>
       </fieldset>

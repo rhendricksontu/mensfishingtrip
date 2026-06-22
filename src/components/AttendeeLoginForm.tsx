@@ -4,6 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { signInAttendee, type LoginState } from "@/app/login/actions";
 import PhoneInput from "@/components/PhoneInput";
+import PasswordInput from "@/components/PasswordInput";
 
 const initial: LoginState = {};
 
@@ -30,7 +31,7 @@ export default function AttendeeLoginForm() {
       </div>
       <div>
         <span className="label">Password</span>
-        <input name="password" type="password" className="input" autoComplete="current-password" required />
+        <PasswordInput name="password" autoComplete="current-password" required />
       </div>
       <SubmitBtn />
       <p className="text-center text-sm text-brand-500">

@@ -4,6 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { resetPassword, type ResetState } from "@/app/reset/actions";
 import PhoneInput from "@/components/PhoneInput";
+import PasswordInput from "@/components/PasswordInput";
 
 const initial: ResetState = { ok: false };
 
@@ -52,11 +53,11 @@ export default function ResetPasswordForm() {
       </Field>
 
       <Field label="New Password" error={err("password")}>
-        <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
+        <PasswordInput name="password" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
       </Field>
 
       <Field label="Confirm New Password" error={err("confirm")}>
-        <input name="confirm" type="password" className="input" autoComplete="new-password" required />
+        <PasswordInput name="confirm" autoComplete="new-password" required />
       </Field>
 
       <SubmitBtn />
