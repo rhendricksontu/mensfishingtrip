@@ -40,7 +40,7 @@ function LocationCard({ loc }: { loc: LocationItem }) {
     <div className="card">
       <h3 className="font-semibold text-brand-800">{shortenPlace(loc.name)}</h3>
       {loc.address && (
-        <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
+        <p className="mt-2 text-sm text-brand-600">{shortenPlace(loc.address)}</p>
       )}
       <MapLink place={place} className="btn-secondary mt-3">
         Get directions

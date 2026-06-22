@@ -45,8 +45,11 @@ export function wazeUrl(place: string): string {
   return `https://waze.com/ul?q=${mapsQuery(place)}&navigate=yes`;
 }
 
-// Display-only shortening. The full business name is kept in the data so maps
-// resolve correctly; this trims the wordy suffix for cleaner display.
+// Display-only cleanup. The data may carry a longer name (for geocoding) or an
+// "@lat,lng" coordinate marker (for exact routing); strip those for display.
 export function shortenPlace(s: string): string {
-  return s.replace(" & Professional Guide Service", "");
+  return s
+    .replace(" & Professional Guide Service", "")
+    .replace(/\s*@\s*-?\d+(?:\.\d+)?\s*,\s*-?\d+(?:\.\d+)?\s*/, "")
+    .trim();
 }

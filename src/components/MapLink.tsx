@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 
-function encodePlace(place: string): string {
+// A place may embed exact coordinates as "@lat,lng" so maps route to the
+// precise spot instead of geocoding the name. Coordinates win when present.
+function buildQuery(place: string): string {
+  const coord = place.match(/@\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/);
+  if (coord) return `${coord[1]},${coord[2]}`;
   return encodeURIComponent(place.replace(/·/g, " ").replace(/\s+/g, " ").trim());
 }
 
@@ -18,7 +22,7 @@ export default function MapLink({
   className?: string;
   children: React.ReactNode;
 }) {
-  const q = encodePlace(place);
+  const q = buildQuery(place);
   const webDir = `https://www.google.com/maps/dir/?api=1&destination=${q}`;
   const [href, setHref] = useState(webDir);
 
