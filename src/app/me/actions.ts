@@ -10,7 +10,9 @@ import { normalizePhone, formatPhone, phoneKey, authEmailForPhone } from "@/lib/
 
 const EditSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name."),
-  fish_with_guide: z.boolean(),
+  fish_with_guide: z.enum(["yes", "no"], {
+    errorMap: () => ({ message: "Please choose yes or no." }),
+  }),
   phone: z
     .string()
     .trim()
@@ -54,7 +56,7 @@ export async function updateMyRsvp(
 
   const parsed = EditSchema.safeParse({
     name: formData.get("name"),
-    fish_with_guide: bool(formData, "fish_with_guide"),
+    fish_with_guide: formData.get("fish_with_guide"),
     phone: formData.get("phone"),
     password: formData.get("password") ?? "",
     emergency_contact_name: formData.get("emergency_contact_name"),
@@ -108,7 +110,7 @@ export async function updateMyRsvp(
     .from("attendees")
     .update({
       name: d.name,
-      fish_with_guide: d.fish_with_guide,
+      fish_with_guide: d.fish_with_guide === "yes",
       phone: formatPhone(d.phone),
       emergency_contact_name: d.emergency_contact_name,
       emergency_contact_phone: formatPhone(d.emergency_contact_phone),

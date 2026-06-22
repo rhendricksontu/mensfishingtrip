@@ -73,15 +73,18 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Field label="First & Last Name" error={err("name")}>
             <input name="name" className="input" defaultValue={attendee.name} required />
           </Field>
-          <label className="flex items-start gap-3">
-            <input
-              type="checkbox"
+          <Field label="Do you want to fish with a guide?" error={err("fish_with_guide")}>
+            <select
               name="fish_with_guide"
-              defaultChecked={attendee.fish_with_guide}
-              className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
-            />
-            <span className="text-sm text-brand-800">Will fish with a guide.</span>
-          </label>
+              className="input"
+              defaultValue={attendee.fish_with_guide ? "yes" : "no"}
+              required
+            >
+              <option value="" disabled>Select One</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </Field>
           <Field label="Cell Phone (Your Username)" error={err("phone")}>
             <PhoneInput name="phone" defaultValue={attendee.phone} required />
           </Field>
