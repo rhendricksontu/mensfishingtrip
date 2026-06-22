@@ -99,7 +99,9 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
             </select>
           </div>
         </div>
-        <AddButton />
+        <div className="flex justify-center">
+          <AddButton />
+        </div>
       </form>
 
       {ROLES.map((roleObj) => {
