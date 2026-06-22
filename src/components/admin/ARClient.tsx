@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateAttendee } from "@/app/admin/actions";
 import { PAYMENT } from "@/lib/config";
@@ -44,7 +44,6 @@ export default function ARClient({ attendees }: { attendees: Attendee[] }) {
 function ARRow({ a }: { a: Attendee }) {
   const router = useRouter();
   const [pending, start] = useTransition();
-  const [note, setNote] = useState(a.payment_note ?? "");
 
   function save(patch: Parameters<typeof updateAttendee>[1]) {
     start(async () => {
@@ -54,11 +53,11 @@ function ARRow({ a }: { a: Attendee }) {
   }
 
   return (
-    <div className={`card space-y-2 ${pending ? "opacity-60" : ""}`}>
+    <div className={`card ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
-        <div>
+        <div className="flex flex-wrap items-baseline gap-2">
           <h3 className="font-bold text-brand-800">{a.name}</h3>
-          <PhoneLink phone={a.phone} className="text-sm text-brand-600 underline" />
+          <PhoneLink phone={a.phone} className="text-brand-400 underline" />
         </div>
         <label className="flex shrink-0 items-center gap-2 rounded-lg bg-brand-50 px-3 py-2">
           <input
@@ -73,19 +72,6 @@ function ARRow({ a }: { a: Attendee }) {
             {a.paid ? "Paid" : "Unpaid"}
           </span>
         </label>
-      </div>
-      <div>
-        <span className="label">Payment Note</span>
-        <input
-          className="input"
-          value={note}
-          placeholder="e.g. Venmo 6/22, cash, check #123"
-          onChange={(e) => setNote(e.target.value)}
-          onBlur={(e) =>
-            e.target.value !== (a.payment_note ?? "") &&
-            save({ payment_note: e.target.value.trim() || null })
-          }
-        />
       </div>
     </div>
   );
