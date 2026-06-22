@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { classNames } from "@/lib/utils";
 import { signOutAttendee } from "@/app/me/actions";
 
@@ -23,6 +23,12 @@ export default function Nav({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Close the mobile menu on any route change (e.g. after login/logout), since
+  // the Nav persists in the layout and would otherwise keep its open state.
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
   const links = isAdmin
     ? [...LINKS, { href: "/admin", label: "Organizer" }]
     : LINKS;
