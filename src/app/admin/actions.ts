@@ -29,6 +29,7 @@ export async function updateAttendee(id: string, patch: AttendeePatch) {
   if (error) return { ok: false, error: error.message };
 
   revalidatePath("/admin");
+  revalidatePath("/admin/ar");
   revalidatePath("/admin/roster");
   revalidatePath("/admin/cabins");
   revalidatePath("/admin/fishing");
