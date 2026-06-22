@@ -158,12 +158,13 @@ function CabinCard({
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="font-bold text-brand-800">{cabin.name}</h3>
-          {!editing && lines.length > 0 && (
-            <div className="text-sm text-brand-600">
-              {lines.map((line, i) => (
-                <p key={i}>{line}</p>
-              ))}
-            </div>
+          {!editing && mapQuery && (
+            <MapLink
+              place={mapQuery}
+              className="mt-0.5 inline-block text-sm font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+            >
+              {lines.join(", ")}
+            </MapLink>
           )}
         </div>
         {!editing && (
@@ -180,12 +181,6 @@ function CabinCard({
       {/* Read view */}
       {!editing && (
         <>
-          {mapQuery && (
-            <MapLink place={mapQuery} className="btn-secondary">
-              Get directions
-            </MapLink>
-          )}
-
           {/* Host, styled like the guide listing on the fishing card:
               bold name, phone below, capacity under that. */}
           {host ? (
