@@ -3,6 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { useState } from "react";
 import { addSignup, removeSignup, type SignupState } from "@/app/signups/actions";
+import { formatPhone } from "@/lib/utils";
 import type { Signup, SignupRole } from "@/lib/types";
 
 const initial: SignupState = { ok: false };
@@ -35,10 +36,12 @@ function AddButton() {
 
 export default function SignupBoard({
   signups,
+  phoneById,
   currentAttendeeId,
   isAdmin,
 }: {
   signups: Signup[];
+  phoneById: Record<string, string>;
   currentAttendeeId: string | null;
   isAdmin: boolean;
 }) {
@@ -146,7 +149,14 @@ export default function SignupBoard({
                     <ul className="mt-2 space-y-1.5">
                       {people.map((p) => (
                         <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
-                          <span className="text-brand-800">{p.name}</span>
+                          <span>
+                            <span className="text-brand-800">{p.name}</span>
+                            {p.attendee_id && phoneById[p.attendee_id] && (
+                              <span className="ml-2 text-xs text-brand-400">
+                                {formatPhone(phoneById[p.attendee_id])}
+                              </span>
+                            )}
+                          </span>
                           {canRemove(p) && (
                             <button
                               onClick={() => handleRemove(p.id)}
