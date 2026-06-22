@@ -169,28 +169,26 @@ function CabinCard({
           {/* Host, styled like the guide listing on the fishing card:
               bold name, phone below, capacity under that. */}
           {host ? (
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
-                  Cabin Host
-                </span>
-                <div className="flex flex-wrap items-baseline gap-2">
-                  <h3 className="font-bold text-brand-800">{host.name}</h3>
-                  <PhoneLink phone={host.phone} className="text-brand-400 underline" />
-                </div>
-                <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
-                  {occupants.length}
-                  {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} Men
-                </span>
+            <div>
+              <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+                Cabin Host
+              </span>
+              <div className="flex flex-wrap items-baseline gap-2">
+                <h3 className="font-bold text-brand-800">{host.name}</h3>
+                <PhoneLink phone={host.phone} className="text-brand-400 underline" />
+                <button
+                  onClick={() =>
+                    run(() => updateAttendee(host.id, { cabin_id: null, is_cabin_host: false }))
+                  }
+                  className="text-xs text-brand-400 underline hover:text-red-600"
+                >
+                  Remove
+                </button>
               </div>
-              <button
-                onClick={() =>
-                  run(() => updateAttendee(host.id, { cabin_id: null, is_cabin_host: false }))
-                }
-                className="text-xs text-brand-400 underline hover:text-red-600"
-              >
-                Remove
-              </button>
+              <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+                {occupants.length}
+                {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} Men
+              </span>
             </div>
           ) : (
             <div>
