@@ -137,6 +137,10 @@ export default function RsvpForm() {
         </select>
       </Field>
 
+      <Field label="Preferred Driver" error={err("preferred_driver")}>
+        <input name="preferred_driver" className="input" placeholder="Who you'd like to ride with (optional)" maxLength={100} />
+      </Field>
+
         </div>
       </fieldset>
 

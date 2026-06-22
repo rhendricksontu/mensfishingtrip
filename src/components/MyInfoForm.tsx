@@ -51,6 +51,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
           {attendee.departure_location && <Row label="Departure/Return Location" value={attendee.departure_location} />}
+          {attendee.preferred_driver && <Row label="Preferred Driver" value={attendee.preferred_driver} />}
         </dl>
       </div>
     );
@@ -137,6 +138,10 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
             <option key={o} value={o}>{o}</option>
           ))}
         </select>
+      </Field>
+
+      <Field label="Preferred Driver" error={err("preferred_driver")}>
+        <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you'd like to ride with (optional)" maxLength={100} />
       </Field>
 
         </div>

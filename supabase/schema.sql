@@ -70,6 +70,7 @@ create table if not exists attendees (
   ride_preference          ride_preference not null default 'either',
   departure_time           text,                 -- e.g. "Friday Morning (8am-12pm)"
   departure_location       text,                 -- preferred departure/return spot
+  preferred_driver         text,                 -- free-text: who they'd like to ride with
   willing_to_drive         boolean not null default false,
   seat_capacity            int not null default 0, -- passenger seats available (excludes driver)
   needs_ride               boolean not null default false, -- wants to be partnered with a driver

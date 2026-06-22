@@ -28,6 +28,7 @@ const EditSchema = z.object({
   }),
   departure_time: z.string().trim().min(1, "Choose a departure time."),
   departure_location: z.string().trim().min(1, "Choose a departure/return location.").max(100),
+  preferred_driver: z.string().trim().max(100).optional().default(""),
   willing_to_drive: z.boolean(),
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
 });
@@ -59,6 +60,7 @@ export async function updateMyRsvp(
     ride_preference: formData.get("ride_preference"),
     departure_time: formData.get("departure_time"),
     departure_location: formData.get("departure_location"),
+    preferred_driver: formData.get("preferred_driver") ?? "",
     willing_to_drive: bool(formData, "willing_to_drive"),
     seat_capacity: formData.get("seat_capacity") || 0,
   });
@@ -110,6 +112,7 @@ export async function updateMyRsvp(
       ride_preference: d.ride_preference,
       departure_time: d.departure_time || null,
       departure_location: d.departure_location || null,
+      preferred_driver: d.preferred_driver || null,
       willing_to_drive: willingToDrive,
       seat_capacity: willingToDrive ? d.seat_capacity : 0,
       needs_ride: d.ride_preference === "riding",

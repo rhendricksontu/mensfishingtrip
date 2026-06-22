@@ -33,6 +33,7 @@ export interface Attendee {
   ride_preference: RidePreference;
   departure_time: string | null;
   departure_location: string | null;
+  preferred_driver: string | null;
   willing_to_drive: boolean;
   seat_capacity: number;
   needs_ride: boolean;
