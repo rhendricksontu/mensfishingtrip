@@ -22,8 +22,8 @@ const RsvpSchema = z.object({
   ride_preference: z.enum(["driving", "riding"], {
     errorMap: () => ({ message: "Choose Driver or Passenger." }),
   }),
-  departure_time: z.string().trim().optional().default(""),
-  departure_location: z.string().trim().max(100).optional().default(""),
+  departure_time: z.string().trim().min(1, "Choose a departure time."),
+  departure_location: z.string().trim().min(1, "Choose a departure/return location.").max(100),
   willing_to_drive: z.boolean(),
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
   notes: z.string().trim().max(1000).optional().default(""),
