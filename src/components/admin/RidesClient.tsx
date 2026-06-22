@@ -222,11 +222,21 @@ function RideCard({
           }}
         >
           <option value="">+ Add Passenger…</option>
-          {candidates.map((a) => (
-            <option key={a.id} value={a.id}>
-              {a.name} · {formatPhone(a.phone)}
-            </option>
-          ))}
+          {candidates.map((a) => {
+            const prefs = [
+              a.departure_time,
+              a.departure_location,
+              a.preferred_driver ? `prefers ${a.preferred_driver}` : null,
+            ]
+              .filter(Boolean)
+              .join(" · ");
+            return (
+              <option key={a.id} value={a.id}>
+                {a.name} · {formatPhone(a.phone)}
+                {prefs ? ` — ${prefs}` : ""}
+              </option>
+            );
+          })}
         </select>
       )}
     </div>
