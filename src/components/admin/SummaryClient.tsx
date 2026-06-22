@@ -119,9 +119,9 @@ export default function SummaryClient({
                   label="Departure/Return Location"
                   value={a.departure_location || "Not set"}
                 />
+                <Row label="Driver" value={s.driver} />
                 <Row label="Cabin" value={s.cabin} />
                 {s.fishing && <Row label="Fishing" value={s.fishing} />}
-                <Row label="Driver" value={s.driver} />
                 <Row
                   label="Payment"
                   value={
