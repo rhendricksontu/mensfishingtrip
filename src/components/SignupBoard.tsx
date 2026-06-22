@@ -110,7 +110,12 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
               const people = cell(roleObj.key, d.key);
               return (
                 <div key={d.key} className="card">
-                  <h3 className="font-semibold text-brand-800">{d.label}</h3>
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-semibold text-brand-800">{d.label}</h3>
+                    <span className="badge bg-brand-100 text-brand-700">
+                      {people.length} signed up
+                    </span>
+                  </div>
                   {people.length === 0 ? (
                     <p className="mt-2 text-sm text-brand-400">No one yet. Be the first!</p>
                   ) : (
