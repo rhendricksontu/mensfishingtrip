@@ -107,8 +107,8 @@ export default function RsvpForm() {
       )}
 
       <Field label="Preferred Departure Time" error={err("departure_time")}>
-        <select name="departure_time" className="input" defaultValue="">
-          <option value="">No Preference</option>
+        <select name="departure_time" className="input" defaultValue="" required>
+          <option value="" disabled>Select One</option>
           {DEPARTURE_TIME_OPTIONS.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
@@ -116,7 +116,8 @@ export default function RsvpForm() {
       </Field>
 
       <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
-        <select name="departure_location" className="input" defaultValue="No Preference">
+        <select name="departure_location" className="input" defaultValue="" required>
+          <option value="" disabled>Select One</option>
           {DEPARTURE_LOCATION_OPTIONS.map((o) => (
             <option key={o} value={o}>{o}</option>
           ))}
