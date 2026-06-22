@@ -7,10 +7,18 @@ import {
   getRidePassengers,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
-import { formatPhone, normalizePhone, addressLines, addressOneLine } from "@/lib/utils";
+import { addressLines, addressOneLine } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import MapLink from "@/components/MapLink";
-import type { Attendee, RideDirection } from "@/lib/types";
+import PhoneLink from "@/components/PhoneLink";
+import TripRides from "@/components/trip/TripRides";
+import type {
+  Attendee,
+  Cabin,
+  FishingGroup,
+  FishingSession,
+  RideDirection,
+} from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
@@ -27,19 +35,16 @@ export default async function MyTripPage() {
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
 
-  // Cabin
+  // Cabin (all occupants, for the read-only card)
   const cabin = cabins.find((c) => c.id === me.cabin_id) || null;
-  const cabinmates = me.cabin_id
-    ? attendees.filter((a) => a.cabin_id === me.cabin_id && a.id !== me.id)
-    : [];
-  const hosts = me.cabin_id
-    ? attendees.filter((a) => a.cabin_id === me.cabin_id && a.is_cabin_host)
+  const cabinOccupants = cabin
+    ? attendees.filter((a) => a.cabin_id === cabin.id)
     : [];
 
-  // Fishing
+  // Fishing (all anglers in my group)
   const group = groups.find((g) => g.id === me.fishing_group_id) || null;
-  const groupmates = me.fishing_group_id
-    ? attendees.filter((a) => a.fishing_group_id === me.fishing_group_id && a.id !== me.id)
+  const groupAnglers = group
+    ? attendees.filter((a) => a.fishing_group_id === group.id)
     : [];
 
   // Groups this member is guiding (if any), with their anglers.
@@ -104,83 +109,27 @@ export default async function MyTripPage() {
       {/* Assignments */}
       <div className="grid gap-4 sm:grid-cols-2">
         {/* Cabin */}
-        <div className="card">
+        <div className="space-y-2">
           <h2 className="font-bold text-brand-800">Cabin</h2>
           {cabin ? (
-            <>
-              <p className="mt-1 text-lg font-semibold text-brand-700">{cabin.name}</p>
-              {addressOneLine(cabin) && (
-                <MapLink
-                  place={addressOneLine(cabin)}
-                  className="mt-1 inline-block text-sm font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-                >
-                  {addressLines(cabin).join(", ")}
-                </MapLink>
-              )}
-              {me.is_cabin_host && (
-                <span className="badge mt-2 bg-olive-600 text-white">You&apos;re a cabin host</span>
-              )}
-              {hosts.length > 0 && !me.is_cabin_host && (
-                <p className="mt-1 text-sm text-brand-600">
-                  Host:{" "}
-                  {hosts.map((h, i) => (
-                    <span key={h.id}>
-                      {i > 0 && ", "}
-                      {h.name} <PhoneLink phone={h.phone} />
-                    </span>
-                  ))}
-                </p>
-              )}
-              {cabinmates.length > 0 && (
-                <p className="mt-2 text-sm text-brand-600">
-                  <span className="font-medium text-brand-700">Cabinmates:</span>{" "}
-                  {cabinmates.map((a, i) => (
-                    <span key={a.id}>
-                      {i > 0 && ", "}
-                      {a.name} <PhoneLink phone={a.phone} />
-                    </span>
-                  ))}
-                </p>
-              )}
-            </>
+            <CabinView cabin={cabin} occupants={cabinOccupants} meId={me.id} />
           ) : (
-            <p className="mt-1 text-sm text-brand-400">Not assigned yet. Check back soon.</p>
+            <div className="card text-sm text-brand-400">Not assigned yet. Check back soon.</div>
           )}
         </div>
 
         {/* Fishing */}
-        <div className="card">
+        <div className="space-y-2">
           <h2 className="font-bold text-brand-800">Fishing</h2>
-          {me.assigned_session ? (
-            <p className="mt-1 text-lg font-semibold text-brand-700">
-              {SESSION_LABELS[me.assigned_session]}
-            </p>
+          {group ? (
+            <GuideView
+              group={group}
+              anglers={groupAnglers}
+              session={me.assigned_session}
+              meId={me.id}
+            />
           ) : (
-            <p className="mt-1 text-sm text-brand-400">Session not assigned yet.</p>
-          )}
-          {group && (
-            <>
-              <p className="mt-1 text-sm text-brand-700">
-                Guide: <span className="font-medium">{group.guide_name || group.name}</span>
-                {group.guide_phone && (
-                  <>
-                    {" "}
-                    <PhoneLink phone={group.guide_phone} />
-                  </>
-                )}
-              </p>
-              {groupmates.length > 0 && (
-                <p className="mt-2 text-sm text-brand-600">
-                  <span className="font-medium text-brand-700">With:</span>{" "}
-                  {groupmates.map((a, i) => (
-                    <span key={a.id}>
-                      {i > 0 && ", "}
-                      {a.name} <PhoneLink phone={a.phone} />
-                    </span>
-                  ))}
-                </p>
-              )}
-            </>
+            <div className="card text-sm text-brand-400">Session not assigned yet.</div>
           )}
         </div>
       </div>
@@ -217,11 +166,14 @@ export default async function MyTripPage() {
       )}
 
       {/* Rides */}
-      <div className="card">
+      <div>
         <h2 className="font-bold text-brand-800">Your Rides</h2>
-        <div className="mt-2 space-y-4">
-          <RideBlock title="To Broken Bow" direction="to_trip" info={rideInfo("to_trip")} meId={me.id} />
-          <RideBlock title="Coming Home" direction="from_trip" info={rideInfo("from_trip")} meId={me.id} />
+        <div className="mt-2">
+          <TripRides
+            toInfo={rideInfo("to_trip")}
+            fromInfo={rideInfo("from_trip")}
+            meId={me.id}
+          />
         </div>
       </div>
 
@@ -231,92 +183,132 @@ export default async function MyTripPage() {
   );
 }
 
-function RideBlock({
-  title,
-  direction,
-  info,
+// Read-only cabin card, mirroring the organizer Cabins card.
+function CabinView({
+  cabin,
+  occupants,
   meId,
 }: {
-  title: string;
-  direction: RideDirection;
-  info: {
-    driver: Attendee | null;
-    passengers: Attendee[];
-    iAmDriver: boolean;
-  } | null;
+  cabin: Cabin;
+  occupants: Attendee[];
   meId: string;
 }) {
+  const host = occupants.find((a) => a.is_cabin_host) ?? null;
+  const over = cabin.capacity > 0 && occupants.length > cabin.capacity;
+  const lines = addressLines(cabin);
+  const mapQuery = addressOneLine(cabin);
+  const others = occupants.filter((a) => !a.is_cabin_host);
+  const cap = cabin.capacity > 0 ? ` / ${cabin.capacity}` : "";
+
   return (
-    <div className="rounded-lg bg-brand-50 p-3">
-      <p className="text-sm font-semibold text-brand-700">{title}</p>
-      {!info ? (
-        <p className="text-sm text-brand-400">Not arranged yet.</p>
-      ) : (
-        <RideDetails direction={direction} info={info} meId={meId} />
-      )}
-    </div>
-  );
-}
+    <div className="card space-y-3">
+      <div>
+        <h3 className="font-bold text-brand-800">{cabin.name}</h3>
+        {mapQuery && (
+          <MapLink
+            place={mapQuery}
+            className="mt-0.5 inline-block text-sm font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+          >
+            {lines.join(", ")}
+          </MapLink>
+        )}
+      </div>
 
-function RideDetails({
-  direction,
-  info,
-  meId,
-}: {
-  direction: RideDirection;
-  info: { driver: Attendee | null; passengers: Attendee[]; iAmDriver: boolean };
-  meId: string;
-}) {
-  const others = info.passengers.filter((p) => p.id !== meId);
-  return (
-    <div className="mt-1 space-y-2 text-sm text-brand-700">
-      {info.iAmDriver ? (
-        <p className="font-medium">You&apos;re driving.</p>
-      ) : (
-        <p>
-          Riding with{" "}
-          {info.driver ? (
-            <span className="font-medium">
-              {info.driver.name} <PhoneLink phone={info.driver.phone} />
-            </span>
-          ) : (
-            <span className="font-medium">a driver (TBD)</span>
-          )}
-        </p>
-      )}
-
-      {direction === "to_trip" && info.driver?.departure_time && (
-        <p className="text-brand-600">Preferred departure: {info.driver.departure_time}</p>
-      )}
-      {info.driver?.departure_location && (
-        <p className="text-brand-600">
-          Departure/return location: {info.driver.departure_location}
-        </p>
-      )}
-
-      {others.length > 0 ? (
+      {host ? (
         <div>
-          <p className="font-medium">Passengers</p>
-          <ul className="mt-0.5 space-y-0.5">
-            {others.map((p) => (
-              <li key={p.id}>
-                {p.name} <PhoneLink phone={p.phone} />
-              </li>
-            ))}
-          </ul>
+          <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+            Cabin Host
+          </span>
+          <h3 className="font-bold text-brand-800">
+            {host.name}
+            {host.id === meId && " (You)"}
+          </h3>
+          <p className="text-sm">
+            <PhoneLink phone={host.phone} />
+          </p>
+          <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+            {occupants.length}
+            {cap} Men
+          </span>
         </div>
-      ) : info.iAmDriver ? (
-        <p className="text-brand-500">No passengers assigned yet.</p>
-      ) : null}
+      ) : (
+        <div>
+          <span className="mb-1 inline-block rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-900">
+            No Host Yet
+          </span>
+          <p className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+            {occupants.length}
+            {cap} Men
+          </p>
+        </div>
+      )}
+
+      {others.length > 0 && (
+        <ul className="divide-y divide-brand-50">
+          {others.map((a) => (
+            <li key={a.id} className="py-2 text-sm">
+              <span className="font-medium text-brand-800">
+                {a.name}
+                {a.id === meId && " (You)"}
+              </span>{" "}
+              <PhoneLink phone={a.phone} />
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
-// Clickable phone number — tap to call or text.
-function PhoneLink({ phone }: { phone: string }) {
+// Read-only fishing group card, mirroring the organizer guide card.
+function GuideView({
+  group,
+  anglers,
+  session,
+  meId,
+}: {
+  group: FishingGroup;
+  anglers: Attendee[];
+  session: FishingSession | null;
+  meId: string;
+}) {
+  const guideName = group.guide_name || group.name;
+  const over = group.capacity > 0 && anglers.length > group.capacity;
+  const cap = group.capacity > 0 ? ` / ${group.capacity}` : "";
+
   return (
-    <a href={`tel:${normalizePhone(phone)}`} className="text-brand-600 underline">
-      {formatPhone(phone)}
-    </a>
+    <div className="card space-y-3">
+      <div>
+        <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+          Fishing Guide
+        </span>
+        <h3 className="font-bold text-brand-800">{guideName}</h3>
+        {group.guide_phone && (
+          <p className="text-sm">
+            <PhoneLink phone={group.guide_phone} />
+          </p>
+        )}
+        {session && <p className="text-sm text-brand-600">{SESSION_LABELS[session]}</p>}
+      </div>
+
+      <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+        {anglers.length}
+        {cap} Anglers
+      </span>
+
+      {anglers.length > 0 && (
+        <ul className="divide-y divide-brand-50">
+          {anglers.map((a) => (
+            <li key={a.id} className="py-2 text-sm">
+              <span className="font-medium text-brand-800">
+                {a.name}
+                {a.id === meId && " (You)"}
+              </span>{" "}
+              <PhoneLink phone={a.phone} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
