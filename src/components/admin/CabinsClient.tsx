@@ -177,7 +177,7 @@ function CabinCard({
                 <p className="text-sm text-brand-600">{formatPhone(host.phone)}</p>
                 <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
                   {occupants.length}
-                  {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
+                  {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} Men
                 </span>
               </div>
               <button
@@ -196,7 +196,7 @@ function CabinCard({
               </span>
               <p className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
                 {occupants.length}
-                {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
+                {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} Men
               </p>
             </div>
           )}
