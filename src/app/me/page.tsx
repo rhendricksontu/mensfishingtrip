@@ -182,41 +182,58 @@ function RideBlock({
       {!info ? (
         <p className="text-sm text-brand-400">Not arranged yet.</p>
       ) : (
-        <div className="mt-1 space-y-1 text-sm text-brand-700">
-          {info.iAmDriver ? (
-            <p>
-              <span className="font-medium">You&apos;re driving.</span>
-              {info.passengers.filter((p) => p.id !== meId).length > 0 ? (
-                <>
-                  {" "}
-                  Passengers:{" "}
-                  {info.passengers
-                    .filter((p) => p.id !== meId)
-                    .map((p) => `${p.name} ${formatPhone(p.phone)}`)
-                    .join(", ")}
-                </>
-              ) : (
-                " No passengers assigned yet."
-              )}
-            </p>
-          ) : (
-            <p>
-              Riding with{" "}
-              <span className="font-medium">
-                {info.driver ? `${info.driver.name} ${formatPhone(info.driver.phone)}` : "a driver (TBD)"}
-              </span>
-            </p>
-          )}
-          {direction === "to_trip" && info.driver?.departure_time && (
-            <p className="text-brand-600">Preferred departure: {info.driver.departure_time}</p>
-          )}
-          {info.driver?.departure_location && (
-            <p className="text-brand-600">
-              Departure/return location: {info.driver.departure_location}
-            </p>
-          )}
-        </div>
+        <RideDetails direction={direction} info={info} meId={meId} />
       )}
+    </div>
+  );
+}
+
+function RideDetails({
+  direction,
+  info,
+  meId,
+}: {
+  direction: RideDirection;
+  info: { driver: Attendee | null; passengers: Attendee[]; iAmDriver: boolean };
+  meId: string;
+}) {
+  const others = info.passengers.filter((p) => p.id !== meId);
+  return (
+    <div className="mt-1 space-y-2 text-sm text-brand-700">
+      {info.iAmDriver ? (
+        <p className="font-medium">You&apos;re driving.</p>
+      ) : (
+        <p>
+          Riding with{" "}
+          <span className="font-medium">
+            {info.driver ? `${info.driver.name} ${formatPhone(info.driver.phone)}` : "a driver (TBD)"}
+          </span>
+        </p>
+      )}
+
+      {direction === "to_trip" && info.driver?.departure_time && (
+        <p className="text-brand-600">Preferred departure: {info.driver.departure_time}</p>
+      )}
+      {info.driver?.departure_location && (
+        <p className="text-brand-600">
+          Departure/return location: {info.driver.departure_location}
+        </p>
+      )}
+
+      {others.length > 0 ? (
+        <div>
+          <p className="font-medium">Passengers</p>
+          <ul className="mt-0.5 space-y-0.5">
+            {others.map((p) => (
+              <li key={p.id}>
+                {p.name} {formatPhone(p.phone)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : info.iAmDriver ? (
+        <p className="text-brand-500">No passengers assigned yet.</p>
+      ) : null}
     </div>
   );
 }
