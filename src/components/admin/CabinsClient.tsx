@@ -8,7 +8,7 @@ import {
   deleteCabin,
   updateAttendee,
 } from "@/app/admin/actions";
-import { formatPhone } from "@/lib/utils";
+import { formatPhone, addressLines, addressOneLine } from "@/lib/utils";
 import MapLink from "@/components/MapLink";
 import type { Attendee, Cabin } from "@/lib/types";
 
@@ -101,14 +101,20 @@ function CabinCard({
 
   const host = occupants.find((a) => a.is_cabin_host) ?? null;
   const over = cabin.capacity > 0 && occupants.length > cabin.capacity;
+  const lines = addressLines(cabin);
+  const mapQuery = addressOneLine(cabin);
 
   return (
     <div className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="font-bold text-brand-800">{cabin.name}</h3>
-          {!editing && cabin.address && (
-            <p className="whitespace-pre-line text-sm text-brand-600">{cabin.address}</p>
+          {!editing && lines.length > 0 && (
+            <div className="text-sm text-brand-600">
+              {lines.map((line, i) => (
+                <p key={i}>{line}</p>
+              ))}
+            </div>
           )}
         </div>
         {!editing && (
@@ -125,8 +131,8 @@ function CabinCard({
       {/* Read view */}
       {!editing && (
         <>
-          {cabin.address && (
-            <MapLink place={cabin.address} className="btn-secondary">
+          {mapQuery && (
+            <MapLink place={mapQuery} className="btn-secondary">
               Get directions
             </MapLink>
           )}
@@ -185,18 +191,70 @@ function CabinCard({
               }
             />
           </div>
-          <div>
-            <span className="label">Address</span>
-            <textarea
-              className="input min-h-[4.5rem]"
-              rows={3}
-              defaultValue={cabin.address ?? ""}
-              placeholder="Full street address, e.g. 123 Beavers Bend Rd, Broken Bow, OK 74728"
-              onBlur={(e) =>
-                e.target.value !== (cabin.address ?? "") &&
-                run(() => updateCabin(cabin.id, { address: e.target.value.trim() || null }))
-              }
-            />
+          <div className="space-y-3">
+            <div>
+              <span className="label">Address 1</span>
+              <input
+                className="input"
+                defaultValue={cabin.address1 ?? ""}
+                placeholder="Street address"
+                onBlur={(e) =>
+                  e.target.value.trim() !== (cabin.address1 ?? "") &&
+                  run(() => updateCabin(cabin.id, { address1: e.target.value.trim() || null }))
+                }
+              />
+            </div>
+            <div>
+              <span className="label">Address 2</span>
+              <input
+                className="input"
+                defaultValue={cabin.address2 ?? ""}
+                placeholder="Apt, suite, unit (optional)"
+                onBlur={(e) =>
+                  e.target.value.trim() !== (cabin.address2 ?? "") &&
+                  run(() => updateCabin(cabin.id, { address2: e.target.value.trim() || null }))
+                }
+              />
+            </div>
+            <div className="grid gap-3 sm:grid-cols-[2fr_1fr_1fr]">
+              <div>
+                <span className="label">City</span>
+                <input
+                  className="input"
+                  defaultValue={cabin.city ?? ""}
+                  placeholder="City"
+                  onBlur={(e) =>
+                    e.target.value.trim() !== (cabin.city ?? "") &&
+                    run(() => updateCabin(cabin.id, { city: e.target.value.trim() || null }))
+                  }
+                />
+              </div>
+              <div>
+                <span className="label">State</span>
+                <input
+                  className="input"
+                  defaultValue={cabin.state ?? ""}
+                  placeholder="State"
+                  onBlur={(e) =>
+                    e.target.value.trim() !== (cabin.state ?? "") &&
+                    run(() => updateCabin(cabin.id, { state: e.target.value.trim() || null }))
+                  }
+                />
+              </div>
+              <div>
+                <span className="label">Zip Code</span>
+                <input
+                  className="input"
+                  inputMode="numeric"
+                  defaultValue={cabin.zip ?? ""}
+                  placeholder="Zip"
+                  onBlur={(e) =>
+                    e.target.value.trim() !== (cabin.zip ?? "") &&
+                    run(() => updateCabin(cabin.id, { zip: e.target.value.trim() || null }))
+                  }
+                />
+              </div>
+            </div>
           </div>
           <div>
             <span className="label">Capacity</span>
@@ -292,15 +350,29 @@ function AddCabin() {
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
+  const [address1, setAddress1] = useState("");
+  const [address2, setAddress2] = useState("");
+  const [city, setCity] = useState("");
+  const [stateField, setStateField] = useState("");
+  const [zip, setZip] = useState("");
   const [capacity, setCapacity] = useState(10);
 
   function add() {
     if (name.trim().length < 1) return;
     start(async () => {
-      await createCabin(name.trim(), capacity, address.trim());
+      await createCabin(name.trim(), capacity, {
+        address1: address1.trim() || null,
+        address2: address2.trim() || null,
+        city: city.trim() || null,
+        state: stateField.trim() || null,
+        zip: zip.trim() || null,
+      });
       setName("");
-      setAddress("");
+      setAddress1("");
+      setAddress2("");
+      setCity("");
+      setStateField("");
+      setZip("");
       setOpen(false);
       router.refresh();
     });
@@ -319,13 +391,13 @@ function AddCabin() {
       <h3 className="font-semibold text-brand-800">Add a Cabin</h3>
       <div className="space-y-3">
         <input className="input" placeholder="Cabin name" value={name} onChange={(e) => setName(e.target.value)} />
-        <textarea
-          className="input min-h-[4.5rem]"
-          rows={3}
-          placeholder="Full street address, e.g. 123 Beavers Bend Rd, Broken Bow, OK 74728"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
+        <input className="input" placeholder="Address 1 (street address)" value={address1} onChange={(e) => setAddress1(e.target.value)} />
+        <input className="input" placeholder="Address 2 (apt, suite, unit — optional)" value={address2} onChange={(e) => setAddress2(e.target.value)} />
+        <div className="grid gap-3 sm:grid-cols-[2fr_1fr_1fr]">
+          <input className="input" placeholder="City" value={city} onChange={(e) => setCity(e.target.value)} />
+          <input className="input" placeholder="State" value={stateField} onChange={(e) => setStateField(e.target.value)} />
+          <input className="input" inputMode="numeric" placeholder="Zip Code" value={zip} onChange={(e) => setZip(e.target.value)} />
+        </div>
       </div>
       <div className="flex items-end gap-3">
         <div>

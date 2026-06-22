@@ -7,7 +7,7 @@ import {
   getRidePassengers,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
-import { formatPhone, normalizePhone } from "@/lib/utils";
+import { formatPhone, normalizePhone, addressLines, addressOneLine } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import MapLink from "@/components/MapLink";
 import type { Attendee, RideDirection } from "@/lib/types";
@@ -101,11 +101,15 @@ export default async function MyTripPage() {
           {cabin ? (
             <>
               <p className="mt-1 text-lg font-semibold text-brand-700">{cabin.name}</p>
-              {cabin.address && (
-                <p className="whitespace-pre-line text-sm text-brand-600">{cabin.address}</p>
+              {addressLines(cabin).length > 0 && (
+                <div className="text-sm text-brand-600">
+                  {addressLines(cabin).map((line, i) => (
+                    <p key={i}>{line}</p>
+                  ))}
+                </div>
               )}
-              {cabin.address && (
-                <MapLink place={cabin.address} className="btn-secondary mt-2">
+              {addressOneLine(cabin) && (
+                <MapLink place={addressOneLine(cabin)} className="btn-secondary mt-2">
                   Get directions
                 </MapLink>
               )}

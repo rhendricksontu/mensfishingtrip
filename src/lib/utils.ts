@@ -16,6 +16,33 @@ export function classNames(...xs: Array<string | false | null | undefined>): str
   return xs.filter(Boolean).join(" ");
 }
 
+// Build display lines from a structured street address. Falls back to the
+// legacy free-text `address` when no structured parts are present.
+export function addressLines(a: {
+  address1?: string | null;
+  address2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+  address?: string | null;
+}): string[] {
+  const lines: string[] = [];
+  if (a.address1?.trim()) lines.push(a.address1.trim());
+  if (a.address2?.trim()) lines.push(a.address2.trim());
+  const cityState = [a.city?.trim(), a.state?.trim()].filter(Boolean).join(", ");
+  const lastLine = [cityState, a.zip?.trim()].filter(Boolean).join(" ").trim();
+  if (lastLine) lines.push(lastLine);
+  if (lines.length === 0 && a.address?.trim()) {
+    return a.address.split("\n").map((s) => s.trim()).filter(Boolean);
+  }
+  return lines;
+}
+
+// A single-line version, suitable as a maps query.
+export function addressOneLine(a: Parameters<typeof addressLines>[0]): string {
+  return addressLines(a).join(", ");
+}
+
 // Canonical key for a phone number: US 10-digit when possible, else all digits.
 // Used so the same person maps to the same login regardless of formatting.
 export function phoneKey(phone: string): string {

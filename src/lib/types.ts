@@ -6,7 +6,12 @@ export type RideDirection = "to_trip" | "from_trip";
 export interface Cabin {
   id: string;
   name: string;
-  address: string | null;
+  address: string | null; // legacy free-text fallback
+  address1: string | null;
+  address2: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
   capacity: number;
   notes: string | null;
   sort_order: number;

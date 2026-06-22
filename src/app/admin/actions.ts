@@ -82,16 +82,28 @@ export async function setAttendeePassword(attendeeId: string, password: string) 
 
 // ---- Cabins ----------------------------------------------------------------
 
-export async function createCabin(name: string, capacity: number, address?: string) {
+interface CabinAddress {
+  address1?: string | null;
+  address2?: string | null;
+  city?: string | null;
+  state?: string | null;
+  zip?: string | null;
+}
+
+export async function createCabin(
+  name: string,
+  capacity: number,
+  address?: CabinAddress
+) {
   await requireAdmin();
   const db = createAdminClient();
-  await db.from("cabins").insert({ name, capacity, address: address || null });
+  await db.from("cabins").insert({ name, capacity, ...(address ?? {}) });
   revalidatePath("/admin/cabins");
 }
 
 export async function updateCabin(
   id: string,
-  patch: { name?: string; address?: string | null; capacity?: number }
+  patch: { name?: string; capacity?: number } & CabinAddress
 ) {
   await requireAdmin();
   const db = createAdminClient();
