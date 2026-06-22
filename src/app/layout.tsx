@@ -6,6 +6,7 @@ import { getSessionUser, getAdminUser } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.mensfishingtrip.com"),
   title: "Men's Fishing Trip 2026",
   description:
     "Logistics, RSVP, agenda, and assignments for the annual men's fishing trip in Broken Bow.",
