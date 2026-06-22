@@ -56,7 +56,7 @@ export default function FishingClient({
         );
       })}
 
-      <AddGuide />
+      <AddGuide attendees={attendees} />
 
       {unassigned.length > 0 && (
         <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
@@ -303,30 +303,57 @@ function GuideCard({
 }
 
 type GuideWhen = FishingSession | "both";
+const OTHER = "__other__";
 
-function AddGuide() {
+function AddGuide({ attendees }: { attendees: Attendee[] }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
+  // Either a member id, OTHER (non-member), or "" (nothing picked yet).
+  const [who, setWho] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [cap, setCap] = useState(4);
   const [when, setWhen] = useState<GuideWhen>("saturday_morning");
 
+  const members = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
+
+  function reset() {
+    setWho("");
+    setName("");
+    setPhone("");
+    setCap(4);
+    setWhen("saturday_morning");
+    setOpen(false);
+  }
+
   function add() {
-    if (name.trim().length < 1) return;
-    const phoneArg = phone.trim() ? formatPhone(phone.trim()) : undefined;
+    let guideName: string;
+    let guidePhone: string | undefined;
+    let guideId: string | undefined;
+
+    if (who === OTHER) {
+      if (name.trim().length < 1) return;
+      guideName = name.trim();
+      guidePhone = phone.trim() ? formatPhone(phone.trim()) : undefined;
+      guideId = undefined;
+    } else if (who) {
+      const m = attendees.find((a) => a.id === who);
+      if (!m) return;
+      guideName = m.name;
+      guidePhone = m.phone;
+      guideId = m.id;
+    } else {
+      return; // nothing selected
+    }
+
     const sessions: FishingSession[] =
       when === "both" ? ["saturday_morning", "saturday_afternoon"] : [when];
     start(async () => {
       for (const s of sessions) {
-        await createFishingGroup(name.trim(), s, name.trim(), cap, phoneArg);
+        await createFishingGroup(guideName, s, guideName, cap, guidePhone, guideId);
       }
-      setName("");
-      setPhone("");
-      setCap(4);
-      setWhen("saturday_morning");
-      setOpen(false);
+      reset();
       router.refresh();
     });
   }
@@ -342,15 +369,33 @@ function AddGuide() {
   return (
     <div className="card space-y-3">
       <h3 className="font-semibold text-brand-800">Add a Guide</h3>
+      <div>
+        <span className="label">Guide</span>
+        <select className="input" value={who} onChange={(e) => setWho(e.target.value)}>
+          <option value="">Select a Member…</option>
+          {members.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+            </option>
+          ))}
+          <option value={OTHER}>Someone Not on the RSVP List…</option>
+        </select>
+      </div>
+
+      {who === OTHER && (
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="flex-1">
+            <span className="label">Guide Name</span>
+            <input className="input" placeholder="Guide Name" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div className="flex-1">
+            <span className="label">Guide Phone</span>
+            <input className="input" type="tel" inputMode="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-end gap-3">
-        <div className="flex-1">
-          <span className="label">Guide Name</span>
-          <input className="input" placeholder="Guide Name" value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div className="flex-1">
-          <span className="label">Guide Phone</span>
-          <input className="input" type="tel" inputMode="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
-        </div>
         <div>
           <span className="label">Capacity</span>
           <input
@@ -361,20 +406,21 @@ function AddGuide() {
             onChange={(e) => setCap(Number(e.target.value))}
           />
         </div>
+        <div className="flex-1">
+          <span className="label">Guiding</span>
+          <select className="input" value={when} onChange={(e) => setWhen(e.target.value as GuideWhen)}>
+            <option value="saturday_morning">Morning Session</option>
+            <option value="saturday_afternoon">Afternoon Session</option>
+            <option value="both">Both Sessions</option>
+          </select>
+        </div>
       </div>
-      <div>
-        <span className="label">Guiding</span>
-        <select className="input" value={when} onChange={(e) => setWhen(e.target.value as GuideWhen)}>
-          <option value="saturday_morning">Morning Session</option>
-          <option value="saturday_afternoon">Afternoon Session</option>
-          <option value="both">Both Sessions</option>
-        </select>
-      </div>
+
       <div className="flex gap-2">
         <button onClick={add} className="btn-primary" disabled={pending}>
           Add Guide
         </button>
-        <button onClick={() => setOpen(false)} className="btn-secondary">
+        <button onClick={reset} className="btn-secondary">
           Cancel
         </button>
       </div>

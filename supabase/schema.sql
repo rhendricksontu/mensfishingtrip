@@ -52,14 +52,15 @@ create table if not exists cabins (
 -- Fishing groups (each belongs to a Saturday session and has a guide)
 -- ---------------------------------------------------------------------------
 create table if not exists fishing_groups (
-  id          uuid primary key default gen_random_uuid(),
-  name        text not null,
-  session     fishing_session not null,
-  guide_name  text,
-  guide_phone text,
-  capacity    int  not null default 0,
-  notes       text,
-  created_at  timestamptz not null default now()
+  id                uuid primary key default gen_random_uuid(),
+  name              text not null,
+  session           fishing_session not null,
+  guide_name        text,
+  guide_phone       text,
+  guide_attendee_id uuid, -- set when the guide is an RSVP'd member (FK added after attendees)
+  capacity          int  not null default 0,
+  notes             text,
+  created_at        timestamptz not null default now()
 );
 
 -- ---------------------------------------------------------------------------
@@ -106,6 +107,18 @@ create unique index if not exists attendees_name_phone_uniq
   on attendees (lower(name), regexp_replace(phone, '\D', '', 'g'));
 create unique index if not exists attendees_user_id_uniq
   on attendees (user_id) where user_id is not null;
+
+-- fishing_groups.guide_attendee_id -> attendees(id). Added here because
+-- fishing_groups is created before attendees exists.
+do $guide_fk$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'fishing_groups_guide_attendee_fk') then
+    alter table fishing_groups
+      add constraint fishing_groups_guide_attendee_fk
+      foreign key (guide_attendee_id) references attendees(id) on delete set null;
+  end if;
+end
+$guide_fk$;
 
 -- ---------------------------------------------------------------------------
 -- Signups (breakfast cook / coffee maker), scoped to a day

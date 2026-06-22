@@ -42,6 +42,14 @@ export default async function MyTripPage() {
     ? attendees.filter((a) => a.fishing_group_id === me.fishing_group_id && a.id !== me.id)
     : [];
 
+  // Groups this member is guiding (if any), with their anglers.
+  const guidingGroups = groups
+    .filter((g) => g.guide_attendee_id === me.id)
+    .map((g) => ({
+      group: g,
+      anglers: attendees.filter((a) => a.fishing_group_id === g.id),
+    }));
+
   // The car I'm in for a single direction (explicit only).
   function findRide(direction: RideDirection) {
     const dirRides = rides.filter((r) => r.direction === direction);
@@ -176,6 +184,37 @@ export default async function MyTripPage() {
           )}
         </div>
       </div>
+
+      {/* You're Guiding (for member-guides) */}
+      {guidingGroups.length > 0 && (
+        <div className="card">
+          <h2 className="font-bold text-brand-800">You&apos;re Guiding</h2>
+          <div className="mt-2 space-y-4">
+            {guidingGroups.map(({ group: g, anglers }) => (
+              <div key={g.id}>
+                <p className="text-sm font-semibold text-brand-700">
+                  {SESSION_LABELS[g.session]}
+                  <span className="ml-2 text-xs font-normal text-brand-500">
+                    {anglers.length}
+                    {g.capacity > 0 ? ` / ${g.capacity}` : ""} anglers
+                  </span>
+                </p>
+                {anglers.length > 0 ? (
+                  <ul className="mt-1 space-y-0.5 text-sm text-brand-600">
+                    {anglers.map((a) => (
+                      <li key={a.id}>
+                        {a.name} <PhoneLink phone={a.phone} />
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="mt-1 text-sm text-brand-400">No anglers assigned yet.</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Rides */}
       <div className="card">

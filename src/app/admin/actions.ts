@@ -148,13 +148,19 @@ export async function createFishingGroup(
   session: FishingSession,
   guide_name: string,
   capacity: number,
-  guide_phone?: string
+  guide_phone?: string | null,
+  guide_attendee_id?: string | null
 ) {
   await requireAdmin();
   const db = createAdminClient();
-  await db
-    .from("fishing_groups")
-    .insert({ name, session, guide_name, capacity, guide_phone: guide_phone || null });
+  await db.from("fishing_groups").insert({
+    name,
+    session,
+    guide_name,
+    capacity,
+    guide_phone: guide_phone || null,
+    guide_attendee_id: guide_attendee_id || null,
+  });
   revalidatePath("/admin/fishing");
 }
 
