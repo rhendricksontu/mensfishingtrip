@@ -23,7 +23,7 @@ export default async function SignupsPage() {
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Breakfast, Coffee & Guide Lunches</h1>
         <p className="mt-1 text-brand-600">
-          A weekend runs on coffee, a hot breakfast, and well-fed guides. Grab a slot below.
+          Our weekend runs on coffee, a hot breakfast, and well-fed guides. Grab a slot below.
         </p>
       </div>
       <SignupBoard
