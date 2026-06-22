@@ -268,6 +268,35 @@ export async function assignPassenger(
   revalidatePath("/admin/rides");
 }
 
+// Remove a passenger from a driver's ride for a direction. Coming-home that's
+// still inheriting the down ride is materialized first so the others stay.
+export async function unassignPassenger(
+  driver_id: string,
+  direction: RideDirection,
+  attendee_id: string
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+
+  if (direction === "from_trip") {
+    const { data: existing } = await db
+      .from("rides")
+      .select("id")
+      .eq("driver_id", driver_id)
+      .eq("direction", "from_trip")
+      .maybeSingle();
+    if (!existing) await seedReturnFromDown(driver_id);
+  }
+
+  const rideId = await getOrCreateRideId(db, driver_id, direction);
+  await db
+    .from("ride_passengers")
+    .delete()
+    .eq("ride_id", rideId)
+    .eq("attendee_id", attendee_id);
+  revalidatePath("/admin/rides");
+}
+
 export async function setRideField(
   driver_id: string,
   direction: RideDirection,

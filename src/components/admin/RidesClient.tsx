@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   assignPassenger,
   removePassenger,
+  unassignPassenger,
   seedReturnFromDown,
 } from "@/app/admin/actions";
 import { formatPhone, normalizePhone } from "@/lib/utils";
@@ -228,9 +229,17 @@ function RideCard({
           {passengers.length > 0 ? (
             <ul className="divide-y divide-brand-50">
               {passengers.map((p) => (
-                <li key={p.id} className="py-2 text-sm">
-                  <span className="font-medium text-brand-800">{p.name}</span>
-                  <span className="ml-2 text-xs text-brand-400">{formatPhone(p.phone)}</span>
+                <li key={p.id} className="flex items-center justify-between gap-2 py-2 text-sm">
+                  <span>
+                    <span className="font-medium text-brand-800">{p.name}</span>
+                    <span className="ml-2 text-xs text-brand-400">{formatPhone(p.phone)}</span>
+                  </span>
+                  <button
+                    onClick={() => run(() => unassignPassenger(driver.id, direction, p.id))}
+                    className="text-xs text-brand-400 underline hover:text-red-600"
+                  >
+                    remove
+                  </button>
                 </li>
               ))}
             </ul>

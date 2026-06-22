@@ -129,9 +129,21 @@ function GuideCard({
           {members.length > 0 && (
             <ul className="divide-y divide-brand-50">
               {members.map((a) => (
-                <li key={a.id} className="py-2 text-sm">
-                  <span className="font-medium text-brand-800">{a.name}</span>
-                  <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                <li key={a.id} className="flex items-center justify-between gap-2 py-2 text-sm">
+                  <span>
+                    <span className="font-medium text-brand-800">{a.name}</span>
+                    <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                  </span>
+                  <button
+                    onClick={() =>
+                      run(() =>
+                        updateAttendee(a.id, { fishing_group_id: null, assigned_session: null })
+                      )
+                    }
+                    className="text-xs text-brand-400 underline hover:text-red-600"
+                  >
+                    remove
+                  </button>
                 </li>
               ))}
             </ul>

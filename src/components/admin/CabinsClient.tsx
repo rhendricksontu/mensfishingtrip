@@ -168,16 +168,26 @@ function CabinCard({
           {/* Host, styled like the guide listing on the fishing card:
               bold name, phone below, capacity under that. */}
           {host ? (
-            <div>
-              <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
-                Cabin Host
-              </span>
-              <h3 className="font-bold text-brand-800">{host.name}</h3>
-              <p className="text-sm text-brand-600">{formatPhone(host.phone)}</p>
-              <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
-                {occupants.length}
-                {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
-              </span>
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+                  Cabin Host
+                </span>
+                <h3 className="font-bold text-brand-800">{host.name}</h3>
+                <p className="text-sm text-brand-600">{formatPhone(host.phone)}</p>
+                <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+                  {occupants.length}
+                  {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
+                </span>
+              </div>
+              <button
+                onClick={() =>
+                  run(() => updateAttendee(host.id, { cabin_id: null, is_cabin_host: false }))
+                }
+                className="text-xs text-brand-400 underline hover:text-red-600"
+              >
+                remove
+              </button>
             </div>
           ) : (
             <div>
@@ -195,9 +205,19 @@ function CabinCard({
               {occupants
                 .filter((a) => !a.is_cabin_host)
                 .map((a) => (
-                  <li key={a.id} className="py-2 text-sm">
-                    <span className="font-medium text-brand-800">{a.name}</span>
-                    <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                  <li key={a.id} className="flex items-center justify-between gap-2 py-2 text-sm">
+                    <span>
+                      <span className="font-medium text-brand-800">{a.name}</span>
+                      <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
+                    </span>
+                    <button
+                      onClick={() =>
+                        run(() => updateAttendee(a.id, { cabin_id: null, is_cabin_host: false }))
+                      }
+                      className="text-xs text-brand-400 underline hover:text-red-600"
+                    >
+                      remove
+                    </button>
                   </li>
                 ))}
             </ul>
