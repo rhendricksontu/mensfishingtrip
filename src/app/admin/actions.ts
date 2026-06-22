@@ -233,3 +233,33 @@ export async function setRideField(
   await db.from("rides").update(patch).eq("id", rideId);
   revalidatePath("/admin/rides");
 }
+
+// Coming-home defaults to the same passengers as the ride down. This makes the
+// return ride explicit by copying the driver's "to_trip" passengers into it,
+// so the organizer can then customize.
+export async function seedReturnFromDown(driver_id: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const fromId = await getOrCreateRideId(db, driver_id, "from_trip");
+  const { data: toRide } = await db
+    .from("rides")
+    .select("id")
+    .eq("driver_id", driver_id)
+    .eq("direction", "to_trip")
+    .maybeSingle();
+  if (toRide) {
+    const { data: pax } = await db
+      .from("ride_passengers")
+      .select("attendee_id")
+      .eq("ride_id", toRide.id);
+    if (pax && pax.length) {
+      await db
+        .from("ride_passengers")
+        .upsert(
+          pax.map((p) => ({ ride_id: fromId, attendee_id: p.attendee_id })),
+          { onConflict: "ride_id,attendee_id" }
+        );
+    }
+  }
+  revalidatePath("/admin/rides");
+}

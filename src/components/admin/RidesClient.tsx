@@ -6,6 +6,7 @@ import {
   assignPassenger,
   setRideField,
   removePassenger,
+  seedReturnFromDown,
 } from "@/app/admin/actions";
 import { formatPhone } from "@/lib/utils";
 import type { Attendee, Ride, RideDirection } from "@/lib/types";
@@ -41,16 +42,31 @@ export default function RidesClient({
   const byId = new Map(attendees.map((a) => [a.id, a]));
   const drivers = attendees.filter((a) => a.willing_to_drive);
 
+  const passengersOf = (rideId: string) =>
+    ridePassengers
+      .filter((p) => p.ride_id === rideId)
+      .map((p) => byId.get(p.attendee_id))
+      .filter(Boolean) as Attendee[];
+
+  // A driver's effective passengers for a direction. Coming-home (from_trip)
+  // inherits the ride-down passengers until it has its own ride row.
+  function effective(driver: Attendee, direction: RideDirection) {
+    const ride = rides.find((r) => r.driver_id === driver.id && r.direction === direction) ?? null;
+    if (ride) return { ride, passengers: passengersOf(ride.id), inherited: false };
+    if (direction === "from_trip") {
+      const toRide = rides.find((r) => r.driver_id === driver.id && r.direction === "to_trip");
+      return { ride: null, passengers: toRide ? passengersOf(toRide.id) : [], inherited: true };
+    }
+    return { ride: null, passengers: [] as Attendee[], inherited: false };
+  }
+
   return (
     <div className="space-y-8">
       {DIRECTIONS.map((dir) => {
-        const dirRides = rides.filter((r) => r.direction === dir.key);
-        // Everyone already riding (as a passenger) in this direction.
+        // Effective seating for this direction (includes inherited coming-home).
         const seated = new Set<string>();
-        dirRides.forEach((r) =>
-          ridePassengers
-            .filter((p) => p.ride_id === r.id)
-            .forEach((p) => seated.add(p.attendee_id))
+        drivers.forEach((d) =>
+          effective(d, dir.key).passengers.forEach((p) => seated.add(p.id))
         );
         const unplaced = attendees.filter(
           (a) => !a.willing_to_drive && !seated.has(a.id)
@@ -67,13 +83,7 @@ export default function RidesClient({
             )}
 
             {drivers.map((driver) => {
-              const ride = dirRides.find((r) => r.driver_id === driver.id) ?? null;
-              const passengers = ride
-                ? (ridePassengers
-                    .filter((p) => p.ride_id === ride.id)
-                    .map((p) => byId.get(p.attendee_id))
-                    .filter(Boolean) as Attendee[])
-                : [];
+              const { ride, passengers, inherited } = effective(driver, dir.key);
               const candidates = attendees.filter(
                 (a) => a.id !== driver.id && !seated.has(a.id)
               );
@@ -84,6 +94,7 @@ export default function RidesClient({
                   direction={dir.key}
                   ride={ride}
                   passengers={passengers}
+                  inherited={inherited}
                   candidates={candidates}
                 />
               );
@@ -111,12 +122,14 @@ function RideCard({
   direction,
   ride,
   passengers,
+  inherited,
   candidates,
 }: {
   driver: Attendee;
   direction: RideDirection;
   ride: Ride | null;
   passengers: Attendee[];
+  inherited: boolean;
   candidates: Attendee[];
 }) {
   const router = useRouter();
@@ -127,6 +140,12 @@ function RideCard({
       await fn();
       router.refresh();
     });
+
+  // Coming-home that's still inheriting the down ride: copy it before editing.
+  function startEditing() {
+    if (inherited) run(() => seedReturnFromDown(driver.id));
+    setEditing(true);
+  }
 
   const seatsLeft = driver.seat_capacity - passengers.length;
 
@@ -145,7 +164,7 @@ function RideCard({
         </div>
         {!editing && (
           <button
-            onClick={() => setEditing(true)}
+            onClick={startEditing}
             aria-label="Edit ride"
             className="text-brand-400 hover:text-brand-700"
           >
@@ -157,6 +176,9 @@ function RideCard({
       {/* Read view */}
       {!editing && (
         <>
+          {inherited && (
+            <p className="text-xs font-medium text-brand-500">Same as the ride to Broken Bow</p>
+          )}
           {passengers.length > 0 ? (
             <ul className="divide-y divide-brand-50">
               {passengers.map((p) => (
