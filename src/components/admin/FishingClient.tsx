@@ -100,6 +100,11 @@ function GuideCard({
     <div className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
+          {!editing && (
+            <p className="text-xs font-semibold uppercase tracking-wide text-olive-700">
+              Fishing Guide
+            </p>
+          )}
           <h3 className="font-bold text-brand-800">{guideName}</h3>
           {!editing && guide.guide_phone && (
             <p className="text-sm text-brand-600">{formatPhone(guide.guide_phone)}</p>

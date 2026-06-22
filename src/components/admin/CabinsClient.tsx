@@ -141,7 +141,7 @@ function CabinCard({
               bold name, phone below, capacity under that. */}
           {host ? (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-brand-400">
+              <p className="text-xs font-semibold uppercase tracking-wide text-olive-700">
                 Cabin Host
               </p>
               <h3 className="font-bold text-brand-800">{host.name}</h3>
