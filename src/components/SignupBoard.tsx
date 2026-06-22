@@ -137,7 +137,7 @@ export default function SignupBoard({
                     </span>
                   </div>
                   <p className={`mt-1 text-xs font-medium ${met ? "text-olive-700" : "text-amber-700"}`}>
-                    {met ? "Minimum met" : `${roleObj.min - people.length} more needed`}
+                    {met ? "Minimum Met" : `${roleObj.min - people.length} More Needed`}
                   </p>
                   {people.length === 0 ? (
                     <p className="mt-2 text-sm text-brand-400">No one yet. Be the first!</p>
@@ -146,7 +146,7 @@ export default function SignupBoard({
                       {people.map((p) => (
                         <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
                           <span>
-                            <span className="text-brand-800">
+                            <span className="font-medium text-brand-800">
                               {p.name}
                               {p.attendee_id && p.attendee_id === currentAttendeeId && " (You)"}
                             </span>
