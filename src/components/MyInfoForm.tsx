@@ -21,6 +21,7 @@ function SaveBtn() {
 export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
   const [state, action] = useFormState(updateMyRsvp, initial);
   const [open, setOpen] = useState(false);
+  const [ridePref, setRidePref] = useState<string>(attendee.ride_preference);
   const [willingToDrive, setWillingToDrive] = useState(attendee.willing_to_drive);
   const err = (k: string) => state.fieldErrors?.[k];
 
@@ -37,7 +38,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Row label="Emergency contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
           <Row label="Ride preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
           {attendee.willing_to_drive && <Row label="Willing to drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
-          {attendee.needs_ride && <Row label="Needs a ride" value="Yes, match me with a driver" />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
           {attendee.departure_location && <Row label="Departure/return location" value={attendee.departure_location} />}
         </dl>
@@ -78,12 +78,32 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
       </fieldset>
 
       <Field label="Ride preference" error={err("ride_preference")}>
-        <select name="ride_preference" className="input" defaultValue={attendee.ride_preference} required>
+        <select
+          name="ride_preference"
+          className="input"
+          defaultValue={attendee.ride_preference}
+          required
+          onChange={(e) => setRidePref(e.target.value)}
+        >
           <option value="" disabled>Select One</option>
           <option value="driving">Driver</option>
           <option value="riding">Passenger</option>
         </select>
       </Field>
+
+      {ridePref === "driving" && (
+        <div className="rounded-lg bg-brand-50 p-4 space-y-4">
+          <label className="flex items-start gap-3">
+            <input type="checkbox" name="willing_to_drive" checked={willingToDrive} onChange={(e) => setWillingToDrive(e.target.checked)} className="mt-1 h-5 w-5 rounded text-brand-600" />
+            <span className="text-sm text-brand-800"><span className="font-semibold">I&apos;m willing to drive others.</span></span>
+          </label>
+          {willingToDrive && (
+            <Field label="Passenger seats available (not counting you)" error={err("seat_capacity")}>
+              <input name="seat_capacity" type="number" inputMode="numeric" min={0} max={20} className="input" defaultValue={attendee.seat_capacity || 3} />
+            </Field>
+          )}
+        </div>
+      )}
 
       <Field label="Preferred departure time" error={err("departure_time")}>
         <select name="departure_time" className="input" defaultValue={attendee.departure_time ?? ""}>
@@ -101,22 +121,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           ))}
         </select>
       </Field>
-
-      <div className="rounded-lg bg-brand-50 p-4 space-y-4">
-        <label className="flex items-start gap-3">
-          <input type="checkbox" name="willing_to_drive" checked={willingToDrive} onChange={(e) => setWillingToDrive(e.target.checked)} className="mt-1 h-5 w-5 rounded text-brand-600" />
-          <span className="text-sm text-brand-800"><span className="font-semibold">I&apos;m willing to drive others.</span></span>
-        </label>
-        {willingToDrive && (
-          <Field label="Passenger seats available (not counting you)" error={err("seat_capacity")}>
-            <input name="seat_capacity" type="number" inputMode="numeric" min={0} max={20} className="input" defaultValue={attendee.seat_capacity || 3} />
-          </Field>
-        )}
-        <label className="flex items-start gap-3">
-          <input type="checkbox" name="needs_ride" defaultChecked={attendee.needs_ride} className="mt-1 h-5 w-5 rounded text-brand-600" />
-          <span className="text-sm text-brand-800"><span className="font-semibold">I&apos;d like to be partnered with a driver.</span></span>
-        </label>
-      </div>
 
       <Field label="Anything else? (optional)" error={err("notes")}>
         <textarea name="notes" rows={3} className="input" defaultValue={attendee.notes ?? ""} />

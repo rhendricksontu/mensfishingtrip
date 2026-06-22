@@ -19,6 +19,7 @@ function SubmitButton() {
 
 export default function RsvpForm() {
   const [state, formAction] = useFormState(submitRsvp, initialState);
+  const [ridePref, setRidePref] = useState("");
   const [willingToDrive, setWillingToDrive] = useState(false);
 
   const err = (k: string) => state.fieldErrors?.[k];
@@ -65,12 +66,41 @@ export default function RsvpForm() {
       </fieldset>
 
       <Field label="Ride preference" error={err("ride_preference")}>
-        <select name="ride_preference" className="input" defaultValue="" required>
+        <select
+          name="ride_preference"
+          className="input"
+          defaultValue=""
+          required
+          onChange={(e) => setRidePref(e.target.value)}
+        >
           <option value="" disabled>Select One</option>
           <option value="driving">Driver</option>
           <option value="riding">Passenger</option>
         </select>
       </Field>
+
+      {ridePref === "driving" && (
+        <div className="rounded-lg bg-brand-50 p-4 space-y-4">
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              name="willing_to_drive"
+              checked={willingToDrive}
+              onChange={(e) => setWillingToDrive(e.target.checked)}
+              className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-sm text-brand-800">
+              <span className="font-semibold">I&apos;m willing to drive others.</span> I can offer seats in my vehicle.
+            </span>
+          </label>
+
+          {willingToDrive && (
+            <Field label="Passenger seats available (not counting you)" error={err("seat_capacity")}>
+              <input name="seat_capacity" type="number" inputMode="numeric" min={0} max={20} className="input" defaultValue={3} />
+            </Field>
+          )}
+        </div>
+      )}
 
       <Field label="Preferred departure time" error={err("departure_time")}>
         <select name="departure_time" className="input" defaultValue="">
@@ -88,38 +118,6 @@ export default function RsvpForm() {
           ))}
         </select>
       </Field>
-
-      <div className="rounded-lg bg-brand-50 p-4 space-y-4">
-        <label className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            name="willing_to_drive"
-            checked={willingToDrive}
-            onChange={(e) => setWillingToDrive(e.target.checked)}
-            className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
-          />
-          <span className="text-sm text-brand-800">
-            <span className="font-semibold">I&apos;m willing to drive others.</span> I can offer seats in my vehicle.
-          </span>
-        </label>
-
-        {willingToDrive && (
-          <Field label="Passenger seats available (not counting you)" error={err("seat_capacity")}>
-            <input name="seat_capacity" type="number" inputMode="numeric" min={0} max={20} className="input" defaultValue={3} />
-          </Field>
-        )}
-
-        <label className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            name="needs_ride"
-            className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
-          />
-          <span className="text-sm text-brand-800">
-            <span className="font-semibold">I&apos;d like to be partnered with a driver.</span> Match me with someone who has room.
-          </span>
-        </label>
-      </div>
 
       <Field label="Anything else we should know? (optional)" error={err("notes")}>
         <textarea name="notes" rows={3} className="input" placeholder="Dietary needs, arrival changes, etc." />

@@ -26,7 +26,6 @@ const RsvpSchema = z.object({
   departure_location: z.string().trim().max(100).optional().default(""),
   willing_to_drive: z.boolean(),
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
-  needs_ride: z.boolean(),
   notes: z.string().trim().max(1000).optional().default(""),
 });
 
@@ -56,7 +55,6 @@ export async function submitRsvp(
     departure_location: formData.get("departure_location"),
     willing_to_drive: bool(formData, "willing_to_drive"),
     seat_capacity: formData.get("seat_capacity") || 0,
-    needs_ride: bool(formData, "needs_ride"),
     notes: formData.get("notes"),
   });
 
@@ -73,6 +71,8 @@ export async function submitRsvp(
   const db = createAdminClient();
   const authEmail = authEmailForPhone(d.phone);
 
+  // Drivers can offer seats; passengers need a ride by definition.
+  const willingToDrive = d.ride_preference === "driving" && d.willing_to_drive;
   const record = {
     name: d.name,
     phone: d.phone,
@@ -81,9 +81,9 @@ export async function submitRsvp(
     ride_preference: d.ride_preference,
     departure_time: d.departure_time || null,
     departure_location: d.departure_location || null,
-    willing_to_drive: d.willing_to_drive,
-    seat_capacity: d.willing_to_drive ? d.seat_capacity : 0,
-    needs_ride: d.needs_ride,
+    willing_to_drive: willingToDrive,
+    seat_capacity: willingToDrive ? d.seat_capacity : 0,
+    needs_ride: d.ride_preference === "riding",
     notes: d.notes || null,
   };
 
