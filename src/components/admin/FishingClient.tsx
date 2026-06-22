@@ -30,7 +30,8 @@ export default function FishingClient({
   groups: FishingGroup[];
   attendees: Attendee[];
 }) {
-  const unassigned = attendees.filter((a) => !a.fishing_group_id);
+  // Only members who said yes to fishing with a guide can be assigned.
+  const unassigned = attendees.filter((a) => !a.fishing_group_id && a.fish_with_guide);
 
   return (
     <div className="space-y-8">
