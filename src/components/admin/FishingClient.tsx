@@ -97,6 +97,9 @@ function GuideCard({
       {/* Read view */}
       {!editing && (
         <>
+          {guide.guide_phone && (
+            <p className="text-sm text-brand-600">{formatPhone(guide.guide_phone)}</p>
+          )}
           <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
             {members.length}
             {guide.capacity > 0 ? ` / ${guide.capacity}` : ""} anglers
@@ -143,6 +146,24 @@ function GuideCard({
                 }
               />
             </div>
+          </div>
+          <div>
+            <span className="label">Guide phone</span>
+            <input
+              className="input"
+              type="tel"
+              inputMode="tel"
+              defaultValue={guide.guide_phone ?? ""}
+              placeholder="(555) 123-4567"
+              onBlur={(e) =>
+                e.target.value !== (guide.guide_phone ?? "") &&
+                run(() =>
+                  updateFishingGroup(guide.id, {
+                    guide_phone: e.target.value ? formatPhone(e.target.value) : null,
+                  })
+                )
+              }
+            />
           </div>
 
           {members.length > 0 && (
@@ -223,13 +244,21 @@ function AddGuide({ session }: { session: FishingSession }) {
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [cap, setCap] = useState(4);
 
   function add() {
     if (name.trim().length < 1) return;
     start(async () => {
-      await createFishingGroup(name.trim(), session, name.trim(), cap);
+      await createFishingGroup(
+        name.trim(),
+        session,
+        name.trim(),
+        cap,
+        phone.trim() ? formatPhone(phone.trim()) : undefined
+      );
       setName("");
+      setPhone("");
       setOpen(false);
       router.refresh();
     });
@@ -248,6 +277,10 @@ function AddGuide({ session }: { session: FishingSession }) {
       <div className="flex-1">
         <span className="label">Guide name</span>
         <input className="input" placeholder="Guide name" value={name} onChange={(e) => setName(e.target.value)} />
+      </div>
+      <div className="flex-1">
+        <span className="label">Guide phone</span>
+        <input className="input" type="tel" inputMode="tel" placeholder="(555) 123-4567" value={phone} onChange={(e) => setPhone(e.target.value)} />
       </div>
       <div>
         <span className="label">Capacity</span>

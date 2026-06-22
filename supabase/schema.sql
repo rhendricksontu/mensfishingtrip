@@ -51,6 +51,7 @@ create table if not exists fishing_groups (
   name        text not null,
   session     fishing_session not null,
   guide_name  text,
+  guide_phone text,
   capacity    int  not null default 0,
   notes       text,
   created_at  timestamptz not null default now()

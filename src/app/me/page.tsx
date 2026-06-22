@@ -105,7 +105,7 @@ export default async function MyTripPage() {
               )}
               {hosts.length > 0 && !me.is_cabin_host && (
                 <p className="mt-1 text-sm text-brand-600">
-                  Host: {hosts.map((h) => h.name).join(", ")}
+                  Host: {hosts.map((h) => `${h.name} ${formatPhone(h.phone)}`).join(", ")}
                 </p>
               )}
               {cabinmates.length > 0 && (
@@ -134,6 +134,7 @@ export default async function MyTripPage() {
             <>
               <p className="mt-1 text-sm text-brand-700">
                 Guide: <span className="font-medium">{group.guide_name || group.name}</span>
+                {group.guide_phone ? ` ${formatPhone(group.guide_phone)}` : ""}
               </p>
               {groupmates.length > 0 && (
                 <p className="mt-2 text-sm text-brand-600">

@@ -17,6 +17,7 @@ export interface FishingGroup {
   name: string;
   session: FishingSession;
   guide_name: string | null;
+  guide_phone: string | null;
   capacity: number;
   notes: string | null;
 }
