@@ -175,7 +175,7 @@ function CabinCard({
                 </span>
                 <div className="flex flex-wrap items-baseline gap-2">
                   <h3 className="font-bold text-brand-800">{host.name}</h3>
-                  <span className="text-xs text-brand-400">{formatPhone(host.phone)}</span>
+                  <span className="text-brand-400">{formatPhone(host.phone)}</span>
                 </div>
                 <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
                   {occupants.length}

@@ -110,7 +110,7 @@ function GuideCard({
           <div className="flex flex-wrap items-baseline gap-2">
             <h3 className="font-bold text-brand-800">{guideName}</h3>
             {!editing && guide.guide_phone && (
-              <span className="text-xs text-brand-400">{formatPhone(guide.guide_phone)}</span>
+              <span className="text-brand-400">{formatPhone(guide.guide_phone)}</span>
             )}
           </div>
         </div>

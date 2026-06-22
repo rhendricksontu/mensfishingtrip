@@ -166,7 +166,7 @@ function RideCard({
           <h3 className="font-bold text-brand-800">{driver.name}</h3>
           <a
             href={`tel:${normalizePhone(driver.phone)}`}
-            className="text-xs text-brand-400 underline decoration-brand-300 underline-offset-2 hover:text-brand-700"
+            className="text-brand-400 underline decoration-brand-300 underline-offset-2 hover:text-brand-700"
           >
             {formatPhone(driver.phone)}
           </a>
