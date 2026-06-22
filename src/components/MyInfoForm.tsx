@@ -77,6 +77,10 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </Field>
       </fieldset>
 
+      <fieldset className="rounded-lg border border-brand-100 p-4">
+        <legend className="px-1 text-sm font-semibold text-brand-700">Travel Preferences</legend>
+        <div className="space-y-4">
+
       <Field label="Ride Preference" error={err("ride_preference")}>
         <select
           name="ride_preference"
@@ -121,6 +125,9 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           ))}
         </select>
       </Field>
+
+        </div>
+      </fieldset>
 
       <SaveBtn />
     </form>
