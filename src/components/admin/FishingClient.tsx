@@ -142,7 +142,7 @@ function GuideCard({
                     }
                     className="text-xs text-brand-400 underline hover:text-red-600"
                   >
-                    remove
+                    Remove
                   </button>
                 </li>
               ))}
@@ -241,7 +241,7 @@ function GuideCard({
                     }
                     className="text-xs text-brand-400 underline hover:text-red-600"
                   >
-                    remove
+                    Remove
                   </button>
                 </li>
               ))}

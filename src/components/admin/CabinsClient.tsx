@@ -186,7 +186,7 @@ function CabinCard({
                 }
                 className="text-xs text-brand-400 underline hover:text-red-600"
               >
-                remove
+                Remove
               </button>
             </div>
           ) : (
@@ -216,7 +216,7 @@ function CabinCard({
                       }
                       className="text-xs text-brand-400 underline hover:text-red-600"
                     >
-                      remove
+                      Remove
                     </button>
                   </li>
                 ))}
@@ -384,7 +384,7 @@ function CabinCard({
                       }
                       className="text-xs text-brand-400 underline hover:text-red-600"
                     >
-                      remove
+                      Remove
                     </button>
                   </div>
                 </li>

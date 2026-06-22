@@ -238,7 +238,7 @@ function RideCard({
                     onClick={() => run(() => unassignPassenger(driver.id, direction, p.id))}
                     className="text-xs text-brand-400 underline hover:text-red-600"
                   >
-                    remove
+                    Remove
                   </button>
                 </li>
               ))}
@@ -286,7 +286,7 @@ function RideCard({
                     onClick={() => ride && run(() => removePassenger(ride.id, p.id))}
                     className="text-xs text-brand-400 underline hover:text-red-600"
                   >
-                    remove
+                    Remove
                   </button>
                 </li>
               ))}
