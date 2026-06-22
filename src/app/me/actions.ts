@@ -139,5 +139,5 @@ export async function updateMyRsvp(
 export async function signOutAttendee(): Promise<void> {
   const supabase = createSupabaseServerClient();
   await supabase.auth.signOut();
-  redirect("/login");
+  redirect("/");
 }

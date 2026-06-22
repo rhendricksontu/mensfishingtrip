@@ -34,9 +34,9 @@ export async function getCurrentAttendee(): Promise<Attendee | null> {
   }
 }
 
-// Require a logged-in attendee; redirect to login otherwise.
+// Require a logged-in attendee; send them to the home page otherwise.
 export async function requireAttendee(): Promise<Attendee> {
   const attendee = await getCurrentAttendee();
-  if (!attendee) redirect("/login");
+  if (!attendee) redirect("/");
   return attendee;
 }
