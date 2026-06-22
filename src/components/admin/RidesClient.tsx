@@ -7,7 +7,7 @@ import {
   removePassenger,
   seedReturnFromDown,
 } from "@/app/admin/actions";
-import { formatPhone } from "@/lib/utils";
+import { formatPhone, normalizePhone } from "@/lib/utils";
 import type { Attendee, Ride, RideDirection } from "@/lib/types";
 
 interface RidePassenger {
@@ -150,19 +150,32 @@ function RideCard({
   }
 
   const seatsLeft = driver.seat_capacity - passengers.length;
+  const over = seatsLeft < 0;
 
   return (
     <div className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
         <div>
+          {!editing && (
+            <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+              Driver
+            </span>
+          )}
           <h3 className="font-bold text-brand-800">{driver.name}</h3>
-          <a href={`tel:${driver.phone}`} className="text-sm text-brand-600 underline">
-            {formatPhone(driver.phone)}
-          </a>
-          <span className="ml-2 text-xs text-brand-500">
-            {passengers.length}/{driver.seat_capacity} seats
-            {seatsLeft > 0 ? ` · ${seatsLeft} open` : seatsLeft < 0 ? " · over capacity" : " · full"}
-          </span>
+          {!editing && (
+            <>
+              <a
+                href={`tel:${normalizePhone(driver.phone)}`}
+                className="block text-sm text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+              >
+                {formatPhone(driver.phone)}
+              </a>
+              <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+                {passengers.length}/{driver.seat_capacity} seats
+                {seatsLeft > 0 ? ` · ${seatsLeft} open` : seatsLeft < 0 ? " · over capacity" : " · full"}
+              </span>
+            </>
+          )}
         </div>
         {!editing && (
           <button
@@ -175,20 +188,19 @@ function RideCard({
         )}
       </div>
 
-      {((direction === "to_trip" && driver.departure_time) || driver.departure_location) && (
-        <div className="space-y-0.5 text-xs text-brand-500">
-          {direction === "to_trip" && driver.departure_time && (
-            <p>Preferred departure: {driver.departure_time}</p>
-          )}
-          {driver.departure_location && (
-            <p>Departure/return location: {driver.departure_location}</p>
-          )}
-        </div>
-      )}
-
       {/* Read view */}
       {!editing && (
         <>
+          {((direction === "to_trip" && driver.departure_time) || driver.departure_location) && (
+            <div className="space-y-0.5 text-xs text-brand-500">
+              {direction === "to_trip" && driver.departure_time && (
+                <p>Preferred departure: {driver.departure_time}</p>
+              )}
+              {driver.departure_location && (
+                <p>Departure/return location: {driver.departure_location}</p>
+              )}
+            </div>
+          )}
           {inherited && (
             <p className="text-xs font-medium text-brand-500">Same as the ride to Broken Bow</p>
           )}
