@@ -14,7 +14,7 @@ const EditSchema = z.object({
     .string()
     .trim()
     .refine((v) => normalizePhone(v).length >= 10, "Enter a valid phone number."),
-  // Optional on edit — blank means keep the current password.
+  // Optional on edit; blank means keep the current password.
   password: z
     .string()
     .refine((v) => v === "" || v.length >= 8, "Password must be at least 8 characters."),
