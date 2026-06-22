@@ -3,7 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { useState } from "react";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
-import { DEPARTURE_TIME_OPTIONS } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
 import type { Attendee } from "@/lib/types";
 
@@ -35,7 +35,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Row label="Name" value={attendee.name} />
           <Row label="Cell phone" value={formatPhone(attendee.phone)} />
           <Row label="Emergency contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
-          <Row label="Ride preference" value={attendee.ride_preference === "driving" ? "Driving my own car" : attendee.ride_preference === "riding" ? "Riding with someone" : "Either is fine"} />
+          <Row label="Ride preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
           {attendee.willing_to_drive && <Row label="Willing to drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.needs_ride && <Row label="Needs a ride" value="Yes, match me with a driver" />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
@@ -77,10 +77,10 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
       </fieldset>
 
       <Field label="Ride preference" error={err("ride_preference")}>
-        <select name="ride_preference" className="input" defaultValue={attendee.ride_preference}>
-          <option value="either">Either is fine</option>
-          <option value="driving">Driving my own car</option>
-          <option value="riding">Riding with someone</option>
+        <select name="ride_preference" className="input" defaultValue={attendee.ride_preference} required>
+          <option value="" disabled>Select one</option>
+          <option value="driving">Driver</option>
+          <option value="riding">Passenger</option>
         </select>
       </Field>
 

@@ -65,10 +65,10 @@ export default function RsvpForm() {
       </fieldset>
 
       <Field label="Ride preference" error={err("ride_preference")}>
-        <select name="ride_preference" className="input" defaultValue="either">
-          <option value="either">Either is fine</option>
-          <option value="driving">Driving my own car</option>
-          <option value="riding">Riding with someone</option>
+        <select name="ride_preference" className="input" defaultValue="" required>
+          <option value="" disabled>Select one</option>
+          <option value="driving">Driver</option>
+          <option value="riding">Passenger</option>
         </select>
       </Field>
 

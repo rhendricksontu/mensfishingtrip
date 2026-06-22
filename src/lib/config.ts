@@ -44,7 +44,7 @@ export const SESSION_LABELS: Record<string, string> = {
 };
 
 export const RIDE_PREF_LABELS: Record<string, string> = {
-  driving: "Driving my own car",
-  riding: "Riding with someone",
-  either: "Either is fine",
+  driving: "Driver",
+  riding: "Passenger",
+  either: "Either", // legacy fallback for older RSVPs
 };

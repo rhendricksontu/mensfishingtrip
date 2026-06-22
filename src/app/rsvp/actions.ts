@@ -19,7 +19,9 @@ const RsvpSchema = z.object({
     .string()
     .trim()
     .refine((v) => normalizePhone(v).length >= 10, "Enter a valid emergency contact phone."),
-  ride_preference: z.enum(["driving", "riding", "either"]),
+  ride_preference: z.enum(["driving", "riding"], {
+    errorMap: () => ({ message: "Choose Driver or Passenger." }),
+  }),
   departure_time: z.string().trim().optional().default(""),
   willing_to_drive: z.boolean(),
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
