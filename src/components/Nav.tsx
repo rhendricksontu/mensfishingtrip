@@ -8,10 +8,10 @@ import { classNames } from "@/lib/utils";
 import { signOutAttendee } from "@/app/me/actions";
 
 const LINKS = [
+  { href: "/me", label: "My Fishing Trip" },
   { href: "/", label: "Agenda" },
   { href: "/signups", label: "Signups" },
   { href: "/locations", label: "Locations" },
-  { href: "/me", label: "My Fishing Trip" },
 ];
 
 export default function Nav({
