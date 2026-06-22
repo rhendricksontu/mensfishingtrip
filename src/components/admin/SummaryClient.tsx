@@ -90,7 +90,8 @@ export default function SummaryClient({
       {sorted.map((a) => {
         const open = openId === a.id;
         const s = summaryFor(a);
-        const needsAttention = s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned;
+        const needsAttention =
+          s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned || !s.paid;
         return (
           <li
             key={a.id}
@@ -150,7 +151,7 @@ export default function SummaryClient({
                 )}
                 <Row
                   label="Payment"
-                  value={s.paid ? "Paid" : "Unpaid"}
+                  value={s.paid ? "Paid" : <FixLink href="/admin/ar" label="Unpaid" />}
                   highlight={!s.paid}
                 />
               </dl>
@@ -162,11 +163,11 @@ export default function SummaryClient({
   );
 }
 
-// "Unassigned" value that links to the tab where you can fix it.
-function FixLink({ href }: { href: string }) {
+// A flagged value that links to the tab where you can fix it.
+function FixLink({ href, label = "Unassigned" }: { href: string; label?: string }) {
   return (
     <Link href={href} className="font-semibold text-amber-700 underline">
-      Unassigned
+      {label}
     </Link>
   );
 }
