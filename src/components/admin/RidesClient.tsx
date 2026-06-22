@@ -237,6 +237,28 @@ function RideCard({
           ) : (
             <p className="text-sm text-brand-400">No passengers assigned.</p>
           )}
+
+          {seatsLeft > 0 && candidates.length > 0 && (
+            <select
+              className="input"
+              value=""
+              onChange={(e) => {
+                const id = e.target.value;
+                if (!id) return;
+                run(async () => {
+                  if (inherited) await seedReturnFromDown(driver.id);
+                  await assignPassenger(driver.id, direction, id);
+                });
+              }}
+            >
+              <option value="">+ Add Passenger…</option>
+              {candidates.map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.name} · {formatPhone(a.phone)}
+                </option>
+              ))}
+            </select>
+          )}
         </>
       )}
 

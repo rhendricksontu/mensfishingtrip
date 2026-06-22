@@ -202,6 +202,25 @@ function CabinCard({
                 ))}
             </ul>
           )}
+
+          {(cabin.capacity === 0 || occupants.length < cabin.capacity) &&
+            unassigned.length > 0 && (
+              <select
+                className="input"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value)
+                    run(() => updateAttendee(e.target.value, { cabin_id: cabin.id }));
+                }}
+              >
+                <option value="">+ Add Traveler…</option>
+                {unassigned.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name} · {formatPhone(a.phone)}
+                  </option>
+                ))}
+              </select>
+            )}
         </>
       )}
 

@@ -136,6 +136,30 @@ function GuideCard({
               ))}
             </ul>
           )}
+
+          {(guide.capacity === 0 || members.length < guide.capacity) &&
+            unassigned.length > 0 && (
+              <select
+                className="input"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value)
+                    run(() =>
+                      updateAttendee(e.target.value, {
+                        fishing_group_id: guide.id,
+                        assigned_session: session,
+                      })
+                    );
+                }}
+              >
+                <option value="">+ Add Angler…</option>
+                {unassigned.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name} · {formatPhone(a.phone)}
+                  </option>
+                ))}
+              </select>
+            )}
         </>
       )}
 
