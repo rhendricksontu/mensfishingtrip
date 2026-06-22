@@ -45,8 +45,8 @@ export default function RosterClient({
             ["all", "All"],
             ["unpaid", "Unpaid"],
             ["paid", "Paid"],
-            ["needs_ride", "Needs ride"],
-            ["no_cabin", "No cabin"],
+            ["needs_ride", "Needs Ride"],
+            ["no_cabin", "No Cabin"],
           ] as const).map(([key, label]) => (
             <button
               key={key}
@@ -228,7 +228,7 @@ function AttendeeCard({
               }}
               className="text-brand-500 underline hover:text-brand-700"
             >
-              {a.role === "admin" ? "Make member" : "Make admin"}
+              {a.role === "admin" ? "Make Member" : "Make Admin"}
             </button>
             <span className="text-brand-200">·</span>
             <button

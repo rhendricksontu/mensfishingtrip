@@ -67,7 +67,7 @@ export default async function MyTripPage() {
           <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
         </div>
         <form action={signOutAttendee}>
-          <button className="btn-secondary text-sm">Log out</button>
+          <button className="btn-secondary text-sm">Log Out</button>
         </form>
       </div>
 

@@ -47,7 +47,7 @@ export default async function AdminOverviewPage() {
           <span className="font-semibold text-amber-700">${unpaid * PAYMENT.amount}</span> outstanding
         </p>
         <Link href="/admin/roster" className="btn-secondary mt-3">
-          Manage payments in Roster →
+          Manage Payments in Roster →
         </Link>
       </section>
 
@@ -68,7 +68,7 @@ export default async function AdminOverviewPage() {
               ))}
             </ul>
             <Link href="/admin/cabins" className="btn-secondary mt-1">
-              Assign hosts →
+              Assign Hosts →
             </Link>
           </div>
         )}

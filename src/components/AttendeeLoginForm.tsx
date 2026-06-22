@@ -10,7 +10,7 @@ function SubmitBtn() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Logging in…" : "Log in"}
+      {pending ? "Logging In…" : "Log In"}
     </button>
   );
 }
@@ -35,7 +35,7 @@ export default function AttendeeLoginForm() {
       <p className="text-center text-sm text-brand-500">
         Haven&apos;t signed up yet?{" "}
         <Link href="/rsvp" className="font-semibold text-brand-600 underline">
-          RSVP here
+          RSVP here.
         </Link>
       </p>
     </form>

@@ -140,7 +140,7 @@ function AddGroup({
   if (!open) {
     return (
       <button onClick={() => setOpen(true)} className="btn-secondary w-full">
-        + Add group to {SESSION_LABELS[session]}
+        + Add Group to {SESSION_LABELS[session]}
       </button>
     );
   }
@@ -162,7 +162,7 @@ function AddGroup({
             }
           }}
         >
-          Add group
+          Add Group
         </button>
         <button className="btn-secondary" onClick={() => setOpen(false)}>
           Cancel

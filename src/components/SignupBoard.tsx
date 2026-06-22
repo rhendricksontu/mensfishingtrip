@@ -16,7 +16,7 @@ const DAYS = [
   { key: "sunday", label: "Sunday" },
 ];
 
-function AddButton({ label = "Sign up" }: { label?: string }) {
+function AddButton({ label = "Sign Up" }: { label?: string }) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
@@ -200,7 +200,7 @@ export default function SignupBoard({
                   className="input sm:w-28"
                 />
               </div>
-              <AddButton label="Sign up" />
+              <AddButton label="Sign Up" />
             </div>
           </form>
         </div>

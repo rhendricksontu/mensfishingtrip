@@ -76,7 +76,7 @@ export default function CabinsClient({
                           : "bg-brand-50 text-brand-500 ring-1 ring-brand-200"
                       }`}
                     >
-                      {a.is_cabin_host ? "Host" : "Make host"}
+                      {a.is_cabin_host ? "Host" : "Make Host"}
                     </button>
                   </li>
                 ))}

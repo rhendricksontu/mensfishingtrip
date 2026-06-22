@@ -263,7 +263,7 @@ function AddRide({
           }
         }}
       >
-        Add car
+        Add Car
       </button>
     </div>
   );

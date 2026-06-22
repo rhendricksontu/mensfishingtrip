@@ -12,7 +12,7 @@ function SubmitButton() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary w-full" disabled={pending}>
-      {pending ? "Creating your account…" : "Submit RSVP & Create Account"}
+      {pending ? "Creating Your Account…" : "Submit RSVP & Create Account"}
     </button>
   );
 }
@@ -30,7 +30,7 @@ export default function RsvpForm() {
           {state.error}{" "}
           {state.error.includes("log in") && (
             <Link href="/login" className="font-semibold underline">
-              Go to login
+              Go to Log In
             </Link>
           )}
         </div>

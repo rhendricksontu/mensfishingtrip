@@ -13,7 +13,7 @@ function SaveBtn() {
   const { pending } = useFormStatus();
   return (
     <button type="submit" className="btn-primary" disabled={pending}>
-      {pending ? "Saving…" : "Save changes"}
+      {pending ? "Saving…" : "Save Changes"}
     </button>
   );
 }
