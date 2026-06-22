@@ -151,10 +151,10 @@ function AttendeeCard({
             onChange={(e) => save({ is_cabin_host: e.target.checked })}
             className="h-5 w-5 rounded text-brand-600 disabled:opacity-40"
           />
-          <span className="text-sm text-brand-700">Cabin host</span>
+          <span className="text-sm text-brand-700">Cabin Host</span>
         </label>
         <Select
-          label="Fishing session"
+          label="Fishing Session"
           value={a.assigned_session ?? ""}
           onChange={(v) =>
             save({
@@ -170,7 +170,7 @@ function AttendeeCard({
           ]}
         />
         <Select
-          label="Fishing group"
+          label="Fishing Group"
           value={a.fishing_group_id ?? ""}
           disabled={!a.assigned_session}
           onChange={(v) => save({ fishing_group_id: v || null })}
@@ -186,7 +186,7 @@ function AttendeeCard({
 
       <div className="flex items-end gap-2">
         <div className="flex-1">
-          <span className="label">Payment note (admin only)</span>
+          <span className="label">Payment Note (Admin Only)</span>
           <input
             className="input"
             value={note}

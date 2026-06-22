@@ -24,7 +24,7 @@ export default function AttendeeLoginForm() {
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
       )}
       <div>
-        <span className="label">Cell phone</span>
+        <span className="label">Cell Phone</span>
         <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
       </div>
       <div>

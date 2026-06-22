@@ -42,19 +42,19 @@ export default function ResetPasswordForm() {
         you RSVP&apos;d, then choose a new password.
       </p>
 
-      <Field label="Your cell phone" error={err("phone")}>
+      <Field label="Your Cell Phone" error={err("phone")}>
         <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
       </Field>
 
-      <Field label="Emergency contact phone" error={err("emergency_contact_phone")}>
+      <Field label="Emergency Contact Phone" error={err("emergency_contact_phone")}>
         <input name="emergency_contact_phone" type="tel" inputMode="tel" className="input" placeholder="(555) 123-4567" required />
       </Field>
 
-      <Field label="New password" error={err("password")}>
+      <Field label="New Password" error={err("password")}>
         <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
       </Field>
 
-      <Field label="Confirm new password" error={err("confirm")}>
+      <Field label="Confirm New Password" error={err("confirm")}>
         <input name="confirm" type="password" className="input" autoComplete="new-password" required />
       </Field>
 

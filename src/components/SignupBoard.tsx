@@ -64,7 +64,7 @@ export default function SignupBoard({
             </div>
           )}
           <div>
-            <span className="label">Your name</span>
+            <span className="label">Your Name</span>
             <input name="name" className="input" required autoComplete="name" />
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -185,11 +185,11 @@ export default function SignupBoard({
             )}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto_auto] sm:items-end">
               <div>
-                <span className="label">Your name</span>
+                <span className="label">Your Name</span>
                 <input name="name" className="input" required autoComplete="name" />
               </div>
               <div>
-                <span className="label">How many lunches?</span>
+                <span className="label">How Many Lunches?</span>
                 <input
                   name="quantity"
                   type="number"

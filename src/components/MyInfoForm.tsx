@@ -34,12 +34,12 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </div>
         <dl className="mt-3 space-y-1.5 text-sm">
           <Row label="Name" value={attendee.name} />
-          <Row label="Cell phone" value={formatPhone(attendee.phone)} />
-          <Row label="Emergency contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
-          <Row label="Ride preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
-          {attendee.willing_to_drive && <Row label="Willing to drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
+          <Row label="Cell Phone" value={formatPhone(attendee.phone)} />
+          <Row label="Emergency Contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
+          <Row label="Ride Preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
+          {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
-          {attendee.departure_location && <Row label="Departure/return location" value={attendee.departure_location} />}
+          {attendee.departure_location && <Row label="Departure/Return Location" value={attendee.departure_location} />}
         </dl>
       </div>
     );
@@ -68,16 +68,16 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
       </p>
 
       <fieldset className="rounded-lg border border-brand-100 p-4 space-y-4">
-        <legend className="px-1 text-sm font-semibold text-brand-700">Emergency contact</legend>
-        <Field label="Contact name" error={err("emergency_contact_name")}>
+        <legend className="px-1 text-sm font-semibold text-brand-700">Emergency Contact</legend>
+        <Field label="Contact Name" error={err("emergency_contact_name")}>
           <input name="emergency_contact_name" className="input" defaultValue={attendee.emergency_contact_name} required />
         </Field>
-        <Field label="Contact phone" error={err("emergency_contact_phone")}>
+        <Field label="Contact Phone" error={err("emergency_contact_phone")}>
           <input name="emergency_contact_phone" type="tel" inputMode="tel" className="input" defaultValue={attendee.emergency_contact_phone} required />
         </Field>
       </fieldset>
 
-      <Field label="Ride preference" error={err("ride_preference")}>
+      <Field label="Ride Preference" error={err("ride_preference")}>
         <select
           name="ride_preference"
           className="input"
@@ -98,14 +98,14 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
             <span className="text-sm text-brand-800"><span className="font-semibold">I&apos;m willing to drive others.</span></span>
           </label>
           {willingToDrive && (
-            <Field label="Passenger seats available (not counting you)" error={err("seat_capacity")}>
+            <Field label="Passenger Seats Available (Not Counting You)" error={err("seat_capacity")}>
               <input name="seat_capacity" type="number" inputMode="numeric" min={0} max={20} className="input" defaultValue={attendee.seat_capacity || 3} />
             </Field>
           )}
         </div>
       )}
 
-      <Field label="Preferred departure time" error={err("departure_time")}>
+      <Field label="Preferred Departure Time" error={err("departure_time")}>
         <select name="departure_time" className="input" defaultValue={attendee.departure_time ?? ""}>
           <option value="">No Preference</option>
           {DEPARTURE_TIME_OPTIONS.map((o) => (

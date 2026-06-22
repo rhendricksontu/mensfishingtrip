@@ -45,27 +45,27 @@ export default function RsvpForm() {
         <p className="text-sm font-semibold text-brand-800">
           Your login: you&apos;ll use your cell phone &amp; this password to check your trip info later.
         </p>
-        <Field label="Cell phone (your username)" error={err("phone")}>
+        <Field label="Cell Phone (Your Username)" error={err("phone")}>
           <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
         </Field>
-        <Field label="Create a password" error={err("password")}>
+        <Field label="Create a Password" error={err("password")}>
           <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
         </Field>
       </div>
 
       <fieldset className="rounded-lg border border-brand-100 p-4">
-        <legend className="px-1 text-sm font-semibold text-brand-700">Emergency contact</legend>
+        <legend className="px-1 text-sm font-semibold text-brand-700">Emergency Contact</legend>
         <div className="space-y-4">
-          <Field label="Contact name" error={err("emergency_contact_name")}>
+          <Field label="Contact Name" error={err("emergency_contact_name")}>
             <input name="emergency_contact_name" className="input" required />
           </Field>
-          <Field label="Contact phone" error={err("emergency_contact_phone")}>
+          <Field label="Contact Phone" error={err("emergency_contact_phone")}>
             <input name="emergency_contact_phone" type="tel" inputMode="tel" className="input" placeholder="(555) 123-4567" required />
           </Field>
         </div>
       </fieldset>
 
-      <Field label="Ride preference" error={err("ride_preference")}>
+      <Field label="Ride Preference" error={err("ride_preference")}>
         <select
           name="ride_preference"
           className="input"
@@ -95,14 +95,14 @@ export default function RsvpForm() {
           </label>
 
           {willingToDrive && (
-            <Field label="Passenger seats available (not counting you)" error={err("seat_capacity")}>
+            <Field label="Passenger Seats Available (Not Counting You)" error={err("seat_capacity")}>
               <input name="seat_capacity" type="number" inputMode="numeric" min={0} max={20} className="input" defaultValue={3} />
             </Field>
           )}
         </div>
       )}
 
-      <Field label="Preferred departure time" error={err("departure_time")}>
+      <Field label="Preferred Departure Time" error={err("departure_time")}>
         <select name="departure_time" className="input" defaultValue="">
           <option value="">No Preference</option>
           {DEPARTURE_TIME_OPTIONS.map((o) => (
