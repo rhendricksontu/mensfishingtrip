@@ -3,6 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { resetPassword, type ResetState } from "@/app/reset/actions";
+import PhoneInput from "@/components/PhoneInput";
 
 const initial: ResetState = { ok: false };
 
@@ -43,11 +44,11 @@ export default function ResetPasswordForm() {
       </p>
 
       <Field label="Your Cell Phone" error={err("phone")}>
-        <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
+        <PhoneInput name="phone" required />
       </Field>
 
       <Field label="Emergency Contact Phone" error={err("emergency_contact_phone")}>
-        <input name="emergency_contact_phone" type="tel" inputMode="tel" className="input" placeholder="(555) 123-4567" required />
+        <PhoneInput name="emergency_contact_phone" required autoComplete="off" />
       </Field>
 
       <Field label="New Password" error={err("password")}>

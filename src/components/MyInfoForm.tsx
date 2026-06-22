@@ -5,6 +5,7 @@ import { useState } from "react";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
+import PhoneInput from "@/components/PhoneInput";
 import type { Attendee } from "@/lib/types";
 
 const initial: EditState = { ok: false };
@@ -73,7 +74,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <input name="emergency_contact_name" className="input" defaultValue={attendee.emergency_contact_name} required />
         </Field>
         <Field label="Contact Phone" error={err("emergency_contact_phone")}>
-          <input name="emergency_contact_phone" type="tel" inputMode="tel" className="input" defaultValue={attendee.emergency_contact_phone} required />
+          <PhoneInput name="emergency_contact_phone" defaultValue={attendee.emergency_contact_phone} required autoComplete="off" />
         </Field>
       </fieldset>
 

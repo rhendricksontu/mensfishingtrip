@@ -6,7 +6,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentAttendee } from "@/lib/attendee";
-import { normalizePhone } from "@/lib/utils";
+import { normalizePhone, formatPhone } from "@/lib/utils";
 
 const EditSchema = z.object({
   name: z.string().trim().min(2, "Please enter your full name."),
@@ -72,7 +72,7 @@ export async function updateMyRsvp(
     .update({
       name: d.name,
       emergency_contact_name: d.emergency_contact_name,
-      emergency_contact_phone: d.emergency_contact_phone,
+      emergency_contact_phone: formatPhone(d.emergency_contact_phone),
       ride_preference: d.ride_preference,
       departure_time: d.departure_time || null,
       departure_location: d.departure_location || null,

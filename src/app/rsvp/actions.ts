@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { normalizePhone, authEmailForPhone } from "@/lib/utils";
+import { normalizePhone, formatPhone, authEmailForPhone } from "@/lib/utils";
 import type { Attendee } from "@/lib/types";
 
 const RsvpSchema = z.object({
@@ -75,9 +75,9 @@ export async function submitRsvp(
   const willingToDrive = d.ride_preference === "driving" && d.willing_to_drive;
   const record = {
     name: d.name,
-    phone: d.phone,
+    phone: formatPhone(d.phone),
     emergency_contact_name: d.emergency_contact_name,
-    emergency_contact_phone: d.emergency_contact_phone,
+    emergency_contact_phone: formatPhone(d.emergency_contact_phone),
     ride_preference: d.ride_preference,
     departure_time: d.departure_time || null,
     departure_location: d.departure_location || null,

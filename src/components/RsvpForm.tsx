@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, PAYMENT } from "@/lib/config";
+import PhoneInput from "@/components/PhoneInput";
 
 const initialState: RsvpState = { ok: false };
 
@@ -24,9 +25,13 @@ export default function RsvpForm() {
 
   const formRef = useRef<HTMLFormElement>(null);
   const [formValid, setFormValid] = useState(false);
-  const recheck = () => setFormValid(formRef.current?.checkValidity() ?? false);
+  // Defer to the next frame so controlled fields (the formatted phone inputs)
+  // have committed their value before we read checkValidity().
+  const recheck = () => {
+    requestAnimationFrame(() => setFormValid(formRef.current?.checkValidity() ?? false));
+  };
   // Re-check when conditional fields (driver options) appear or disappear.
-  useEffect(recheck, [ridePref, willingToDrive]);
+  useEffect(() => { recheck(); }, [ridePref, willingToDrive]);
 
   const err = (k: string) => state.fieldErrors?.[k];
 
@@ -53,7 +58,7 @@ export default function RsvpForm() {
             You&apos;ll use your cell phone &amp; this password to check your fishing trip info later.
           </p>
           <Field label="Cell Phone (Your Username)" error={err("phone")}>
-            <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
+            <PhoneInput name="phone" required />
           </Field>
           <Field label="Create a Password" error={err("password")}>
             <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
@@ -68,7 +73,7 @@ export default function RsvpForm() {
             <input name="emergency_contact_name" className="input" required />
           </Field>
           <Field label="Contact Phone" error={err("emergency_contact_phone")}>
-            <input name="emergency_contact_phone" type="tel" inputMode="tel" className="input" placeholder="(555) 123-4567" required />
+            <PhoneInput name="emergency_contact_phone" required autoComplete="off" />
           </Field>
         </div>
       </fieldset>

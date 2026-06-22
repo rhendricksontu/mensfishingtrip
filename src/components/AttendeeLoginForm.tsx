@@ -3,6 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import Link from "next/link";
 import { signInAttendee, type LoginState } from "@/app/login/actions";
+import PhoneInput from "@/components/PhoneInput";
 
 const initial: LoginState = {};
 
@@ -25,7 +26,7 @@ export default function AttendeeLoginForm() {
       )}
       <div>
         <span className="label">Cell Phone</span>
-        <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
+        <PhoneInput name="phone" required />
       </div>
       <div>
         <span className="label">Password</span>
