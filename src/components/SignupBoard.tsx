@@ -7,10 +7,11 @@ import type { Signup, SignupRole } from "@/lib/types";
 
 const initial: SignupState = { ok: false };
 
-const ROLES: { key: SignupRole; label: string }[] = [
-  { key: "breakfast_cook", label: "Breakfast Cook" },
-  { key: "coffee_maker", label: "Coffee Maker" },
-  { key: "guide_lunch", label: "Guide Lunch Maker" },
+// `min` is the number of volunteers needed per day for each role.
+const ROLES: { key: SignupRole; label: string; min: number }[] = [
+  { key: "breakfast_cook", label: "Breakfast Cook", min: 8 },
+  { key: "coffee_maker", label: "Coffee Maker", min: 4 },
+  { key: "guide_lunch", label: "Guide Lunch Maker", min: 4 },
 ];
 
 const DAYS = [
@@ -125,14 +126,20 @@ export default function SignupBoard({
           <div className={single ? "flex justify-center" : "grid gap-3 sm:grid-cols-2"}>
             {days.map((d) => {
               const people = cell(roleObj.key, d.key);
+              const met = people.length >= roleObj.min;
               return (
                 <div key={d.key} className={single ? "card w-full sm:w-1/2" : "card"}>
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="font-semibold text-brand-800">{d.label}</h3>
-                    <span className="badge bg-brand-100 text-brand-700">
-                      {people.length} signed up
+                    <span
+                      className={`badge ${met ? "bg-olive-100 text-olive-800" : "bg-amber-100 text-amber-800"}`}
+                    >
+                      {people.length} of {roleObj.min}
                     </span>
                   </div>
+                  <p className={`mt-1 text-xs font-medium ${met ? "text-olive-700" : "text-amber-700"}`}>
+                    {met ? "Minimum met" : `${roleObj.min - people.length} more needed`}
+                  </p>
                   {people.length === 0 ? (
                     <p className="mt-2 text-sm text-brand-400">No one yet. Be the first!</p>
                   ) : (
