@@ -101,16 +101,12 @@ export default async function MyTripPage() {
           {cabin ? (
             <>
               <p className="mt-1 text-lg font-semibold text-brand-700">{cabin.name}</p>
-              {addressLines(cabin).length > 0 && (
-                <div className="text-sm text-brand-600">
-                  {addressLines(cabin).map((line, i) => (
-                    <p key={i}>{line}</p>
-                  ))}
-                </div>
-              )}
               {addressOneLine(cabin) && (
-                <MapLink place={addressOneLine(cabin)} className="btn-secondary mt-2">
-                  Get directions
+                <MapLink
+                  place={addressOneLine(cabin)}
+                  className="mt-1 inline-block text-sm font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+                >
+                  {addressLines(cabin).join(", ")}
                 </MapLink>
               )}
               {me.is_cabin_host && (
