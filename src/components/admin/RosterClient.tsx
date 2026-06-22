@@ -124,6 +124,9 @@ function AttendeeCard({
 
       <div className="flex flex-wrap gap-1.5 text-xs">
         <span className="badge bg-brand-100 text-brand-700">{RIDE_PREF_LABELS[a.ride_preference]}</span>
+        {a.fish_with_guide && (
+          <span className="badge bg-olive-100 text-olive-800">Wants guide</span>
+        )}
         {a.willing_to_drive && (
           <span className="badge bg-blue-100 text-blue-700">Driver · {a.seat_capacity} seats</span>
         )}
@@ -302,12 +305,13 @@ function ExportButton({
     const cabinName = (id: string | null) => cabins.find((c) => c.id === id)?.name ?? "";
     const groupName = (id: string | null) => groups.find((g) => g.id === id)?.name ?? "";
     const headers = [
-      "Name", "Phone", "Emergency Contact", "Emergency Phone", "Ride Pref",
+      "Name", "Phone", "Emergency Contact", "Emergency Phone", "Fish With Guide", "Ride Pref",
       "Willing To Drive", "Seats", "Needs Ride", "Departure", "Departure Location",
       "Preferred Driver", "Cabin", "Cabin Host", "Session", "Group", "Paid", "Payment Note",
     ];
     const rows = attendees.map((a) => [
       a.name, a.phone, a.emergency_contact_name, a.emergency_contact_phone,
+      a.fish_with_guide ? "yes" : "no",
       a.ride_preference, a.willing_to_drive ? "yes" : "no", a.seat_capacity,
       a.needs_ride ? "yes" : "no", a.departure_time ?? "", a.departure_location ?? "",
       a.preferred_driver ?? "", cabinName(a.cabin_id),

@@ -48,6 +48,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Row label="Name" value={attendee.name} />
           <Row label="Cell Phone" value={formatPhone(attendee.phone)} />
           <Row label="Emergency Contact" value={`${attendee.emergency_contact_name} · ${formatPhone(attendee.emergency_contact_phone)}`} />
+          <Row label="Fish with a Guide" value={attendee.fish_with_guide ? "Yes" : "No"} />
           <Row label="Ride Preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
           {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
@@ -72,6 +73,15 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Field label="First & Last Name" error={err("name")}>
             <input name="name" className="input" defaultValue={attendee.name} required />
           </Field>
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              name="fish_with_guide"
+              defaultChecked={attendee.fish_with_guide}
+              className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-sm text-brand-800">Will fish with a guide.</span>
+          </label>
           <Field label="Cell Phone (Your Username)" error={err("phone")}>
             <PhoneInput name="phone" defaultValue={attendee.phone} required />
           </Field>

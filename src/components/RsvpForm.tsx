@@ -55,6 +55,14 @@ export default function RsvpForm() {
           <Field label="First & Last Name" error={err("name")}>
             <input name="name" className="input" autoComplete="name" required />
           </Field>
+          <label className="flex items-start gap-3">
+            <input
+              type="checkbox"
+              name="fish_with_guide"
+              className="mt-1 h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-sm text-brand-800">Will fish with a guide.</span>
+          </label>
           <p className="rounded-lg bg-brand-50 px-3 py-2 text-xs text-brand-600">
             You&apos;ll use your cell phone &amp; this password to check your fishing trip info later.
           </p>

@@ -76,6 +76,7 @@ create table if not exists attendees (
   willing_to_drive         boolean not null default false,
   seat_capacity            int not null default 0, -- passenger seats available (excludes driver)
   needs_ride               boolean not null default false, -- wants to be partnered with a driver
+  fish_with_guide          boolean not null default false, -- wants to fish with a guide
 
   -- admin-managed assignments
   cabin_id                 uuid references cabins(id) on delete set null,
