@@ -52,9 +52,9 @@ function ARRow({ a }: { a: Attendee }) {
   return (
     <div className={`card ${pending ? "opacity-60" : ""}`}>
       <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-wrap items-baseline gap-2">
+        <div>
           <h3 className="font-bold text-brand-800">{a.name}</h3>
-          <PhoneLink phone={a.phone} className="text-brand-400 underline" />
+          <PhoneLink phone={a.phone} className="text-sm text-brand-600 underline" />
         </div>
         <label className="flex shrink-0 items-center gap-2 rounded-lg bg-brand-50 px-3 py-2">
           <input
