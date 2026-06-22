@@ -57,6 +57,7 @@ export default function RsvpForm() {
             <input name="name" className="input" autoComplete="name" required />
           </Field>
           <Field label="Do you want to fish with a guide?" error={err("fish_with_guide")}>
+            <p className="mb-1 text-xs text-brand-500">(Fishing Guides, Select &quot;No&quot;)</p>
             <select name="fish_with_guide" className="input" defaultValue="" required>
               <option value="" disabled>Select One</option>
               <option value="yes">Yes</option>
