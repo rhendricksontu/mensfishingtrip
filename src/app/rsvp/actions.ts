@@ -144,6 +144,14 @@ export async function submitRsvp(
   if (dbErr) {
     // Roll back the orphaned auth user so they can retry cleanly.
     await db.auth.admin.deleteUser(userId);
+    // Same full name + cell phone already exists (DB unique constraint).
+    if (dbErr.code === "23505" || /duplicate|unique/i.test(dbErr.message ?? "")) {
+      return {
+        ok: false,
+        error:
+          "Someone with this name and phone number has already RSVP'd. Please log in instead.",
+      };
+    }
     return { ok: false, error: "Could not save your RSVP. Please try again." };
   }
 
