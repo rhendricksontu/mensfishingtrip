@@ -122,10 +122,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </select>
       </Field>
 
-      <Field label="Anything else? (optional)" error={err("notes")}>
-        <textarea name="notes" rows={3} className="input" defaultValue={attendee.notes ?? ""} />
-      </Field>
-
       <SaveBtn />
     </form>
   );

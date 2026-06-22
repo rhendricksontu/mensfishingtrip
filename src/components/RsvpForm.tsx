@@ -119,10 +119,6 @@ export default function RsvpForm() {
         </select>
       </Field>
 
-      <Field label="Anything else we should know? (optional)" error={err("notes")}>
-        <textarea name="notes" rows={3} className="input" placeholder="Dietary needs, arrival changes, etc." />
-      </Field>
-
       <SubmitButton />
 
       <p className="text-center text-xs text-brand-400">
