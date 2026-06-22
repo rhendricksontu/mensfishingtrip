@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { SESSION_LABELS, RIDE_PREF_LABELS } from "@/lib/config";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Cabin, FishingGroup, Ride } from "@/lib/types";
@@ -49,7 +50,7 @@ export default function SummaryClient({
       );
       const ride = link ? dirRides.find((r) => r.id === link.ride_id) : null;
       const d = ride?.driver_id ? byId.get(ride.driver_id) : null;
-      driver = d ? d.name : "Not assigned";
+      driver = d ? d.name : "Unassigned";
       rideUnassigned = !d;
     }
 
@@ -65,12 +66,12 @@ export default function SummaryClient({
         ? `${group.guide_name || group.name}${session ? ` · ${SESSION_LABELS[session]}` : ""}`
         : session
           ? SESSION_LABELS[session]
-          : "Not assigned";
+          : "Unassigned";
       fishingUnassigned = !group && !session;
     }
 
     return {
-      cabin: cabin ? cabin.name : "Not assigned",
+      cabin: cabin ? cabin.name : "Unassigned",
       cabinUnassigned: !cabin,
       fishing,
       fishingUnassigned,
@@ -130,10 +131,22 @@ export default function SummaryClient({
                   label="Departure/Return Location"
                   value={a.departure_location || "Not set"}
                 />
-                <Row label="Driver" value={s.driver} highlight={s.rideUnassigned} />
-                <Row label="Cabin" value={s.cabin} highlight={s.cabinUnassigned} />
+                <Row
+                  label="Driver"
+                  value={s.rideUnassigned ? <FixLink href="/admin/rides" /> : s.driver}
+                  highlight={s.rideUnassigned}
+                />
+                <Row
+                  label="Cabin"
+                  value={s.cabinUnassigned ? <FixLink href="/admin/cabins" /> : s.cabin}
+                  highlight={s.cabinUnassigned}
+                />
                 {s.fishing && (
-                  <Row label="Fishing" value={s.fishing} highlight={s.fishingUnassigned} />
+                  <Row
+                    label="Fishing"
+                    value={s.fishingUnassigned ? <FixLink href="/admin/fishing" /> : s.fishing}
+                    highlight={s.fishingUnassigned}
+                  />
                 )}
                 <Row
                   label="Payment"
@@ -146,6 +159,15 @@ export default function SummaryClient({
         );
       })}
     </ul>
+  );
+}
+
+// "Unassigned" value that links to the tab where you can fix it.
+function FixLink({ href }: { href: string }) {
+  return (
+    <Link href={href} className="font-semibold text-amber-700 underline">
+      Unassigned
+    </Link>
   );
 }
 
