@@ -142,7 +142,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </div>
       </fieldset>
 
-      <div className="flex gap-3">
+      <div className="flex justify-center gap-3">
         <SaveBtn />
         <button type="button" onClick={() => setOpen(false)} className="btn-secondary">
           Cancel
