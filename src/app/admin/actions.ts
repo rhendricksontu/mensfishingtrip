@@ -222,6 +222,15 @@ export async function assignPassenger(
   await db
     .from("ride_passengers")
     .upsert({ ride_id: rideId, attendee_id }, { onConflict: "ride_id,attendee_id" });
+
+  // Default: riding down with a driver also means riding home with them.
+  if (direction === "to_trip") {
+    const homeId = await getOrCreateRideId(db, driver_id, "from_trip");
+    await db
+      .from("ride_passengers")
+      .upsert({ ride_id: homeId, attendee_id }, { onConflict: "ride_id,attendee_id" });
+  }
+
   revalidatePath("/admin/rides");
 }
 
