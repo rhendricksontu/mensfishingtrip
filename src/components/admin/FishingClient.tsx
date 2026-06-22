@@ -36,6 +36,20 @@ export default function FishingClient({
 
   return (
     <div className="space-y-8">
+      {unassigned.length > 0 && (
+        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+          <p className="font-semibold text-amber-800">Unassigned Anglers</p>
+          <ul className="mt-1.5 space-y-1">
+            {unassigned.map((a) => (
+              <li key={a.id}>
+                <span className="font-medium text-brand-800">{a.name}</span>
+                <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {SESSIONS.map((session) => {
         const guides = groups.filter((g) => g.session === session);
         return (
@@ -58,20 +72,6 @@ export default function FishingClient({
       })}
 
       <AddGuide attendees={attendees} />
-
-      {unassigned.length > 0 && (
-        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
-          <p className="font-semibold text-amber-800">Unassigned Anglers</p>
-          <ul className="mt-1.5 space-y-1">
-            {unassigned.map((a) => (
-              <li key={a.id}>
-                <span className="font-medium text-brand-800">{a.name}</span>
-                <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </div>
   );
 }

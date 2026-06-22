@@ -72,6 +72,8 @@ export default function CabinsClient({
 
   return (
     <div className="space-y-4">
+      {unassigned.length > 0 && <UnassignedNote people={unassigned} />}
+
       {cabins.map((c) => (
         <CabinCard
           key={c.id}
@@ -80,8 +82,6 @@ export default function CabinsClient({
           unassigned={unassigned}
         />
       ))}
-
-      {unassigned.length > 0 && <UnassignedNote people={unassigned} />}
 
       <AddCabin />
     </div>

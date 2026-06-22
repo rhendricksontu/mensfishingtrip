@@ -53,16 +53,34 @@ export default function RidesClient({
     return { ride: null, passengers: [] as Attendee[], inherited: false };
   }
 
+  // People not in a To Broken Bow car yet (drivers excluded).
+  const seatedToTrip = new Set<string>();
+  drivers.forEach((d) =>
+    effective(d, "to_trip").passengers.forEach((p) => seatedToTrip.add(p.id))
+  );
+  const unplaced = attendees.filter((a) => !a.willing_to_drive && !seatedToTrip.has(a.id));
+
   return (
     <div className="space-y-8">
+      {unplaced.length > 0 && (
+        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+          <p className="font-semibold text-amber-800">Unassigned Passengers</p>
+          <ul className="mt-1.5 space-y-1 text-brand-600">
+            {unplaced.map((a) => (
+              <li key={a.id}>
+                <span className="font-medium text-brand-800">{a.name}</span>
+                <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {DIRECTIONS.map((dir) => {
-        // Effective seating for this direction (includes inherited coming-home).
+        // Effective seating for this direction (for candidate exclusion).
         const seated = new Set<string>();
         drivers.forEach((d) =>
           effective(d, dir.key).passengers.forEach((p) => seated.add(p.id))
-        );
-        const unplaced = attendees.filter(
-          (a) => !a.willing_to_drive && !seated.has(a.id)
         );
 
         const isReturn = dir.key === "from_trip";
@@ -110,20 +128,6 @@ export default function RidesClient({
                 />
               );
             })}
-
-            {unplaced.length > 0 && (
-              <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
-                <p className="font-semibold text-amber-800">Unassigned Passengers</p>
-                <ul className="mt-1.5 space-y-1 text-brand-600">
-                  {unplaced.map((a) => (
-                    <li key={a.id}>
-                      <span className="font-medium text-brand-800">{a.name}</span>
-                      <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
               </>
             )}
           </section>
