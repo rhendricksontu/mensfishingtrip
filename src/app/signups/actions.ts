@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getCurrentAttendee } from "@/lib/attendee";
+import { getAdminUser } from "@/lib/auth";
 
 const AddSchema = z.object({
   name: z.string().trim().min(2, "Enter your name."),
@@ -30,12 +32,14 @@ export async function addSignup(
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid signup." };
   }
 
+  const me = await getCurrentAttendee();
   const db = createAdminClient();
   const { error } = await db.from("signups").insert({
     name: parsed.data.name,
     role: parsed.data.role,
     trip_day: parsed.data.trip_day,
     quantity: parsed.data.quantity,
+    attendee_id: me?.id ?? null, // ownership: who can remove it later
   });
   if (error) return { ok: false, error: "Could not save your signup. Try again." };
 
@@ -43,8 +47,28 @@ export async function addSignup(
   return { ok: true };
 }
 
-export async function removeSignup(id: string): Promise<void> {
+// A volunteer may remove only their own signup; admins may remove any.
+export async function removeSignup(id: string): Promise<{ ok: boolean; error?: string }> {
   const db = createAdminClient();
+  const { data: row } = await db
+    .from("signups")
+    .select("attendee_id")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!row) {
+    revalidatePath("/signups");
+    return { ok: true }; // already gone
+  }
+
+  const [me, admin] = await Promise.all([getCurrentAttendee(), getAdminUser()]);
+  const isOwner = Boolean(me && row.attendee_id && row.attendee_id === me.id);
+
+  if (!admin && !isOwner) {
+    return { ok: false, error: "You can only remove your own signup." };
+  }
+
   await db.from("signups").delete().eq("id", id);
   revalidatePath("/signups");
+  return { ok: true };
 }

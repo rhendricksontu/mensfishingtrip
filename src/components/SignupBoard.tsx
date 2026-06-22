@@ -32,11 +32,22 @@ function AddButton() {
   );
 }
 
-export default function SignupBoard({ signups }: { signups: Signup[] }) {
+export default function SignupBoard({
+  signups,
+  currentAttendeeId,
+  isAdmin,
+}: {
+  signups: Signup[];
+  currentAttendeeId: string | null;
+  isAdmin: boolean;
+}) {
   const [state, formAction] = useFormState(addSignup, initial);
   const [removing, setRemoving] = useState<string | null>(null);
   const [role, setRole] = useState<SignupRole>("breakfast_cook");
   const [day, setDay] = useState("saturday");
+
+  const canRemove = (s: Signup) =>
+    isAdmin || (currentAttendeeId !== null && s.attendee_id === currentAttendeeId);
 
   const dayOptions = daysForRole(role);
 
@@ -51,8 +62,9 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
   async function handleRemove(id: string) {
     if (!confirm("Remove this signup?")) return;
     setRemoving(id);
-    await removeSignup(id);
+    const res = await removeSignup(id);
     setRemoving(null);
+    if (!res.ok) alert(res.error ?? "Could not remove this signup.");
   }
 
   return (
@@ -128,13 +140,15 @@ export default function SignupBoard({ signups }: { signups: Signup[] }) {
                       {people.map((p) => (
                         <li key={p.id} className="flex items-center justify-between gap-2 text-sm">
                           <span className="text-brand-800">{p.name}</span>
-                          <button
-                            onClick={() => handleRemove(p.id)}
-                            disabled={removing === p.id}
-                            className="text-xs text-brand-400 underline hover:text-red-600"
-                          >
-                            {removing === p.id ? "…" : "remove"}
-                          </button>
+                          {canRemove(p) && (
+                            <button
+                              onClick={() => handleRemove(p.id)}
+                              disabled={removing === p.id}
+                              className="text-xs text-brand-400 underline hover:text-red-600"
+                            >
+                              {removing === p.id ? "…" : "remove"}
+                            </button>
+                          )}
                         </li>
                       ))}
                     </ul>
