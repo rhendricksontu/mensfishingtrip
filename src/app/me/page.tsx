@@ -128,8 +128,7 @@ export default async function MyTripPage() {
           {group && (
             <>
               <p className="mt-1 text-sm text-brand-700">
-                Group: <span className="font-medium">{group.name}</span>
-                {group.guide_name ? ` · Guide: ${group.guide_name}` : ""}
+                Guide: <span className="font-medium">{group.guide_name || group.name}</span>
               </p>
               {groupmates.length > 0 && (
                 <p className="mt-2 text-sm text-brand-600">

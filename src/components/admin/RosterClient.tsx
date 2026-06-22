@@ -181,7 +181,7 @@ function AttendeeCard({
             { value: "", label: a.assigned_session ? "Unassigned" : "Pick a Session First" },
             ...sessionGroups.map((g) => ({
               value: g.id,
-              label: `${g.name}${g.guide_name ? ` (${g.guide_name})` : ""}`,
+              label: g.guide_name || g.name,
             })),
           ]}
         />

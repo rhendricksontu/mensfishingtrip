@@ -131,6 +131,14 @@ export async function updateFishingGroup(
   revalidatePath("/admin/fishing");
 }
 
+export async function deleteFishingGroup(id: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  // attendees.fishing_group_id is ON DELETE SET NULL.
+  await db.from("fishing_groups").delete().eq("id", id);
+  revalidatePath("/admin/fishing");
+}
+
 // ---- Rides -----------------------------------------------------------------
 
 export async function createRide(driver_id: string, direction: RideDirection) {

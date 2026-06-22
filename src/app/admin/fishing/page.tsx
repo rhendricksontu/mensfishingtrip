@@ -13,8 +13,8 @@ export default async function FishingAdminPage() {
       <div>
         <h2 className="text-lg font-bold text-brand-800">Fishing Sessions & Groups</h2>
         <p className="text-sm text-brand-600">
-          Saturday morning and afternoon. Set each group&apos;s guide; assign men to sessions and
-          groups on the Roster tab.
+          Saturday morning and afternoon. Add a guide, set their capacity, and assign
+          members to each guide.
         </p>
       </div>
       <FishingClient groups={groups} attendees={attendees} />
