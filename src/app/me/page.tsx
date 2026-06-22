@@ -186,7 +186,7 @@ function RideBlock({
                   Passengers:{" "}
                   {info.passengers
                     .filter((p) => p.id !== meId)
-                    .map((p) => `${p.name} (${formatPhone(p.phone)})`)
+                    .map((p) => `${p.name} ${formatPhone(p.phone)}`)
                     .join(", ")}
                 </>
               ) : (
@@ -197,7 +197,7 @@ function RideBlock({
             <p>
               Riding with{" "}
               <span className="font-medium">
-                {info.driver ? `${info.driver.name} (${formatPhone(info.driver.phone)})` : "a driver (TBD)"}
+                {info.driver ? `${info.driver.name} ${formatPhone(info.driver.phone)}` : "a driver (TBD)"}
               </span>
             </p>
           )}
