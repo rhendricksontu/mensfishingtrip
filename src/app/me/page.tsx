@@ -111,7 +111,7 @@ export default async function MyTripPage() {
               {cabinmates.length > 0 && (
                 <p className="mt-2 text-sm text-brand-600">
                   <span className="font-medium text-brand-700">Cabinmates:</span>{" "}
-                  {cabinmates.map((a) => a.name).join(", ")}
+                  {cabinmates.map((a) => `${a.name} ${formatPhone(a.phone)}`).join(", ")}
                 </p>
               )}
             </>
@@ -139,7 +139,7 @@ export default async function MyTripPage() {
               {groupmates.length > 0 && (
                 <p className="mt-2 text-sm text-brand-600">
                   <span className="font-medium text-brand-700">With:</span>{" "}
-                  {groupmates.map((a) => a.name).join(", ")}
+                  {groupmates.map((a) => `${a.name} ${formatPhone(a.phone)}`).join(", ")}
                 </p>
               )}
             </>
