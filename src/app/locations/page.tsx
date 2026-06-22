@@ -31,7 +31,8 @@ export default async function LocationsPage() {
 }
 
 function LocationCard({ loc }: { loc: LocationItem }) {
-  const place = loc.address || loc.name;
+  // Destination = name + address so the maps app lands on the right spot.
+  const place = [loc.name, loc.address].filter(Boolean).join(", ");
 
   return (
     <div className="card">
@@ -39,15 +40,9 @@ function LocationCard({ loc }: { loc: LocationItem }) {
       {loc.address && (
         <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
       )}
-      {loc.map_url ? (
-        <a href={loc.map_url} target="_blank" rel="noopener noreferrer" className="btn-secondary mt-3">
-          Get directions
-        </a>
-      ) : loc.address ? (
-        <MapLink place={place} className="btn-secondary mt-3">
-          Get directions
-        </MapLink>
-      ) : null}
+      <MapLink place={place} className="btn-secondary mt-3">
+        Get directions
+      </MapLink>
     </div>
   );
 }
