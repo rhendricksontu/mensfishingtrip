@@ -266,13 +266,13 @@ function CabinView({
           <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
             Cabin Host
           </span>
-          <h3 className="font-bold text-brand-800">
-            {host.name}
-            {host.id === meId && " (You)"}
-          </h3>
-          <p className="text-sm">
+          <div className="flex flex-wrap items-baseline gap-2">
+            <h3 className="font-bold text-brand-800">
+              {host.name}
+              {host.id === meId && " (You)"}
+            </h3>
             <PhoneLink phone={host.phone} />
-          </p>
+          </div>
           <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
             {occupants.length}
             {cap} Men
@@ -329,12 +329,10 @@ function GuideView({
         <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
           Fishing Guide
         </span>
-        <h3 className="font-bold text-brand-800">{guideName}</h3>
-        {group.guide_phone && (
-          <p className="text-sm">
-            <PhoneLink phone={group.guide_phone} />
-          </p>
-        )}
+        <div className="flex flex-wrap items-baseline gap-2">
+          <h3 className="font-bold text-brand-800">{guideName}</h3>
+          {group.guide_phone && <PhoneLink phone={group.guide_phone} />}
+        </div>
         {session && <p className="text-sm text-brand-600">{SESSION_LABELS[session]}</p>}
       </div>
 

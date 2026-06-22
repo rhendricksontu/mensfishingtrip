@@ -107,10 +107,12 @@ function GuideCard({
               Fishing Guide
             </span>
           )}
-          <h3 className="font-bold text-brand-800">{guideName}</h3>
-          {!editing && guide.guide_phone && (
-            <p className="text-sm text-brand-600">{formatPhone(guide.guide_phone)}</p>
-          )}
+          <div className="flex flex-wrap items-baseline gap-2">
+            <h3 className="font-bold text-brand-800">{guideName}</h3>
+            {!editing && guide.guide_phone && (
+              <span className="text-xs text-brand-400">{formatPhone(guide.guide_phone)}</span>
+            )}
+          </div>
         </div>
         {!editing && (
           <button

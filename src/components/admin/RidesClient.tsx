@@ -162,13 +162,15 @@ function RideCard({
         <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
           Driver
         </span>
-        <h3 className="font-bold text-brand-800">{driver.name}</h3>
-        <a
-          href={`tel:${normalizePhone(driver.phone)}`}
-          className="block text-sm text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-        >
-          {formatPhone(driver.phone)}
-        </a>
+        <div className="flex flex-wrap items-baseline gap-2">
+          <h3 className="font-bold text-brand-800">{driver.name}</h3>
+          <a
+            href={`tel:${normalizePhone(driver.phone)}`}
+            className="text-xs text-brand-400 underline decoration-brand-300 underline-offset-2 hover:text-brand-700"
+          >
+            {formatPhone(driver.phone)}
+          </a>
+        </div>
         <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
           {passengers.length}/{driver.seat_capacity} Seats
         </span>
