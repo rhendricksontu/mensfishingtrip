@@ -40,6 +40,8 @@ export default function RidesClient({
 }) {
   const byId = new Map(attendees.map((a) => [a.id, a]));
   const drivers = attendees.filter((a) => a.willing_to_drive);
+  // Coming Home is collapsed by default; To Broken Bow is the priority.
+  const [showReturn, setShowReturn] = useState(false);
 
   const passengersOf = (rideId: string) =>
     ridePassengers
@@ -71,10 +73,28 @@ export default function RidesClient({
           (a) => !a.willing_to_drive && !seated.has(a.id)
         );
 
+        const isReturn = dir.key === "from_trip";
+        const collapsed = isReturn && !showReturn;
+
         return (
           <section key={dir.key} className="space-y-3">
-            <h2 className="text-lg font-bold text-brand-700">{dir.label}</h2>
+            {isReturn ? (
+              <button
+                type="button"
+                onClick={() => setShowReturn((s) => !s)}
+                className="flex w-full items-center justify-between gap-2"
+              >
+                <h2 className="text-lg font-bold text-brand-700">{dir.label}</h2>
+                <span className="whitespace-nowrap text-xs font-medium text-brand-500 underline">
+                  {showReturn ? "Hide" : "Show"}
+                </span>
+              </button>
+            ) : (
+              <h2 className="text-lg font-bold text-brand-700">{dir.label}</h2>
+            )}
 
+            {!collapsed && (
+              <>
             {drivers.length === 0 && (
               <p className="text-sm text-brand-400">
                 No drivers yet. People who pick &ldquo;Driver&rdquo; and offer seats appear here.
@@ -111,6 +131,8 @@ export default function RidesClient({
                   ))}
                 </ul>
               </div>
+            )}
+              </>
             )}
           </section>
         );
