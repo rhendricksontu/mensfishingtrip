@@ -92,6 +92,7 @@ export default function SummaryClient({
         const s = summaryFor(a);
         const needsAttention =
           s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned || !s.paid;
+        const isGuide = groups.some((g) => g.guide_attendee_id === a.id);
         return (
           <li
             key={a.id}
@@ -102,8 +103,13 @@ export default function SummaryClient({
               onClick={() => setOpenId(open ? null : a.id)}
               className="flex w-full items-center justify-between gap-2 text-left"
             >
-              <span className="font-bold text-brand-800">{a.name}</span>
-              <span className="text-xs font-medium text-brand-500 underline">
+              <span className="flex flex-wrap items-center gap-2">
+                <span className="font-bold text-brand-800">{a.name}</span>
+                {a.is_cabin_host && <Chip>Host</Chip>}
+                {isGuide && <Chip>Guide</Chip>}
+                {a.willing_to_drive && <Chip>Driver</Chip>}
+              </span>
+              <span className="shrink-0 text-xs font-medium text-brand-500 underline">
                 {open ? "Hide" : "View"}
               </span>
             </button>
@@ -160,6 +166,15 @@ export default function SummaryClient({
         );
       })}
     </ul>
+  );
+}
+
+// Olive role chip (Host / Guide / Driver).
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center rounded-full bg-olive-600 px-2 py-0.5 text-xs font-semibold text-cream">
+      {children}
+    </span>
   );
 }
 
