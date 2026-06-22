@@ -41,8 +41,8 @@ export default async function MyTripPage() {
     ? attendees.filter((a) => a.fishing_group_id === me.fishing_group_id && a.id !== me.id)
     : [];
 
-  // Rides: for each direction, figure out the car I'm in
-  function rideInfo(direction: RideDirection) {
+  // The car I'm in for a single direction (explicit only).
+  function findRide(direction: RideDirection) {
     const dirRides = rides.filter((r) => r.direction === direction);
     const asDriver = dirRides.find((r) => r.driver_id === me.id);
     const passengerLink = ridePassengers.find(
@@ -56,6 +56,11 @@ export default async function MyTripPage() {
       .map((p) => byId.get(p.attendee_id))
       .filter(Boolean) as Attendee[];
     return { ride, driver, passengers, iAmDriver: Boolean(asDriver) };
+  }
+
+  // Coming-home inherits the ride to Broken Bow until it's customized.
+  function rideInfo(direction: RideDirection) {
+    return findRide(direction) ?? (direction === "from_trip" ? findRide("to_trip") : null);
   }
 
   return (
@@ -145,8 +150,8 @@ export default async function MyTripPage() {
       <div className="card">
         <h2 className="font-bold text-brand-800">Your Rides</h2>
         <div className="mt-2 space-y-4">
-          <RideBlock title="To Broken Bow" info={rideInfo("to_trip")} meId={me.id} />
-          <RideBlock title="Coming Home" info={rideInfo("from_trip")} meId={me.id} />
+          <RideBlock title="To Broken Bow" direction="to_trip" info={rideInfo("to_trip")} meId={me.id} />
+          <RideBlock title="Coming Home" direction="from_trip" info={rideInfo("from_trip")} meId={me.id} />
         </div>
       </div>
 
@@ -158,12 +163,13 @@ export default async function MyTripPage() {
 
 function RideBlock({
   title,
+  direction,
   info,
   meId,
 }: {
   title: string;
+  direction: RideDirection;
   info: {
-    ride: { depart_time: string | null; arrive_time: string | null; notes: string | null };
     driver: Attendee | null;
     passengers: Attendee[];
     iAmDriver: boolean;
@@ -201,14 +207,14 @@ function RideBlock({
               </span>
             </p>
           )}
-          {(info.ride.depart_time || info.ride.arrive_time) && (
+          {direction === "to_trip" && info.driver?.departure_time && (
+            <p className="text-brand-600">Preferred departure: {info.driver.departure_time}</p>
+          )}
+          {info.driver?.departure_location && (
             <p className="text-brand-600">
-              {info.ride.depart_time ? `Leaves ${info.ride.depart_time}` : ""}
-              {info.ride.depart_time && info.ride.arrive_time ? " · " : ""}
-              {info.ride.arrive_time ? `Arrives ${info.ride.arrive_time}` : ""}
+              Departure/return location: {info.driver.departure_location}
             </p>
           )}
-          {info.ride.notes && <p className="text-brand-500">{info.ride.notes}</p>}
         </div>
       )}
     </div>
