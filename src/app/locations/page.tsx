@@ -24,7 +24,6 @@ export default async function LocationsPage() {
         <div className="card text-brand-600">Locations will be posted here soon.</div>
       ) : (
         <div className="space-y-3">
-          <h2 className="text-lg font-bold text-brand-700">Around Broken Bow</h2>
           {cabins.map((c) => (
             <CabinCard key={c.id} cabin={c} />
           ))}
