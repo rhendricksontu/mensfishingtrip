@@ -184,3 +184,52 @@ export async function removePassenger(ride_id: string, attendee_id: string) {
     .eq("attendee_id", attendee_id);
   revalidatePath("/admin/rides");
 }
+
+// Driver-centric helpers: the ride row is created on demand for a
+// driver + direction so the admin just assigns passengers / times.
+type DB = ReturnType<typeof createAdminClient>;
+async function getOrCreateRideId(
+  db: DB,
+  driver_id: string,
+  direction: RideDirection
+): Promise<string> {
+  const { data } = await db
+    .from("rides")
+    .select("id")
+    .eq("driver_id", driver_id)
+    .eq("direction", direction)
+    .maybeSingle();
+  if (data) return data.id as string;
+  const { data: created } = await db
+    .from("rides")
+    .insert({ driver_id, direction })
+    .select("id")
+    .single();
+  return created!.id as string;
+}
+
+export async function assignPassenger(
+  driver_id: string,
+  direction: RideDirection,
+  attendee_id: string
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const rideId = await getOrCreateRideId(db, driver_id, direction);
+  await db
+    .from("ride_passengers")
+    .upsert({ ride_id: rideId, attendee_id }, { onConflict: "ride_id,attendee_id" });
+  revalidatePath("/admin/rides");
+}
+
+export async function setRideField(
+  driver_id: string,
+  direction: RideDirection,
+  patch: { depart_time?: string | null; arrive_time?: string | null; notes?: string | null }
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const rideId = await getOrCreateRideId(db, driver_id, direction);
+  await db.from("rides").update(patch).eq("id", rideId);
+  revalidatePath("/admin/rides");
+}
