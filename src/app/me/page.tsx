@@ -8,7 +8,6 @@ import {
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
-import { signOutAttendee } from "@/app/me/actions";
 import MyInfoForm from "@/components/MyInfoForm";
 import type { Attendee, RideDirection } from "@/lib/types";
 
@@ -61,14 +60,9 @@ export default async function MyTripPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-brand-800">My Fishing Trip</h1>
-          <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
-        </div>
-        <form action={signOutAttendee}>
-          <button className="btn-secondary text-sm">Log Out</button>
-        </form>
+      <div>
+        <h1 className="text-2xl font-bold text-brand-800">My Fishing Trip</h1>
+        <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
       </div>
 
       {/* Payment */}
