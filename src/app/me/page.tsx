@@ -168,7 +168,9 @@ export default async function MyTripPage() {
         {/* Fishing */}
         <div className="space-y-2">
           <h2 className="font-bold text-brand-800">Fishing</h2>
-          {group ? (
+          {guidingGroups.length > 0 ? (
+            <GuidingView groups={guidingGroups} />
+          ) : group ? (
             <GuideView
               group={group}
               anglers={groupAnglers}
@@ -180,37 +182,6 @@ export default async function MyTripPage() {
           )}
         </div>
       </div>
-
-      {/* You're Guiding (for member-guides) */}
-      {guidingGroups.length > 0 && (
-        <div className="card">
-          <h2 className="font-bold text-brand-800">You&apos;re Guiding</h2>
-          <div className="mt-2 space-y-4">
-            {guidingGroups.map(({ group: g, anglers }) => (
-              <div key={g.id}>
-                <p className="text-sm font-semibold text-brand-700">
-                  {SESSION_LABELS[g.session]}
-                  <span className="ml-2 text-xs font-normal text-brand-500">
-                    {anglers.length}
-                    {g.capacity > 0 ? ` / ${g.capacity}` : ""} anglers
-                  </span>
-                </p>
-                {anglers.length > 0 ? (
-                  <ul className="mt-1 space-y-0.5 text-sm text-brand-600">
-                    {anglers.map((a) => (
-                      <li key={a.id}>
-                        {a.name} <PhoneLink phone={a.phone} />
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="mt-1 text-sm text-brand-400">No anglers assigned yet.</p>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Rides */}
       <div>
@@ -308,6 +279,44 @@ function CabinView({
 }
 
 // Read-only fishing group card, mirroring the organizer guide card.
+// For a member who guides: the group(s) they guide, one per session.
+function GuidingView({
+  groups,
+}: {
+  groups: { group: FishingGroup; anglers: Attendee[] }[];
+}) {
+  return (
+    <div className="card space-y-3">
+      <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+        Fishing Guide
+      </span>
+      {groups.map(({ group: g, anglers }) => (
+        <div key={g.id}>
+          <p className="text-sm font-semibold text-brand-700">
+            {SESSION_LABELS[g.session]}
+            <span className="ml-2 text-xs font-normal text-brand-500">
+              {anglers.length}
+              {g.capacity > 0 ? ` / ${g.capacity}` : ""} Anglers
+            </span>
+          </p>
+          {anglers.length > 0 ? (
+            <ul className="mt-1 divide-y divide-brand-50">
+              {anglers.map((a) => (
+                <li key={a.id} className="py-2 text-sm">
+                  <span className="font-medium text-brand-800">{a.name}</span>{" "}
+                  <PhoneLink phone={a.phone} />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="mt-1 text-sm text-brand-400">No anglers assigned yet.</p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function GuideView({
   group,
   anglers,
