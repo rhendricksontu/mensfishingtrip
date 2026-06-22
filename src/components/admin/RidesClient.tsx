@@ -171,8 +171,7 @@ function RideCard({
                 {formatPhone(driver.phone)}
               </a>
               <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
-                {passengers.length}/{driver.seat_capacity} seats
-                {seatsLeft > 0 ? ` · ${seatsLeft} open` : seatsLeft < 0 ? " · over capacity" : " · full"}
+                {passengers.length}/{driver.seat_capacity} Seats
               </span>
             </>
           )}
@@ -194,10 +193,10 @@ function RideCard({
           {((direction === "to_trip" && driver.departure_time) || driver.departure_location) && (
             <div className="space-y-0.5 text-xs text-brand-500">
               {direction === "to_trip" && driver.departure_time && (
-                <p>Preferred departure: {driver.departure_time}</p>
+                <p>Preferred Departure: {driver.departure_time}</p>
               )}
               {driver.departure_location && (
-                <p>Departure/return location: {driver.departure_location}</p>
+                <p>Departure/Return Location: {driver.departure_location}</p>
               )}
             </div>
           )}
@@ -242,7 +241,7 @@ function RideCard({
           )}
 
           <div>
-            <span className="label">Assign a passenger</span>
+            <span className="label">Assign a Passenger</span>
             <select
               className="input"
               value=""
