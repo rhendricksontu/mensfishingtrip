@@ -40,6 +40,7 @@ export default function SummaryClient({
         r.direction === "to_trip" && r.driver_id && byId.get(r.driver_id)?.willing_to_drive
     );
     let driver: string;
+    let rideUnassigned = false;
     if (me.willing_to_drive) {
       driver = "Self";
     } else {
@@ -49,10 +50,12 @@ export default function SummaryClient({
       const ride = link ? dirRides.find((r) => r.id === link.ride_id) : null;
       const d = ride?.driver_id ? byId.get(ride.driver_id) : null;
       driver = d ? d.name : "Not assigned";
+      rideUnassigned = !d;
     }
 
     // Guides show "Guide"; non-guides only show fishing if they want a guide.
     let fishing: string | null;
+    let fishingUnassigned = false;
     if (isGuide) {
       fishing = "Guide";
     } else if (!me.fish_with_guide) {
@@ -63,12 +66,16 @@ export default function SummaryClient({
         : session
           ? SESSION_LABELS[session]
           : "Not assigned";
+      fishingUnassigned = !group && !session;
     }
 
     return {
       cabin: cabin ? cabin.name : "Not assigned",
+      cabinUnassigned: !cabin,
       fishing,
+      fishingUnassigned,
       driver,
+      rideUnassigned,
       paid: me.paid,
     };
   }
@@ -81,9 +88,13 @@ export default function SummaryClient({
     <ul className="space-y-2">
       {sorted.map((a) => {
         const open = openId === a.id;
-        const s = open ? summaryFor(a) : null;
+        const s = summaryFor(a);
+        const needsAttention = s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned;
         return (
-          <li key={a.id} className="card">
+          <li
+            key={a.id}
+            className={`card ${needsAttention ? "border-l-4 border-amber-400" : ""}`}
+          >
             <button
               type="button"
               onClick={() => setOpenId(open ? null : a.id)}
@@ -94,7 +105,7 @@ export default function SummaryClient({
                 {open ? "Hide" : "View"}
               </span>
             </button>
-            {open && s && (
+            {open && (
               <dl className="mt-3 space-y-1.5 border-t border-brand-50 pt-3 text-sm">
                 <Row
                   label="Cell Phone"
@@ -119,18 +130,15 @@ export default function SummaryClient({
                   label="Departure/Return Location"
                   value={a.departure_location || "Not set"}
                 />
-                <Row label="Driver" value={s.driver} />
-                <Row label="Cabin" value={s.cabin} />
-                {s.fishing && <Row label="Fishing" value={s.fishing} />}
+                <Row label="Driver" value={s.driver} highlight={s.rideUnassigned} />
+                <Row label="Cabin" value={s.cabin} highlight={s.cabinUnassigned} />
+                {s.fishing && (
+                  <Row label="Fishing" value={s.fishing} highlight={s.fishingUnassigned} />
+                )}
                 <Row
                   label="Payment"
-                  value={
-                    <span
-                      className={`font-semibold ${s.paid ? "text-brand-700" : "text-amber-700"}`}
-                    >
-                      {s.paid ? "Paid" : "Unpaid"}
-                    </span>
-                  }
+                  value={s.paid ? "Paid" : "Unpaid"}
+                  highlight={!s.paid}
                 />
               </dl>
             )}
@@ -141,11 +149,23 @@ export default function SummaryClient({
   );
 }
 
-function Row({ label, value }: { label: string; value: React.ReactNode }) {
+function Row({
+  label,
+  value,
+  highlight,
+}: {
+  label: string;
+  value: React.ReactNode;
+  highlight?: boolean;
+}) {
   return (
     <div className="flex justify-between gap-3">
-      <dt className="text-brand-500">{label}</dt>
-      <dd className="text-right font-medium text-brand-800">{value}</dd>
+      <dt className={highlight ? "font-semibold text-amber-700" : "text-brand-500"}>{label}</dt>
+      <dd
+        className={`text-right font-medium ${highlight ? "font-semibold text-amber-700" : "text-brand-800"}`}
+      >
+        {value}
+      </dd>
     </div>
   );
 }
