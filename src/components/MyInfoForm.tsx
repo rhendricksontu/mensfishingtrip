@@ -1,7 +1,8 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
 import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import { formatPhone } from "@/lib/utils";
@@ -20,11 +21,20 @@ function SaveBtn() {
 }
 
 export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
+  const router = useRouter();
   const [state, action] = useFormState(updateMyRsvp, initial);
   const [open, setOpen] = useState(false);
   const [ridePref, setRidePref] = useState<string>(attendee.ride_preference);
   const [willingToDrive, setWillingToDrive] = useState(attendee.willing_to_drive);
   const err = (k: string) => state.fieldErrors?.[k];
+
+  // Close the editor and refresh the details once a save succeeds.
+  useEffect(() => {
+    if (state.ok) {
+      setOpen(false);
+      router.refresh();
+    }
+  }, [state, router]);
 
   if (!open) {
     return (
@@ -53,9 +63,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         <button type="button" onClick={() => setOpen(false)} className="text-sm text-brand-500 underline">Cancel</button>
       </div>
 
-      {state.ok && (
-        <div className="rounded-lg bg-brand-50 px-4 py-2 text-sm text-brand-700">Saved!</div>
-      )}
       {state.error && (
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
       )}
