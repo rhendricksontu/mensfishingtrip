@@ -36,7 +36,6 @@ function LocationCard({ loc }: { loc: LocationItem }) {
   return (
     <div className="card">
       <h3 className="font-semibold text-brand-800">{loc.name}</h3>
-      {loc.notes && <p className="mt-2 text-sm text-brand-600">{loc.notes}</p>}
       {loc.address && (
         <p className="mt-2 text-sm text-brand-600">{loc.address}</p>
       )}
