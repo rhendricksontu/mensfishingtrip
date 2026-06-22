@@ -37,21 +37,23 @@ export default function RsvpForm() {
         </div>
       )}
 
-      <Field label="First & Last Name" error={err("name")}>
-        <input name="name" className="input" autoComplete="name" required />
-      </Field>
-
-      <div className="rounded-lg bg-brand-50 p-4 space-y-4">
-        <p className="text-sm font-semibold text-brand-800">
-          Your login: you&apos;ll use your cell phone &amp; this password to check your trip info later.
-        </p>
-        <Field label="Cell Phone (Your Username)" error={err("phone")}>
-          <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
-        </Field>
-        <Field label="Create a Password" error={err("password")}>
-          <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
-        </Field>
-      </div>
+      <fieldset className="rounded-lg border border-brand-100 p-4">
+        <legend className="px-1 text-sm font-semibold text-brand-700">User Information</legend>
+        <div className="space-y-4">
+          <Field label="First & Last Name" error={err("name")}>
+            <input name="name" className="input" autoComplete="name" required />
+          </Field>
+          <p className="rounded-lg bg-brand-50 px-3 py-2 text-xs text-brand-600">
+            You&apos;ll use your cell phone &amp; this password to check your trip info later.
+          </p>
+          <Field label="Cell Phone (Your Username)" error={err("phone")}>
+            <input name="phone" type="tel" inputMode="tel" className="input" autoComplete="tel" placeholder="(555) 123-4567" required />
+          </Field>
+          <Field label="Create a Password" error={err("password")}>
+            <input name="password" type="password" className="input" autoComplete="new-password" placeholder="At least 8 characters" minLength={8} required />
+          </Field>
+        </div>
+      </fieldset>
 
       <fieldset className="rounded-lg border border-brand-100 p-4">
         <legend className="px-1 text-sm font-semibold text-brand-700">Emergency Contact</legend>
