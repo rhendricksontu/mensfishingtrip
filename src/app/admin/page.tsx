@@ -33,15 +33,15 @@ export default async function AdminOverviewPage() {
         <Stat label="RSVPs" value={total} />
         <Stat label="Paid" value={`${paid}`} tone="good" />
         <Stat label="Unpaid" value={`${unpaid}`} tone={unpaid ? "warn" : "good"} />
-        <Stat label="Open seats" value={seats} />
-        <Stat label="Willing drivers" value={drivers} />
-        <Stat label="Need a ride" value={needRide} tone={needRide ? "warn" : "good"} />
-        <Stat label="No cabin yet" value={unassignedCabin} tone={unassignedCabin ? "warn" : "good"} />
-        <Stat label="No session yet" value={unassignedSession} tone={unassignedSession ? "warn" : "good"} />
+        <Stat label="Open Seats" value={seats} />
+        <Stat label="Willing Drivers" value={drivers} />
+        <Stat label="Need a Ride" value={needRide} tone={needRide ? "warn" : "good"} />
+        <Stat label="No Cabin Yet" value={unassignedCabin} tone={unassignedCabin ? "warn" : "good"} />
+        <Stat label="No Session Yet" value={unassignedSession} tone={unassignedSession ? "warn" : "good"} />
       </div>
 
       <section className="card">
-        <h2 className="font-bold text-brand-800">Money collected</h2>
+        <h2 className="font-bold text-brand-800">Money Collected</h2>
         <p className="mt-1 text-sm text-brand-600">
           {paid} of {total} paid · ${paid * PAYMENT.amount} collected ·{" "}
           <span className="font-semibold text-amber-700">${unpaid * PAYMENT.amount}</span> outstanding
@@ -52,7 +52,7 @@ export default async function AdminOverviewPage() {
       </section>
 
       <section className="card">
-        <h2 className="font-bold text-brand-800">Cabin host check</h2>
+        <h2 className="font-bold text-brand-800">Cabin Host Check</h2>
         {cabinsNoHost.length === 0 ? (
           <p className="mt-1 text-sm text-brand-600">
             Every occupied cabin has at least one host.

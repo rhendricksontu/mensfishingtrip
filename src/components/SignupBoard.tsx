@@ -54,7 +54,7 @@ export default function SignupBoard({
       {/* Breakfast & coffee */}
       <div className="space-y-6">
         <form action={formAction} className="card space-y-4">
-          <h2 className="font-bold text-brand-800">Volunteer for a slot</h2>
+          <h2 className="font-bold text-brand-800">Volunteer for a Slot</h2>
           {state.error && (
             <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
           )}

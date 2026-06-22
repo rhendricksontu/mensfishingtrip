@@ -14,7 +14,7 @@ const initial: EditState = { ok: false };
 function SaveBtn() {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" className="btn-primary" disabled={pending}>
+    <button type="submit" className="btn-primary w-36" disabled={pending}>
       {pending ? "Saving…" : "Save Changes"}
     </button>
   );
@@ -40,7 +40,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
     return (
       <div className="card">
         <div className="flex items-center justify-between">
-          <h2 className="font-bold text-brand-800">Your details</h2>
+          <h2 className="font-bold text-brand-800">Your Details</h2>
           <button onClick={() => setOpen(true)} className="btn-secondary text-sm">Edit</button>
         </div>
         <dl className="mt-3 space-y-1.5 text-sm">
@@ -58,7 +58,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
 
   return (
     <form action={action} className="card space-y-4">
-      <h2 className="font-bold text-brand-800">Edit your details</h2>
+      <h2 className="font-bold text-brand-800">Edit Your Details</h2>
 
       {state.error && (
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
@@ -144,7 +144,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
 
       <div className="flex justify-center gap-3">
         <SaveBtn />
-        <button type="button" onClick={() => setOpen(false)} className="btn-secondary">
+        <button type="button" onClick={() => setOpen(false)} className="btn-secondary w-36">
           Cancel
         </button>
       </div>

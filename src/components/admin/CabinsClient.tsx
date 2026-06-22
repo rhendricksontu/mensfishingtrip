@@ -99,7 +99,7 @@ export default function CabinsClient({
       )}
 
       <div className="card">
-        <h3 className="font-semibold text-brand-800">Add a cabin</h3>
+        <h3 className="font-semibold text-brand-800">Add a Cabin</h3>
         <div className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input
             className="input flex-1"

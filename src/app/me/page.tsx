@@ -81,7 +81,7 @@ export default async function MyTripPage() {
         </div>
       ) : (
         <div className="card border-l-4 border-amber-400">
-          <p className="font-semibold text-brand-800">Fishing Trip cost: ${PAYMENT.amount} (not yet received)</p>
+          <p className="font-semibold text-brand-800">Fishing Trip Cost: ${PAYMENT.amount} (not yet received)</p>
           <p className="mt-1 text-sm text-brand-600">
             Send ${PAYMENT.amount} on Venmo to{" "}
             <span className="font-semibold">{PAYMENT.venmoHandle}</span>.
@@ -150,10 +150,10 @@ export default async function MyTripPage() {
 
       {/* Rides */}
       <div className="card">
-        <h2 className="font-bold text-brand-800">Your rides</h2>
+        <h2 className="font-bold text-brand-800">Your Rides</h2>
         <div className="mt-2 space-y-4">
           <RideBlock title="To Broken Bow" info={rideInfo("to_trip")} meId={me.id} />
-          <RideBlock title="Coming home" info={rideInfo("from_trip")} meId={me.id} />
+          <RideBlock title="Coming Home" info={rideInfo("from_trip")} meId={me.id} />
         </div>
       </div>
 

@@ -19,7 +19,7 @@ interface RidePassenger {
 
 const DIRECTIONS: { key: RideDirection; label: string }[] = [
   { key: "to_trip", label: "Heading to Broken Bow" },
-  { key: "from_trip", label: "Coming home" },
+  { key: "from_trip", label: "Coming Home" },
 ];
 
 export default function RidesClient({
