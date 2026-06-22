@@ -34,7 +34,7 @@ export default async function HomePage() {
             href="/login"
             className="font-semibold text-brand-700 underline underline-offset-2 hover:text-brand-800"
           >
-            Please sign in.
+            Please log in.
           </Link>
         </p>
       </div>

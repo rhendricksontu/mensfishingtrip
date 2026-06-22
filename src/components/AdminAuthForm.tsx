@@ -29,7 +29,7 @@ export default function AdminAuthForm() {
           onClick={() => setMode("signin")}
           className={`flex-1 rounded-md py-2 ${mode === "signin" ? "bg-white text-brand-800 shadow-sm" : "text-brand-500"}`}
         >
-          Sign in
+          Log in
         </button>
         <button
           onClick={() => setMode("signup")}
@@ -60,7 +60,7 @@ export default function AdminAuthForm() {
             required
           />
         </div>
-        <SubmitBtn label={mode === "signin" ? "Sign in" : "Create account"} />
+        <SubmitBtn label={mode === "signin" ? "Log in" : "Create account"} />
       </form>
 
       {mode === "signup" && (

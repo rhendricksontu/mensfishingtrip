@@ -23,8 +23,8 @@ export default function ResetPasswordForm() {
     return (
       <div className="card text-center">
         <h2 className="text-xl font-bold text-brand-800">Password updated</h2>
-        <p className="mt-1 text-brand-600">You can now sign in with your new password.</p>
-        <Link href="/login" className="btn-primary mt-4">Go to sign in</Link>
+        <p className="mt-1 text-brand-600">You can now log in with your new password.</p>
+        <Link href="/login" className="btn-primary mt-4">Go to log in</Link>
       </div>
     );
   }
@@ -63,7 +63,7 @@ export default function ResetPasswordForm() {
       <p className="text-center text-sm text-brand-500">
         Remembered it?{" "}
         <Link href="/login" className="font-semibold text-brand-600 underline">
-          Back to sign in
+          Back to log in
         </Link>
       </p>
     </form>

@@ -67,7 +67,7 @@ export async function signUp(_prev: AuthState, formData: FormData): Promise<Auth
   // If email confirmation is on, there's no session yet.
   if (!data.session) {
     return {
-      info: "Account created. Check your email to confirm, then sign in.",
+      info: "Account created. Check your email to confirm, then log in.",
     };
   }
 

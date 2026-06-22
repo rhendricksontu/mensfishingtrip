@@ -55,7 +55,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
                   type="submit"
                   className="rounded-md px-3 py-1.5 text-sm font-medium hover:bg-brand-600"
                 >
-                  Sign Out
+                  Log Out
                 </button>
               </form>
             </nav>
@@ -80,7 +80,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
             href="/login"
             className="rounded-md bg-cream px-3 py-1.5 text-sm font-semibold text-brand-700 hover:bg-cream-200"
           >
-            Sign In
+            Log In
           </Link>
         )}
       </div>
@@ -105,7 +105,7 @@ export default function Nav({ isAuthed }: { isAuthed: boolean }) {
               type="submit"
               className="block w-full rounded-md px-3 py-2.5 text-left text-base font-medium hover:bg-brand-600"
             >
-              Sign Out
+              Log Out
             </button>
           </form>
         </nav>

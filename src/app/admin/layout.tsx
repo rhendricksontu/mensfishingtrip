@@ -30,7 +30,7 @@ export default async function AdminLayout({
           <p className="text-xs text-brand-500">{admin.email}</p>
         </div>
         <form action={signOut}>
-          <button className="btn-secondary text-sm">Sign out</button>
+          <button className="btn-secondary text-sm">Log out</button>
         </form>
       </div>
 
