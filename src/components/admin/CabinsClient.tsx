@@ -158,19 +158,16 @@ function CabinCard({
             {occupants.length}
             {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
           </span>
-          {occupants.length > 0 && (
+          {occupants.some((a) => !a.is_cabin_host) && (
             <ul className="divide-y divide-brand-50">
-              {occupants.map((a) => (
-                <li key={a.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                  <span>
+              {occupants
+                .filter((a) => !a.is_cabin_host)
+                .map((a) => (
+                  <li key={a.id} className="py-2 text-sm">
                     <span className="font-medium text-brand-800">{a.name}</span>
                     <span className="ml-2 text-xs text-brand-400">{formatPhone(a.phone)}</span>
-                  </span>
-                  {a.is_cabin_host && (
-                    <span className="badge bg-olive-600 text-white">Host</span>
-                  )}
-                </li>
-              ))}
+                  </li>
+                ))}
             </ul>
           )}
         </>
