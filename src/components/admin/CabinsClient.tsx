@@ -21,6 +21,44 @@ function EditIcon() {
   );
 }
 
+// Best-effort split of a legacy free-text address into structured parts so the
+// edit form is pre-filled instead of blank for cabins saved before the change.
+function parseLegacyAddress(raw: string): {
+  address1: string;
+  address2: string;
+  city: string;
+  state: string;
+  zip: string;
+} {
+  const empty = { address1: "", address2: "", city: "", state: "", zip: "" };
+  const parts = raw
+    .split(/[\n,]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  if (parts.length === 0) return empty;
+  if (parts.length === 1) return { ...empty, address1: parts[0] };
+
+  const last = parts[parts.length - 1];
+  const stateZip = last.match(/^([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$/);
+  if (stateZip) {
+    const street = parts.slice(0, parts.length - 2);
+    return {
+      address1: street[0] ?? "",
+      address2: street.slice(1).join(", "),
+      city: parts[parts.length - 2] ?? "",
+      state: stateZip[1].toUpperCase(),
+      zip: stateZip[2],
+    };
+  }
+  const street = parts.slice(0, parts.length - 1);
+  return {
+    ...empty,
+    address1: street[0] ?? "",
+    address2: street.slice(1).join(", "),
+    city: last,
+  };
+}
+
 export default function CabinsClient({
   cabins,
   attendees,
@@ -98,6 +136,15 @@ function CabinCard({
       await fn();
       router.refresh();
     });
+
+  // Pre-fill edit fields: use structured parts when present, else parse the
+  // legacy single-field address so editing shows the current address.
+  const hasStructured = Boolean(
+    cabin.address1 || cabin.address2 || cabin.city || cabin.state || cabin.zip
+  );
+  const legacy = hasStructured
+    ? { address1: "", address2: "", city: "", state: "", zip: "" }
+    : parseLegacyAddress(cabin.address ?? "");
 
   const host = occupants.find((a) => a.is_cabin_host) ?? null;
   const over = cabin.capacity > 0 && occupants.length > cabin.capacity;
@@ -197,7 +244,7 @@ function CabinCard({
               <span className="label">Address 1</span>
               <input
                 className="input"
-                defaultValue={cabin.address1 ?? ""}
+                defaultValue={cabin.address1 ?? legacy.address1}
                 placeholder="Street address"
                 onBlur={(e) =>
                   e.target.value.trim() !== (cabin.address1 ?? "") &&
@@ -209,7 +256,7 @@ function CabinCard({
               <span className="label">Address 2</span>
               <input
                 className="input"
-                defaultValue={cabin.address2 ?? ""}
+                defaultValue={cabin.address2 ?? legacy.address2}
                 placeholder="Apt, suite, unit (optional)"
                 onBlur={(e) =>
                   e.target.value.trim() !== (cabin.address2 ?? "") &&
@@ -222,7 +269,7 @@ function CabinCard({
                 <span className="label">City</span>
                 <input
                   className="input"
-                  defaultValue={cabin.city ?? ""}
+                  defaultValue={cabin.city ?? legacy.city}
                   placeholder="City"
                   onBlur={(e) =>
                     e.target.value.trim() !== (cabin.city ?? "") &&
@@ -234,7 +281,7 @@ function CabinCard({
                 <span className="label">State</span>
                 <input
                   className="input"
-                  defaultValue={cabin.state ?? ""}
+                  defaultValue={cabin.state ?? legacy.state}
                   placeholder="State"
                   onBlur={(e) =>
                     e.target.value.trim() !== (cabin.state ?? "") &&
@@ -247,7 +294,7 @@ function CabinCard({
                 <input
                   className="input"
                   inputMode="numeric"
-                  defaultValue={cabin.zip ?? ""}
+                  defaultValue={cabin.zip ?? legacy.zip}
                   placeholder="Zip"
                   onBlur={(e) =>
                     e.target.value.trim() !== (cabin.zip ?? "") &&
@@ -356,7 +403,7 @@ function AddCabin() {
   const [city, setCity] = useState("");
   const [stateField, setStateField] = useState("");
   const [zip, setZip] = useState("");
-  const [capacity, setCapacity] = useState(10);
+  const [capacity, setCapacity] = useState(15);
 
   function add() {
     if (name.trim().length < 1) return;
