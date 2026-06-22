@@ -94,8 +94,9 @@ export default function RidesClient({
 
             {drivers.map((driver) => {
               const { passengers, inherited } = effective(driver, dir.key);
+              // Drivers can't be someone else's passenger.
               const candidates = attendees.filter(
-                (a) => a.id !== driver.id && !seated.has(a.id)
+                (a) => a.id !== driver.id && !a.willing_to_drive && !seated.has(a.id)
               );
               return (
                 <RideCard
