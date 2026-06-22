@@ -58,10 +58,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
 
   return (
     <form action={action} className="card space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="font-bold text-brand-800">Edit your details</h2>
-        <button type="button" onClick={() => setOpen(false)} className="text-sm text-brand-500 underline">Cancel</button>
-      </div>
+      <h2 className="font-bold text-brand-800">Edit your details</h2>
 
       {state.error && (
         <div className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{state.error}</div>
@@ -145,7 +142,12 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </div>
       </fieldset>
 
-      <SaveBtn />
+      <div className="flex gap-3">
+        <SaveBtn />
+        <button type="button" onClick={() => setOpen(false)} className="btn-secondary">
+          Cancel
+        </button>
+      </div>
     </form>
   );
 }
