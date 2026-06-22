@@ -137,27 +137,31 @@ function CabinCard({
             </MapLink>
           )}
 
-          {/* Host, elevated like the guide on the fishing page */}
+          {/* Host, styled like the guide listing on the fishing card:
+              bold name, phone below, capacity under that. */}
           {host ? (
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-brand-400">
                 Cabin Host
               </p>
-              <p className="text-sm">
-                <span className="font-medium text-brand-800">{host.name}</span>
-                <span className="ml-2 text-xs text-brand-400">{formatPhone(host.phone)}</span>
-              </p>
+              <h3 className="font-bold text-brand-800">{host.name}</h3>
+              <p className="text-sm text-brand-600">{formatPhone(host.phone)}</p>
+              <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+                {occupants.length}
+                {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
+              </span>
             </div>
           ) : (
-            occupants.length > 0 && (
-              <p className="text-sm font-medium text-amber-700">No cabin host assigned</p>
-            )
+            <>
+              {occupants.length > 0 && (
+                <p className="text-sm font-medium text-amber-700">No cabin host assigned</p>
+              )}
+              <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+                {occupants.length}
+                {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
+              </span>
+            </>
           )}
-
-          <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
-            {occupants.length}
-            {cabin.capacity > 0 ? ` / ${cabin.capacity}` : ""} men
-          </span>
           {occupants.some((a) => !a.is_cabin_host) && (
             <ul className="divide-y divide-brand-50">
               {occupants
