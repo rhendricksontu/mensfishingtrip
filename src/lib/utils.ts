@@ -41,3 +41,6 @@ export function googleMapsUrl(place: string): string {
 export function appleMapsUrl(place: string): string {
   return `https://maps.apple.com/?q=${mapsQuery(place)}`;
 }
+export function wazeUrl(place: string): string {
+  return `https://waze.com/ul?q=${mapsQuery(place)}&navigate=yes`;
+}
