@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SESSION_LABELS, RIDE_PREF_LABELS } from "@/lib/config";
+import { setAttendeeRole } from "@/app/admin/actions";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Cabin, FishingGroup, Ride } from "@/lib/types";
 
@@ -25,7 +27,16 @@ export default function SummaryClient({
   ridePassengers: RidePassenger[];
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const router = useRouter();
+  const [pending, start] = useTransition();
   const byId = new Map(attendees.map((a) => [a.id, a]));
+
+  function toggleAdmin(a: Attendee) {
+    start(async () => {
+      await setAttendeeRole(a.id, a.role === "admin" ? "member" : "admin");
+      router.refresh();
+    });
+  }
   const needsAttn = (a: Attendee) => {
     const s = summaryFor(a);
     return s.cabinUnassigned || s.fishingUnassigned || s.rideUnassigned || !s.paid;
@@ -183,6 +194,21 @@ export default function SummaryClient({
                   value={s.paid ? "Paid" : <FixLink href="/admin/ar" label="Unpaid" />}
                   highlight={!s.paid}
                 />
+                <div className="flex items-center justify-between gap-3 pt-1">
+                  <dt className="text-brand-500">Organizer</dt>
+                  <button
+                    type="button"
+                    onClick={() => toggleAdmin(a)}
+                    disabled={pending}
+                    className={`text-xs font-semibold underline disabled:opacity-50 ${
+                      a.role === "admin"
+                        ? "text-red-600 hover:text-red-700"
+                        : "text-olive-700 hover:text-olive-800"
+                    }`}
+                  >
+                    {a.role === "admin" ? "Remove Organizer" : "Make Organizer"}
+                  </button>
+                </div>
               </dl>
             )}
           </li>
