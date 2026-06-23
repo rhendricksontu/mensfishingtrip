@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SESSION_LABELS, RIDE_PREF_LABELS } from "@/lib/config";
-import { setAttendeeRole } from "@/app/admin/actions";
+import { setAttendeeRole, deleteAttendee } from "@/app/admin/actions";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Cabin, FishingGroup, Ride } from "@/lib/types";
 
@@ -34,6 +34,20 @@ export default function SummaryClient({
   function toggleAdmin(a: Attendee) {
     start(async () => {
       await setAttendeeRole(a.id, a.role === "admin" ? "member" : "admin");
+      router.refresh();
+    });
+  }
+
+  function removeUser(a: Attendee) {
+    if (
+      !confirm(
+        `Delete ${a.name}? This permanently removes their RSVP, login, and all assignments.`
+      )
+    )
+      return;
+    start(async () => {
+      await deleteAttendee(a.id);
+      setOpenId(null);
       router.refresh();
     });
   }
@@ -212,6 +226,16 @@ export default function SummaryClient({
                     }`}
                   >
                     {a.role === "admin" ? "Remove Organizer" : "Make Organizer"}
+                  </button>
+                </div>
+                <div className="flex justify-end border-t border-brand-50 pt-3">
+                  <button
+                    type="button"
+                    onClick={() => removeUser(a)}
+                    disabled={pending}
+                    className="text-xs font-semibold text-red-600 underline hover:text-red-700 disabled:opacity-50"
+                  >
+                    Delete User
                   </button>
                 </div>
               </dl>
