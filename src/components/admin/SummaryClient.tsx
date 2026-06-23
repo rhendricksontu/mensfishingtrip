@@ -138,6 +138,11 @@ export default function SummaryClient({
               className="flex w-full items-center justify-between gap-2 text-left"
             >
               <span className="flex flex-wrap items-center gap-2">
+                {a.role === "admin" && (
+                  <span className="text-olive-600" title="Organizer" aria-label="Organizer">
+                    ★
+                  </span>
+                )}
                 <span className="font-bold text-brand-800">{a.name}</span>
                 {a.is_cabin_host && <Chip>Host</Chip>}
                 {isGuide && <Chip>Guide</Chip>}
