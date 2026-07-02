@@ -126,8 +126,10 @@ function AgendaRow({
   const router = useRouter();
   const [pending, start] = useTransition();
   const [editing, setEditing] = useState(false);
-  const [showNotes, setShowNotes] = useState(false);
-  const [showFiles, setShowFiles] = useState(false);
+  // Only one panel open at a time — notes and attachments are mutually exclusive.
+  const [expanded, setExpanded] = useState<"notes" | "files" | null>(null);
+  const showNotes = expanded === "notes";
+  const showFiles = expanded === "files";
   const run = (fn: () => Promise<unknown>) =>
     start(async () => {
       await fn();
@@ -313,7 +315,7 @@ function AgendaRow({
               {item.notes && (
                 <button
                   type="button"
-                  onClick={() => setShowNotes((v) => !v)}
+                  onClick={() => setExpanded((v) => (v === "notes" ? null : "notes"))}
                   className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
                 >
                   {showNotes ? "Hide Notes" : "Show Notes"}
@@ -322,7 +324,7 @@ function AgendaRow({
               {files.length > 0 && (
                 <button
                   type="button"
-                  onClick={() => setShowFiles((v) => !v)}
+                  onClick={() => setExpanded((v) => (v === "files" ? null : "files"))}
                   className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
                 >
                   {showFiles ? "Hide Attachments" : `Show Attachments (${files.length})`}
