@@ -16,6 +16,27 @@ export function classNames(...xs: Array<string | false | null | undefined>): str
   return xs.filter(Boolean).join(" ");
 }
 
+// "07:30" (24h, from <input type="time">) -> "7:30 AM".
+export function to12Hour(hhmm: string): string {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(hhmm.trim());
+  if (!m) return hhmm.trim();
+  let h = parseInt(m[1], 10);
+  const mer = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${h}:${m[2]} ${mer}`;
+}
+
+// "7:30 AM" -> "07:30" (24h) for <input type="time">. Returns "" if unparseable.
+export function to24Hour(label: string): string {
+  const m = /^(\d{1,2}):(\d{2})\s*(am|pm)?$/i.exec(label.trim());
+  if (!m) return "";
+  let h = parseInt(m[1], 10);
+  const mer = m[3]?.toLowerCase();
+  if (mer === "pm" && h < 12) h += 12;
+  if (mer === "am" && h === 12) h = 0;
+  return `${String(h).padStart(2, "0")}:${m[2]}`;
+}
+
 // Build display lines from a structured street address. Falls back to the
 // legacy free-text `address` when no structured parts are present.
 export function addressLines(a: {

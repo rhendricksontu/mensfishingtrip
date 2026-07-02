@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DAY_LABELS, TRIP_DAYS } from "@/lib/config";
-import { shortenPlace } from "@/lib/utils";
+import { shortenPlace, to12Hour, to24Hour } from "@/lib/utils";
 import MapLink from "@/components/MapLink";
 import RichTextEditor from "@/components/RichTextEditor";
 import {
@@ -168,13 +168,14 @@ function AgendaRow({
           <div>
             <span className="label">Start Time</span>
             <input
+              type="time"
               className="input"
-              defaultValue={item.start_time ?? ""}
-              placeholder="7:30 AM"
-              onBlur={(e) =>
-                e.target.value.trim() !== (item.start_time ?? "") &&
-                run(() => updateAgendaItem(item.id, { start_time: e.target.value.trim() || null }))
-              }
+              defaultValue={to24Hour(item.start_time ?? "")}
+              onBlur={(e) => {
+                const label = e.target.value ? to12Hour(e.target.value) : null;
+                if (label !== (item.start_time ?? null))
+                  run(() => updateAgendaItem(item.id, { start_time: label }));
+              }}
             />
           </div>
           <div>
@@ -423,7 +424,7 @@ function AddAgendaItem({ day }: { day: string }) {
     if (!title.trim()) return;
     start(async () => {
       await createAgendaItem(day, {
-        start_time: time.trim() || null,
+        start_time: time ? to12Hour(time) : null,
         title: title.trim(),
         description: desc.trim() || null,
         location_name: locName.trim() || null,
@@ -454,7 +455,7 @@ function AddAgendaItem({ day }: { day: string }) {
       <div className="grid gap-3 sm:grid-cols-[7rem_1fr]">
         <div>
           <span className="label">Start Time</span>
-          <input className="input" placeholder="7:30 AM" value={time} onChange={(e) => setTime(e.target.value)} />
+          <input type="time" className="input" value={time} onChange={(e) => setTime(e.target.value)} />
         </div>
         <div>
           <span className="label">Title</span>
