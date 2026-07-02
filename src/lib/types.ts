@@ -25,6 +25,8 @@ export interface FishingGroup {
   guide_phone: string | null;
   guide_attendee_id: string | null;
   capacity: number;
+  meet_location: string | null;
+  meet_location_name: string | null;
   notes: string | null;
 }
 

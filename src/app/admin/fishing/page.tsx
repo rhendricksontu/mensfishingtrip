@@ -1,12 +1,16 @@
 import { requireAdmin } from "@/lib/require-admin";
-import { getAttendees, getFishingGroups } from "@/lib/data";
+import { getAttendees, getFishingGroups, getTripLocations } from "@/lib/data";
 import FishingClient from "@/components/admin/FishingClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function FishingAdminPage() {
   await requireAdmin();
-  const [groups, attendees] = await Promise.all([getFishingGroups(), getAttendees()]);
+  const [groups, attendees, locations] = await Promise.all([
+    getFishingGroups(),
+    getAttendees(),
+    getTripLocations(),
+  ]);
 
   return (
     <div className="space-y-4">
@@ -17,7 +21,7 @@ export default async function FishingAdminPage() {
           members to each guide.
         </p>
       </div>
-      <FishingClient groups={groups} attendees={attendees} />
+      <FishingClient groups={groups} attendees={attendees} locations={locations} />
     </div>
   );
 }

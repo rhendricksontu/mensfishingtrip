@@ -59,6 +59,8 @@ create table if not exists fishing_groups (
   guide_phone       text,
   guide_attendee_id uuid, -- set when the guide is an RSVP'd member (FK added after attendees)
   capacity          int  not null default 0,
+  meet_location      text,          -- where the group meets (address)
+  meet_location_name text,          -- friendly name for the meeting spot
   notes             text,
   created_at        timestamptz not null default now()
 );

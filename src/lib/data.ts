@@ -1,5 +1,6 @@
 import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { addressOneLine } from "@/lib/utils";
 import type {
   AgendaItem,
   AgendaFile,
@@ -80,6 +81,36 @@ export function getSignups(): Promise<Signup[]> {
       .order("created_at", { ascending: true });
     return (data as Signup[]) ?? [];
   }, []);
+}
+
+export interface TripLocation {
+  name: string | null;
+  address: string;
+}
+
+// Distinct trip locations built from agenda item locations + cabins. Used as
+// the option list wherever a place is chosen (e.g. a fishing group's meet-up).
+export async function getTripLocations(): Promise<TripLocation[]> {
+  const [agenda, cabins] = await Promise.all([getAgenda(), getCabins()]);
+  const byAddr = new Map<string, TripLocation>();
+  const add = (name: string | null, address: string) => {
+    const key = address.replace(/@.*/, "").trim().toLowerCase();
+    if (!key) return;
+    const existing = byAddr.get(key);
+    if (!existing) byAddr.set(key, { name: name?.trim() || null, address });
+    else if (!existing.name && name?.trim()) existing.name = name.trim();
+  };
+  for (const item of agenda) {
+    const address = item.location?.trim();
+    if (address && /\d/.test(address)) add(item.location_name, address);
+  }
+  for (const c of cabins) {
+    const address = addressOneLine(c);
+    if (address) add(c.name, address);
+  }
+  return [...byAddr.values()].sort((a, b) =>
+    (a.name || a.address).localeCompare(b.name || b.address)
+  );
 }
 
 export function getSignupLeaders(): Promise<SignupLeader[]> {

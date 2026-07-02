@@ -9,9 +9,14 @@ import {
   updateAttendee,
 } from "@/app/admin/actions";
 import { SESSION_LABELS } from "@/lib/config";
-import { formatPhone } from "@/lib/utils";
+import { formatPhone, shortenPlace } from "@/lib/utils";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, FishingGroup, FishingSession } from "@/lib/types";
+
+interface TripLocation {
+  name: string | null;
+  address: string;
+}
 
 const SESSIONS: FishingSession[] = ["saturday_morning", "saturday_afternoon"];
 
@@ -27,9 +32,11 @@ function EditIcon() {
 export default function FishingClient({
   groups,
   attendees,
+  locations,
 }: {
   groups: FishingGroup[];
   attendees: Attendee[];
+  locations: TripLocation[];
 }) {
   // Only members who said yes to fishing with a guide can be assigned.
   const unassigned = attendees.filter((a) => !a.fishing_group_id && a.fish_with_guide);
@@ -65,6 +72,7 @@ export default function FishingClient({
                 members={attendees.filter((a) => a.fishing_group_id === g.id)}
                 unassigned={unassigned}
                 session={session}
+                locations={locations}
               />
             ))}
           </section>
@@ -81,11 +89,13 @@ function GuideCard({
   members,
   unassigned,
   session,
+  locations,
 }: {
   guide: FishingGroup;
   members: Attendee[];
   unassigned: Attendee[];
   session: FishingSession;
+  locations: TripLocation[];
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -133,6 +143,14 @@ function GuideCard({
             {members.length}
             {guide.capacity > 0 ? ` / ${guide.capacity}` : ""} Anglers
           </span>
+          {guide.meet_location && (
+            <p className="text-sm text-brand-600">
+              Meet at:{" "}
+              <span className="font-medium text-brand-800">
+                {guide.meet_location_name || shortenPlace(guide.meet_location)}
+              </span>
+            </p>
+          )}
           {members.length > 0 && (
             <ul className="divide-y divide-brand-50">
               {members.map((a) => (
@@ -230,6 +248,29 @@ function GuideCard({
                 )
               }
             />
+          </div>
+          <div>
+            <span className="label">Meeting Location</span>
+            <select
+              className="input"
+              value={guide.meet_location ?? ""}
+              onChange={(e) => {
+                const opt = locations.find((o) => o.address === e.target.value);
+                run(() =>
+                  updateFishingGroup(guide.id, {
+                    meet_location: opt?.address || null,
+                    meet_location_name: opt?.name || null,
+                  })
+                );
+              }}
+            >
+              <option value="">No meeting location</option>
+              {locations.map((o) => (
+                <option key={o.address} value={o.address}>
+                  {o.name ? `${o.name} · ${shortenPlace(o.address)}` : shortenPlace(o.address)}
+                </option>
+              ))}
+            </select>
           </div>
 
           {members.length > 0 && (

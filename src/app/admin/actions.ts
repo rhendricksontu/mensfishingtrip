@@ -168,7 +168,14 @@ export async function createFishingGroup(
 
 export async function updateFishingGroup(
   id: string,
-  patch: { guide_name?: string; guide_phone?: string | null; capacity?: number; name?: string }
+  patch: {
+    guide_name?: string;
+    guide_phone?: string | null;
+    capacity?: number;
+    name?: string;
+    meet_location?: string | null;
+    meet_location_name?: string | null;
+  }
 ) {
   await requireAdmin();
   const db = createAdminClient();

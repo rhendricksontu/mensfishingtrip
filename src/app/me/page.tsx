@@ -8,7 +8,7 @@ import {
   getSignups,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
-import { addressLines, addressOneLine } from "@/lib/utils";
+import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
@@ -327,6 +327,18 @@ function GuideView({
         </div>
         {session && <p className="text-sm text-brand-600">{SESSION_LABELS[session]}</p>}
       </div>
+
+      {group.meet_location && (
+        <p className="text-sm text-brand-700">
+          Meet at:{" "}
+          <MapLink
+            place={group.meet_location}
+            className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+          >
+            {group.meet_location_name || shortenPlace(group.meet_location)}
+          </MapLink>
+        </p>
+      )}
 
       <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
         {anglers.length}
