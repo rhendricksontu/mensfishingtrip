@@ -325,28 +325,53 @@ function AgendaRow({
         />
       )}
       {showFiles && files.length > 0 && (
-        <div className="mt-3 space-y-2">
+        <div className="mt-3 space-y-3">
           {files.map((f) =>
             isImage(f.name) ? (
-              <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="block">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={f.url}
-                  alt={f.name}
-                  loading="lazy"
-                  className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
-                />
-              </a>
+              <div key={f.id} className="relative">
+                <a href={f.url} target="_blank" rel="noopener noreferrer" className="block">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={f.url}
+                    alt={f.name}
+                    loading="lazy"
+                    className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
+                  />
+                </a>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Remove ${f.name}?`)) run(() => deleteAgendaFile(f.id));
+                    }}
+                    className="absolute right-2 top-2 rounded-md bg-white/90 px-2 py-1 text-xs font-semibold text-red-600 shadow ring-1 ring-brand-200 hover:bg-white"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             ) : (
-              <a
-                key={f.id}
-                href={fileHref(f)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-              >
-                📎 {f.name}
-              </a>
+              <div key={f.id} className="flex items-center justify-between gap-2">
+                <a
+                  href={fileHref(f)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+                >
+                  📎 {f.name}
+                </a>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (confirm(`Remove ${f.name}?`)) run(() => deleteAgendaFile(f.id));
+                    }}
+                    className="shrink-0 text-xs text-brand-400 underline hover:text-red-600"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
             )
           )}
         </div>
