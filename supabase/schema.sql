@@ -134,6 +134,14 @@ create table if not exists signups (
 );
 create index if not exists signups_role_day_idx on signups (role, trip_day);
 
+-- One leader per signup instance (role + day).
+create table if not exists signup_leaders (
+  role         signup_role not null,
+  trip_day     text not null,
+  attendee_id  uuid references attendees(id) on delete cascade,
+  primary key (role, trip_day)
+);
+
 -- ---------------------------------------------------------------------------
 -- Rides (admin ride tracking): a driver carries 0+ passengers in a direction
 -- ---------------------------------------------------------------------------

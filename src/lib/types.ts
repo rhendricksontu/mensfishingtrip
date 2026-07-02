@@ -68,6 +68,12 @@ export interface Signup {
   created_at: string;
 }
 
+export interface SignupLeader {
+  role: SignupRole;
+  trip_day: string;
+  attendee_id: string | null;
+}
+
 export interface Ride {
   id: string;
   driver_id: string | null;

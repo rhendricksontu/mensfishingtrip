@@ -73,3 +73,25 @@ export async function removeSignup(id: string): Promise<{ ok: boolean; error?: s
   revalidatePath("/signups");
   return { ok: true };
 }
+
+// Admin: set (or clear) the leader for a signup instance (role + day).
+export async function setSignupLeader(
+  role: "breakfast_cook" | "coffee_maker" | "guide_lunch",
+  trip_day: string,
+  attendee_id: string | null
+): Promise<{ ok: boolean; error?: string }> {
+  const admin = await getAdminUser();
+  if (!admin) return { ok: false, error: "Organizers only." };
+
+  const db = createAdminClient();
+  if (attendee_id) {
+    const { error } = await db
+      .from("signup_leaders")
+      .upsert({ role, trip_day, attendee_id }, { onConflict: "role,trip_day" });
+    if (error) return { ok: false, error: "Could not set the leader." };
+  } else {
+    await db.from("signup_leaders").delete().eq("role", role).eq("trip_day", trip_day);
+  }
+  revalidatePath("/signups");
+  return { ok: true };
+}

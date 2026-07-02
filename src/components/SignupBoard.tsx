@@ -1,10 +1,22 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { useState } from "react";
-import { addSignup, removeSignup, type SignupState } from "@/app/signups/actions";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import {
+  addSignup,
+  removeSignup,
+  setSignupLeader,
+  type SignupState,
+} from "@/app/signups/actions";
 import PhoneLink from "@/components/PhoneLink";
-import type { Signup, SignupRole } from "@/lib/types";
+import type { Signup, SignupLeader, SignupRole } from "@/lib/types";
+
+interface Member {
+  id: string;
+  name: string;
+  phone: string;
+}
 
 const initial: SignupState = { ok: false };
 
@@ -36,19 +48,38 @@ function AddButton() {
 
 export default function SignupBoard({
   signups,
+  leaders,
+  members,
   phoneById,
   currentAttendeeId,
   isAdmin,
 }: {
   signups: Signup[];
+  leaders: SignupLeader[];
+  members: Member[];
   phoneById: Record<string, string>;
   currentAttendeeId: string | null;
   isAdmin: boolean;
 }) {
+  const router = useRouter();
   const [state, formAction] = useFormState(addSignup, initial);
   const [removing, setRemoving] = useState<string | null>(null);
   const [role, setRole] = useState<SignupRole>("breakfast_cook");
   const [day, setDay] = useState("saturday");
+  const [, startLeader] = useTransition();
+
+  const memberById = new Map(members.map((m) => [m.id, m]));
+  const leaderByKey = new Map(
+    leaders.filter((l) => l.attendee_id).map((l) => [`${l.role}:${l.trip_day}`, l.attendee_id!])
+  );
+
+  function setLeader(r: SignupRole, d: string, attendeeId: string | null) {
+    startLeader(async () => {
+      const res = await setSignupLeader(r, d, attendeeId);
+      if (!res.ok) alert(res.error ?? "Could not set the leader.");
+      router.refresh();
+    });
+  }
 
   const canRemove = (s: Signup) =>
     isAdmin || (currentAttendeeId !== null && s.attendee_id === currentAttendeeId);
@@ -139,6 +170,42 @@ export default function SignupBoard({
                   <p className={`mt-1 text-xs font-medium ${met ? "text-olive-700" : "text-amber-700"}`}>
                     {met ? "Minimum Met" : `${roleObj.min - people.length} More Needed`}
                   </p>
+
+                  {(() => {
+                    const leaderId = leaderByKey.get(`${roleObj.key}:${d.key}`) ?? null;
+                    const leader = leaderId ? memberById.get(leaderId) : null;
+                    return (
+                      <div className="mt-2 border-t border-brand-50 pt-2">
+                        {leader ? (
+                          <p className="text-sm">
+                            <span className="badge mr-1 bg-olive-600 text-white">Leader</span>
+                            <span className="font-medium text-brand-800">{leader.name}</span>
+                            <PhoneLink
+                              phone={leader.phone}
+                              className="ml-2 text-xs text-brand-400 underline"
+                            />
+                          </p>
+                        ) : (
+                          !isAdmin && <p className="text-xs text-brand-400">No leader assigned yet.</p>
+                        )}
+                        {isAdmin && (
+                          <select
+                            value={leaderId ?? ""}
+                            onChange={(e) => setLeader(roleObj.key, d.key, e.target.value || null)}
+                            className="input mt-1"
+                          >
+                            <option value="">No leader</option>
+                            {members.map((m) => (
+                              <option key={m.id} value={m.id}>
+                                {m.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                    );
+                  })()}
+
                   {people.length === 0 ? (
                     <p className="mt-2 text-sm text-brand-400">No one yet. Be the first!</p>
                   ) : (

@@ -9,6 +9,7 @@ import type {
   LocationItem,
   Ride,
   Signup,
+  SignupLeader,
 } from "@/lib/types";
 
 export function isSupabaseConfigured(): boolean {
@@ -78,6 +79,14 @@ export function getSignups(): Promise<Signup[]> {
       .select("*")
       .order("created_at", { ascending: true });
     return (data as Signup[]) ?? [];
+  }, []);
+}
+
+export function getSignupLeaders(): Promise<SignupLeader[]> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db.from("signup_leaders").select("*");
+    return (data as SignupLeader[]) ?? [];
   }, []);
 }
 
