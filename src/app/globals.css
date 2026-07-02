@@ -35,4 +35,34 @@ body {
   .badge {
     @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
   }
+  /* Rich notes: restore list/heading styles that preflight strips, both in the
+     editor and the rendered read view. */
+  .notes-rich ul {
+    @apply my-1 list-disc pl-5;
+  }
+  .notes-rich ol {
+    @apply my-1 list-decimal pl-5;
+  }
+  .notes-rich a {
+    @apply text-brand-600 underline;
+  }
+  .notes-rich h1 {
+    @apply mt-2 text-lg font-bold text-brand-800;
+  }
+  .notes-rich h2 {
+    @apply mt-2 text-base font-bold text-brand-800;
+  }
+  .notes-rich h3 {
+    @apply mt-2 text-sm font-bold text-brand-800;
+  }
+  .notes-rich blockquote {
+    @apply border-l-2 border-brand-200 pl-3 text-brand-600;
+  }
+}
+
+/* contentEditable placeholder */
+[contenteditable][data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: #97a4b3; /* brand-300 */
+  pointer-events: none;
 }

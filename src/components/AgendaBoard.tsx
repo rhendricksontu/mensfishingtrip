@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { DAY_LABELS, TRIP_DAYS } from "@/lib/config";
 import { shortenPlace } from "@/lib/utils";
 import MapLink from "@/components/MapLink";
+import RichTextEditor from "@/components/RichTextEditor";
 import {
   createAgendaItem,
   updateAgendaItem,
@@ -203,16 +204,14 @@ function AgendaRow({
         </div>
         <div>
           <span className="label">Notes (lyrics, lesson text, etc.)</span>
-          <textarea
-            className="input min-h-[6rem]"
-            rows={4}
-            defaultValue={item.notes ?? ""}
-            placeholder="Paste text here — it loads instantly for everyone, collapsed by default."
-            onBlur={(e) =>
-              e.target.value.trim() !== (item.notes ?? "") &&
-              run(() => updateAgendaItem(item.id, { notes: e.target.value.trim() || null }))
-            }
+          <RichTextEditor
+            defaultHtml={item.notes ?? ""}
+            placeholder="Paste or type here — formatting (bold, lists, color) is kept."
+            onBlurSave={(html) => run(() => updateAgendaItem(item.id, { notes: html || null }))}
           />
+          <p className="mt-1 text-xs text-brand-400">
+            Paste from Word or Docs to keep formatting. Loads instantly for everyone.
+          </p>
         </div>
 
         <div>
@@ -320,7 +319,10 @@ function AgendaRow({
 
       {/* Expanded panels span the full width of the card */}
       {showNotes && item.notes && (
-        <p className="mt-3 whitespace-pre-line text-sm text-brand-700">{item.notes}</p>
+        <div
+          className="notes-rich mt-3 text-sm text-brand-700"
+          dangerouslySetInnerHTML={{ __html: item.notes }}
+        />
       )}
       {showFiles && files.length > 0 && (
         <div className="mt-3 space-y-2">
@@ -424,12 +426,10 @@ function AddAgendaItem({ day }: { day: string }) {
       </div>
       <div>
         <span className="label">Notes (lyrics, lesson text, etc.)</span>
-        <textarea
-          className="input min-h-[6rem]"
-          rows={4}
-          placeholder="Paste text here — loads instantly for everyone, collapsed by default."
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+        <RichTextEditor
+          defaultHtml=""
+          placeholder="Paste or type here — formatting (bold, lists, color) is kept."
+          onChange={setNotes}
         />
       </div>
       <div className="flex gap-2">

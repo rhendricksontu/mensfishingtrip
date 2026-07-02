@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/require-admin";
+import { sanitizeNotes } from "@/lib/sanitize";
 import type { FishingSession, RideDirection } from "@/lib/types";
 
 // ---- Attendee assignment / payment updates --------------------------------
@@ -376,7 +377,8 @@ export async function createAgendaItem(
     description: patch.description || null,
     location: patch.location || null,
   };
-  if (patch.notes) row.notes = patch.notes; // omit when empty (pre-migration safe)
+  const cleanNotes = patch.notes ? sanitizeNotes(patch.notes) : "";
+  if (cleanNotes) row.notes = cleanNotes; // omit when empty (pre-migration safe)
   await db.from("agenda_items").insert(row);
   revalidatePath("/");
 }
@@ -395,7 +397,11 @@ export async function updateAgendaItem(
 ) {
   await requireAdmin();
   const db = createAdminClient();
-  await db.from("agenda_items").update(patch).eq("id", id);
+  const clean = { ...patch };
+  if (typeof clean.notes === "string") {
+    clean.notes = clean.notes ? sanitizeNotes(clean.notes) || null : null;
+  }
+  await db.from("agenda_items").update(clean).eq("id", id);
   revalidatePath("/");
 }
 
