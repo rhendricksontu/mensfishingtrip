@@ -46,6 +46,15 @@ function AddButton() {
   );
 }
 
+function EditIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 20h9" />
+      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+    </svg>
+  );
+}
+
 export default function SignupBoard({
   signups,
   leaders,
@@ -67,6 +76,7 @@ export default function SignupBoard({
   const [role, setRole] = useState<SignupRole>("breakfast_cook");
   const [day, setDay] = useState("saturday");
   const [, startLeader] = useTransition();
+  const [editingLeader, setEditingLeader] = useState<string | null>(null);
 
   const memberById = new Map(members.map((m) => [m.id, m]));
   const leaderByKey = new Map(
@@ -161,22 +171,61 @@ export default function SignupBoard({
                 <div key={d.key} className={single ? "card w-full sm:w-1/2" : "card"}>
                   <div className="flex items-center justify-between gap-2">
                     <h3 className="font-semibold text-brand-800">{d.label}</h3>
-                    <span
-                      className={`badge ${met ? "bg-olive-100 text-olive-800" : "bg-amber-100 text-amber-800"}`}
-                    >
-                      {people.length} of {roleObj.min}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`badge ${met ? "bg-olive-100 text-olive-800" : "bg-amber-100 text-amber-800"}`}
+                      >
+                        {people.length} of {roleObj.min}
+                      </span>
+                      {isAdmin && (
+                        <button
+                          onClick={() =>
+                            setEditingLeader((k) =>
+                              k === `${roleObj.key}:${d.key}` ? null : `${roleObj.key}:${d.key}`
+                            )
+                          }
+                          aria-label="Edit leader"
+                          className="text-brand-400 hover:text-brand-700"
+                        >
+                          <EditIcon />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <p className={`mt-1 text-xs font-medium ${met ? "text-olive-700" : "text-amber-700"}`}>
                     {met ? "Minimum Met" : `${roleObj.min - people.length} More Needed`}
                   </p>
 
                   {(() => {
-                    const leaderId = leaderByKey.get(`${roleObj.key}:${d.key}`) ?? null;
+                    const key = `${roleObj.key}:${d.key}`;
+                    const leaderId = leaderByKey.get(key) ?? null;
                     const leader = leaderId ? memberById.get(leaderId) : null;
+                    const editing = editingLeader === key;
                     return (
                       <div className="mt-2 border-t border-brand-50 pt-2">
-                        {leader ? (
+                        {editing ? (
+                          <>
+                            <span className="label">Leader</span>
+                            <select
+                              value={leaderId ?? ""}
+                              onChange={(e) => setLeader(roleObj.key, d.key, e.target.value || null)}
+                              className="input"
+                            >
+                              <option value="">No leader</option>
+                              {members.map((m) => (
+                                <option key={m.id} value={m.id}>
+                                  {m.name}
+                                </option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => setEditingLeader(null)}
+                              className="btn-secondary mt-2 text-sm"
+                            >
+                              Done
+                            </button>
+                          </>
+                        ) : leader ? (
                           <p className="text-sm">
                             <span className="badge mr-1 bg-olive-600 text-white">Leader</span>
                             <span className="font-medium text-brand-800">{leader.name}</span>
@@ -186,21 +235,7 @@ export default function SignupBoard({
                             />
                           </p>
                         ) : (
-                          !isAdmin && <p className="text-xs text-brand-400">No leader assigned yet.</p>
-                        )}
-                        {isAdmin && (
-                          <select
-                            value={leaderId ?? ""}
-                            onChange={(e) => setLeader(roleObj.key, d.key, e.target.value || null)}
-                            className="input mt-1"
-                          >
-                            <option value="">No leader</option>
-                            {members.map((m) => (
-                              <option key={m.id} value={m.id}>
-                                {m.name}
-                              </option>
-                            ))}
-                          </select>
+                          <p className="text-xs text-brand-400">No leader assigned yet.</p>
                         )}
                       </div>
                     );
