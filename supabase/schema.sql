@@ -161,11 +161,12 @@ create table if not exists agenda_items (
   trip_day     text not null,        -- 'friday' | 'saturday' | 'sunday'
   start_time   text,                 -- display string e.g. "7:30 AM"
   sort_order   int not null default 0,
-  title        text not null,
-  description  text,
-  location     text,
-  notes        text,                 -- inline notes/lyrics text
-  created_at   timestamptz not null default now()
+  title         text not null,
+  description   text,
+  location      text,                -- street address (for directions)
+  location_name text,                -- friendly place name (label)
+  notes         text,                -- inline notes/lyrics text
+  created_at    timestamptz not null default now()
 );
 create index if not exists agenda_day_idx on agenda_items (trip_day, sort_order);
 

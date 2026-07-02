@@ -356,6 +356,7 @@ export async function createAgendaItem(
     title: string;
     description?: string | null;
     location?: string | null;
+    location_name?: string | null;
     notes?: string | null;
   }
 ) {
@@ -377,6 +378,7 @@ export async function createAgendaItem(
     description: patch.description || null,
     location: patch.location || null,
   };
+  if (patch.location_name) row.location_name = patch.location_name; // omit when empty
   const cleanNotes = patch.notes ? sanitizeNotes(patch.notes) : "";
   if (cleanNotes) row.notes = cleanNotes; // omit when empty (pre-migration safe)
   await db.from("agenda_items").insert(row);
@@ -390,6 +392,7 @@ export async function updateAgendaItem(
     title?: string;
     description?: string | null;
     location?: string | null;
+    location_name?: string | null;
     notes?: string | null;
     trip_day?: string;
     sort_order?: number;

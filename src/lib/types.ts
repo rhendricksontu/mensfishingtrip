@@ -86,6 +86,7 @@ export interface AgendaItem {
   title: string;
   description: string | null;
   location: string | null;
+  location_name: string | null;
   notes: string | null;
 }
 

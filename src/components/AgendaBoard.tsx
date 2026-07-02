@@ -191,11 +191,23 @@ function AgendaRow({
           />
         </div>
         <div>
-          <span className="label">Location / Address</span>
+          <span className="label">Location Name</span>
+          <input
+            className="input"
+            defaultValue={item.location_name ?? ""}
+            placeholder="Mountain Fork Park"
+            onBlur={(e) =>
+              e.target.value.trim() !== (item.location_name ?? "") &&
+              run(() => updateAgendaItem(item.id, { location_name: e.target.value.trim() || null }))
+            }
+          />
+        </div>
+        <div>
+          <span className="label">Address</span>
           <input
             className="input"
             defaultValue={item.location ?? ""}
-            placeholder="123 Main St, Broken Bow, OK 74728"
+            placeholder="Beavers Bend Rd, Broken Bow, OK 74728"
             onBlur={(e) =>
               e.target.value.trim() !== (item.location ?? "") &&
               run(() => updateAgendaItem(item.id, { location: e.target.value.trim() || null }))
@@ -281,17 +293,21 @@ function AgendaRow({
           {item.description && (
             <p className="mt-0.5 whitespace-pre-line text-sm text-brand-600">{item.description}</p>
           )}
-          {item.location &&
-            (/\d/.test(item.location) ? (
+          {(() => {
+            const label =
+              item.location_name || (item.location ? shortenPlace(item.location) : "");
+            if (!label) return null;
+            return item.location && /\d/.test(item.location) ? (
               <MapLink
                 place={item.location}
                 className="mt-1 inline-block text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
               >
-                {shortenPlace(item.location)}
+                {label}
               </MapLink>
             ) : (
-              <p className="mt-1 text-xs font-medium text-brand-500">{shortenPlace(item.location)}</p>
-            ))}
+              <p className="mt-1 text-xs font-medium text-brand-500">{label}</p>
+            );
+          })()}
           {(item.notes || files.length > 0) && (
             <div className="mt-2 flex flex-wrap gap-2">
               {item.notes && (
@@ -387,6 +403,7 @@ function AddAgendaItem({ day }: { day: string }) {
   const [time, setTime] = useState("");
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+  const [locName, setLocName] = useState("");
   const [loc, setLoc] = useState("");
   const [notes, setNotes] = useState("");
 
@@ -397,12 +414,14 @@ function AddAgendaItem({ day }: { day: string }) {
         start_time: time.trim() || null,
         title: title.trim(),
         description: desc.trim() || null,
+        location_name: locName.trim() || null,
         location: loc.trim() || null,
         notes: notes.trim() || null,
       });
       setTime("");
       setTitle("");
       setDesc("");
+      setLocName("");
       setLoc("");
       setNotes("");
       setOpen(false);
@@ -441,10 +460,19 @@ function AddAgendaItem({ day }: { day: string }) {
         />
       </div>
       <div>
-        <span className="label">Location / Address</span>
+        <span className="label">Location Name</span>
         <input
           className="input"
-          placeholder="123 Main St, Broken Bow, OK 74728"
+          placeholder="Mountain Fork Park"
+          value={locName}
+          onChange={(e) => setLocName(e.target.value)}
+        />
+      </div>
+      <div>
+        <span className="label">Address</span>
+        <input
+          className="input"
+          placeholder="Beavers Bend Rd, Broken Bow, OK 74728"
           value={loc}
           onChange={(e) => setLoc(e.target.value)}
         />
