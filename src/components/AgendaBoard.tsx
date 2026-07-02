@@ -26,6 +26,15 @@ function EditIcon() {
 const IMAGE_RE = /\.(png|jpe?g|webp|gif)$/i;
 const isImage = (name: string) => IMAGE_RE.test(name);
 
+// Office docs don't render in a phone browser. Open them in the Microsoft
+// Office web viewer (no app needed) instead of a raw download.
+const OFFICE_RE = /\.(docx?|pptx?|xlsx?)$/i;
+function fileHref(f: AgendaFile): string {
+  return OFFICE_RE.test(f.name)
+    ? `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(f.url)}`
+    : f.url;
+}
+
 // Downscale + compress photos in the browser before upload so song sheets are
 // small (~150-300 KB) and load fast for the whole group on weak signal.
 async function compressImage(file: File): Promise<File> {
@@ -284,7 +293,7 @@ function AgendaRow({
               ) : (
                 <a
                   key={f.id}
-                  href={f.url}
+                  href={fileHref(f)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
