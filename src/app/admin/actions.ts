@@ -418,7 +418,12 @@ export async function uploadAgendaFile(agendaItemId: string, formData: FormData)
   const path = `${agendaItemId}/${Date.now()}-${safeName}`;
   const { error } = await db.storage
     .from("agenda-files")
-    .upload(path, file, { contentType: file.type || undefined });
+    .upload(path, file, {
+      contentType: file.type || undefined,
+      // Cache hard at the CDN edge so the first fetch warms it and the rest of
+      // the group gets it fast (files are immutable per upload path).
+      cacheControl: "31536000",
+    });
   if (error) return { ok: false, error: error.message };
   await db.from("agenda_files").insert({ agenda_item_id: agendaItemId, name: file.name, path });
   revalidatePath("/");
