@@ -350,7 +350,12 @@ export async function seedReturnFromDown(driver_id: string) {
 
 export async function createAgendaItem(
   trip_day: string,
-  patch: { start_time?: string | null; title: string; description?: string | null }
+  patch: {
+    start_time?: string | null;
+    title: string;
+    description?: string | null;
+    location?: string | null;
+  }
 ) {
   await requireAdmin();
   const db = createAdminClient();
@@ -368,6 +373,7 @@ export async function createAgendaItem(
     title: patch.title,
     start_time: patch.start_time || null,
     description: patch.description || null,
+    location: patch.location || null,
   });
   revalidatePath("/");
 }
@@ -378,6 +384,7 @@ export async function updateAgendaItem(
     start_time?: string | null;
     title?: string;
     description?: string | null;
+    location?: string | null;
     trip_day?: string;
     sort_order?: number;
   }

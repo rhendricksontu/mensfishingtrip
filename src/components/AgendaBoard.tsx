@@ -147,6 +147,18 @@ function AgendaRow({
             }
           />
         </div>
+        <div>
+          <span className="label">Location / Address</span>
+          <input
+            className="input"
+            defaultValue={item.location ?? ""}
+            placeholder="123 Main St, Broken Bow, OK 74728"
+            onBlur={(e) =>
+              e.target.value.trim() !== (item.location ?? "") &&
+              run(() => updateAgendaItem(item.id, { location: e.target.value.trim() || null }))
+            }
+          />
+        </div>
 
         <div>
           <span className="label">Attachments</span>
@@ -253,6 +265,7 @@ function AddAgendaItem({ day }: { day: string }) {
   const [time, setTime] = useState("");
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
+  const [loc, setLoc] = useState("");
 
   function add() {
     if (!title.trim()) return;
@@ -261,10 +274,12 @@ function AddAgendaItem({ day }: { day: string }) {
         start_time: time.trim() || null,
         title: title.trim(),
         description: desc.trim() || null,
+        location: loc.trim() || null,
       });
       setTime("");
       setTitle("");
       setDesc("");
+      setLoc("");
       setOpen(false);
       router.refresh();
     });
@@ -298,6 +313,15 @@ function AddAgendaItem({ day }: { day: string }) {
           placeholder="Optional details"
           value={desc}
           onChange={(e) => setDesc(e.target.value)}
+        />
+      </div>
+      <div>
+        <span className="label">Location / Address</span>
+        <input
+          className="input"
+          placeholder="123 Main St, Broken Bow, OK 74728"
+          value={loc}
+          onChange={(e) => setLoc(e.target.value)}
         />
       </div>
       <div className="flex gap-2">
