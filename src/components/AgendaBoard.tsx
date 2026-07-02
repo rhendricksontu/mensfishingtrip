@@ -294,8 +294,8 @@ function AgendaRow({
             <p className="mt-0.5 whitespace-pre-line text-sm text-brand-600">{item.description}</p>
           )}
           {(() => {
-            const label =
-              item.location_name || (item.location ? shortenPlace(item.location) : "");
+            const addr = item.location ? shortenPlace(item.location) : "";
+            const label = [item.location_name, addr].filter(Boolean).join(" · ");
             if (!label) return null;
             return item.location && /\d/.test(item.location) ? (
               <MapLink
