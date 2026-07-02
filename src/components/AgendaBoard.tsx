@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { DAY_LABELS, TRIP_DAYS } from "@/lib/config";
 import { shortenPlace } from "@/lib/utils";
@@ -130,6 +130,16 @@ function AgendaRow({
   const [expanded, setExpanded] = useState<"notes" | "files" | null>(null);
   const showNotes = expanded === "notes";
   const showFiles = expanded === "files";
+
+  // After leaving edit mode, scroll the item back into view so it isn't lost.
+  const liRef = useRef<HTMLLIElement>(null);
+  const wasEditing = useRef(false);
+  useEffect(() => {
+    if (wasEditing.current && !editing) {
+      liRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    wasEditing.current = editing;
+  }, [editing]);
   const run = (fn: () => Promise<unknown>) =>
     start(async () => {
       await fn();
@@ -153,7 +163,7 @@ function AgendaRow({
   // ---- Admin edit view ----
   if (isAdmin && editing) {
     return (
-      <li className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
+      <li ref={liRef} className={`card space-y-3 ${pending ? "opacity-60" : ""}`}>
         <div className="grid gap-3 sm:grid-cols-[7rem_1fr]">
           <div>
             <span className="label">Start Time</span>
@@ -274,7 +284,7 @@ function AgendaRow({
 
   // ---- Read view (everyone) ----
   return (
-    <li className={`card ${pending ? "opacity-60" : ""}`}>
+    <li ref={liRef} className={`card ${pending ? "opacity-60" : ""}`}>
       <div className="flex gap-4">
         <div className="w-20 shrink-0 text-sm font-semibold text-brand-600">
           {item.start_time || "-"}
