@@ -164,6 +164,7 @@ create table if not exists agenda_items (
   title        text not null,
   description  text,
   location     text,
+  notes        text,                 -- inline notes/lyrics text
   created_at   timestamptz not null default now()
 );
 create index if not exists agenda_day_idx on agenda_items (trip_day, sort_order);

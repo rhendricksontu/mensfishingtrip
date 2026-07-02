@@ -125,6 +125,8 @@ function AgendaRow({
   const router = useRouter();
   const [pending, start] = useTransition();
   const [editing, setEditing] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [showFiles, setShowFiles] = useState(false);
   const run = (fn: () => Promise<unknown>) =>
     start(async () => {
       await fn();
@@ -196,6 +198,19 @@ function AgendaRow({
             onBlur={(e) =>
               e.target.value.trim() !== (item.location ?? "") &&
               run(() => updateAgendaItem(item.id, { location: e.target.value.trim() || null }))
+            }
+          />
+        </div>
+        <div>
+          <span className="label">Notes (lyrics, lesson text, etc.)</span>
+          <textarea
+            className="input min-h-[6rem]"
+            rows={4}
+            defaultValue={item.notes ?? ""}
+            placeholder="Paste text here — it loads instantly for everyone, collapsed by default."
+            onBlur={(e) =>
+              e.target.value.trim() !== (item.notes ?? "") &&
+              run(() => updateAgendaItem(item.id, { notes: e.target.value.trim() || null }))
             }
           />
         </div>
@@ -277,30 +292,56 @@ function AgendaRow({
           ) : (
             <p className="mt-1 text-xs font-medium text-brand-500">{shortenPlace(item.location)}</p>
           ))}
+        {item.notes && (
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={() => setShowNotes((v) => !v)}
+              className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
+            >
+              {showNotes ? "Hide Notes" : "Show Notes"}
+            </button>
+            {showNotes && (
+              <p className="mt-2 whitespace-pre-line text-sm text-brand-700">{item.notes}</p>
+            )}
+          </div>
+        )}
+
         {files.length > 0 && (
-          <div className="mt-2 space-y-2">
-            {files.map((f) =>
-              isImage(f.name) ? (
-                <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="block">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={f.url}
-                    alt={f.name}
-                    loading="lazy"
-                    className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
-                  />
-                </a>
-              ) : (
-                <a
-                  key={f.id}
-                  href={fileHref(f)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-                >
-                  📎 {f.name}
-                </a>
-              )
+          <div className="mt-2">
+            <button
+              type="button"
+              onClick={() => setShowFiles((v) => !v)}
+              className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
+            >
+              {showFiles ? "Hide Attachments" : `Show Attachments (${files.length})`}
+            </button>
+            {showFiles && (
+              <div className="mt-2 space-y-2">
+                {files.map((f) =>
+                  isImage(f.name) ? (
+                    <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="block">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={f.url}
+                        alt={f.name}
+                        loading="lazy"
+                        className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
+                      />
+                    </a>
+                  ) : (
+                    <a
+                      key={f.id}
+                      href={fileHref(f)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+                    >
+                      📎 {f.name}
+                    </a>
+                  )
+                )}
+              </div>
             )}
           </div>
         )}
@@ -317,6 +358,7 @@ function AddAgendaItem({ day }: { day: string }) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [loc, setLoc] = useState("");
+  const [notes, setNotes] = useState("");
 
   function add() {
     if (!title.trim()) return;
@@ -326,11 +368,13 @@ function AddAgendaItem({ day }: { day: string }) {
         title: title.trim(),
         description: desc.trim() || null,
         location: loc.trim() || null,
+        notes: notes.trim() || null,
       });
       setTime("");
       setTitle("");
       setDesc("");
       setLoc("");
+      setNotes("");
       setOpen(false);
       router.refresh();
     });
@@ -373,6 +417,16 @@ function AddAgendaItem({ day }: { day: string }) {
           placeholder="123 Main St, Broken Bow, OK 74728"
           value={loc}
           onChange={(e) => setLoc(e.target.value)}
+        />
+      </div>
+      <div>
+        <span className="label">Notes (lyrics, lesson text, etc.)</span>
+        <textarea
+          className="input min-h-[6rem]"
+          rows={4}
+          placeholder="Paste text here — loads instantly for everyone, collapsed by default."
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
         />
       </div>
       <div className="flex gap-2">

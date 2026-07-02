@@ -355,6 +355,7 @@ export async function createAgendaItem(
     title: string;
     description?: string | null;
     location?: string | null;
+    notes?: string | null;
   }
 ) {
   await requireAdmin();
@@ -367,14 +368,16 @@ export async function createAgendaItem(
     .order("sort_order", { ascending: false })
     .limit(1)
     .maybeSingle();
-  await db.from("agenda_items").insert({
+  const row: Record<string, unknown> = {
     trip_day,
     sort_order: (last?.sort_order ?? 0) + 10,
     title: patch.title,
     start_time: patch.start_time || null,
     description: patch.description || null,
     location: patch.location || null,
-  });
+  };
+  if (patch.notes) row.notes = patch.notes; // omit when empty (pre-migration safe)
+  await db.from("agenda_items").insert(row);
   revalidatePath("/");
 }
 
@@ -385,6 +388,7 @@ export async function updateAgendaItem(
     title?: string;
     description?: string | null;
     location?: string | null;
+    notes?: string | null;
     trip_day?: string;
     sort_order?: number;
   }
