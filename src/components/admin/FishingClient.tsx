@@ -384,7 +384,8 @@ function AddGuide({
   const [cap, setCap] = useState(4);
   const [when, setWhen] = useState<GuideWhen>("both");
   const [meet, setMeet] = useState(""); // selected meet address
-  const [meetTime, setMeetTime] = useState(""); // 24h HH:MM
+  const [timeAM, setTimeAM] = useState(""); // morning meet time, 24h HH:MM
+  const [timePM, setTimePM] = useState(""); // afternoon meet time, 24h HH:MM
 
   const members = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -395,7 +396,8 @@ function AddGuide({
     setCap(4);
     setWhen("both");
     setMeet("");
-    setMeetTime("");
+    setTimeAM("");
+    setTimePM("");
     setOpen(false);
   }
 
@@ -424,6 +426,7 @@ function AddGuide({
       when === "both" ? ["saturday_morning", "saturday_afternoon"] : [when];
     start(async () => {
       for (const s of sessions) {
+        const t = s === "saturday_morning" ? timeAM : timePM;
         await createFishingGroup(
           guideName,
           s,
@@ -433,7 +436,7 @@ function AddGuide({
           guideId,
           meetOpt?.address || null,
           meetOpt?.name || null,
-          meetTime ? to12Hour(meetTime) : null
+          t ? to12Hour(t) : null
         );
       }
       reset();
@@ -499,28 +502,42 @@ function AddGuide({
         </div>
       </div>
 
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="flex-1">
-          <span className="label">Meeting Location</span>
-          <select className="input h-11" value={meet} onChange={(e) => setMeet(e.target.value)}>
-            <option value="">No meeting location</option>
-            {locations.map((o) => (
-              <option key={o.address} value={o.address}>
-                {o.name ? `${o.name} · ${shortenPlace(o.address)}` : shortenPlace(o.address)}
-              </option>
-            ))}
-          </select>
+      <div>
+        <span className="label">Meeting Location</span>
+        <select className="input" value={meet} onChange={(e) => setMeet(e.target.value)}>
+          <option value="">No meeting location</option>
+          {locations.map((o) => (
+            <option key={o.address} value={o.address}>
+              {o.name ? `${o.name} · ${shortenPlace(o.address)}` : shortenPlace(o.address)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {when === "both" ? (
+        <div className="flex flex-wrap gap-3">
+          <div className="flex-1">
+            <span className="label">Morning Meeting Time</span>
+            <input type="time" className="input" value={timeAM} onChange={(e) => setTimeAM(e.target.value)} />
+          </div>
+          <div className="flex-1">
+            <span className="label">Afternoon Meeting Time</span>
+            <input type="time" className="input" value={timePM} onChange={(e) => setTimePM(e.target.value)} />
+          </div>
         </div>
+      ) : (
         <div>
           <span className="label">Meeting Time</span>
           <input
             type="time"
-            className="input h-11"
-            value={meetTime}
-            onChange={(e) => setMeetTime(e.target.value)}
+            className="input"
+            value={when === "saturday_morning" ? timeAM : timePM}
+            onChange={(e) =>
+              when === "saturday_morning" ? setTimeAM(e.target.value) : setTimePM(e.target.value)
+            }
           />
         </div>
-      </div>
+      )}
 
       <div className="flex gap-2">
         <button onClick={add} className="btn-primary" disabled={pending}>
