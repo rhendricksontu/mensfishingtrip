@@ -79,7 +79,7 @@ export default function FishingClient({
         );
       })}
 
-      <AddGuide attendees={attendees} />
+      <AddGuide attendees={attendees} locations={locations} />
     </div>
   );
 }
@@ -348,7 +348,13 @@ function GuideCard({
 type GuideWhen = FishingSession | "both";
 const OTHER = "__other__";
 
-function AddGuide({ attendees }: { attendees: Attendee[] }) {
+function AddGuide({
+  attendees,
+  locations,
+}: {
+  attendees: Attendee[];
+  locations: TripLocation[];
+}) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
@@ -358,6 +364,7 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
   const [phone, setPhone] = useState("");
   const [cap, setCap] = useState(4);
   const [when, setWhen] = useState<GuideWhen>("both");
+  const [meet, setMeet] = useState(""); // selected meet address
 
   const members = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -367,6 +374,7 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
     setPhone("");
     setCap(4);
     setWhen("both");
+    setMeet("");
     setOpen(false);
   }
 
@@ -390,11 +398,21 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
       return; // nothing selected
     }
 
+    const meetOpt = locations.find((o) => o.address === meet);
     const sessions: FishingSession[] =
       when === "both" ? ["saturday_morning", "saturday_afternoon"] : [when];
     start(async () => {
       for (const s of sessions) {
-        await createFishingGroup(guideName, s, guideName, cap, guidePhone, guideId);
+        await createFishingGroup(
+          guideName,
+          s,
+          guideName,
+          cap,
+          guidePhone,
+          guideId,
+          meetOpt?.address || null,
+          meetOpt?.name || null
+        );
       }
       reset();
       router.refresh();
@@ -457,6 +475,18 @@ function AddGuide({ attendees }: { attendees: Attendee[] }) {
             <option value="saturday_afternoon">Afternoon Session</option>
           </select>
         </div>
+      </div>
+
+      <div>
+        <span className="label">Meeting Location</span>
+        <select className="input" value={meet} onChange={(e) => setMeet(e.target.value)}>
+          <option value="">No meeting location</option>
+          {locations.map((o) => (
+            <option key={o.address} value={o.address}>
+              {o.name ? `${o.name} · ${shortenPlace(o.address)}` : shortenPlace(o.address)}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex gap-2">

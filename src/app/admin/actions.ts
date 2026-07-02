@@ -151,7 +151,9 @@ export async function createFishingGroup(
   guide_name: string,
   capacity: number,
   guide_phone?: string | null,
-  guide_attendee_id?: string | null
+  guide_attendee_id?: string | null,
+  meet_location?: string | null,
+  meet_location_name?: string | null
 ) {
   await requireAdmin();
   const db = createAdminClient();
@@ -162,6 +164,8 @@ export async function createFishingGroup(
     capacity,
     guide_phone: guide_phone || null,
     guide_attendee_id: guide_attendee_id || null,
+    meet_location: meet_location || null,
+    meet_location_name: meet_location_name || null,
   });
   revalidatePath("/admin/fishing");
 }
