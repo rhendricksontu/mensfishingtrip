@@ -23,6 +23,36 @@ function EditIcon() {
   );
 }
 
+const IMAGE_RE = /\.(png|jpe?g|webp|gif)$/i;
+const isImage = (name: string) => IMAGE_RE.test(name);
+
+// Downscale + compress photos in the browser before upload so song sheets are
+// small (~150-300 KB) and load fast for the whole group on weak signal.
+async function compressImage(file: File): Promise<File> {
+  if (!file.type.startsWith("image/") || file.type === "image/gif") return file;
+  try {
+    const bitmap = await createImageBitmap(file);
+    const maxDim = 1600;
+    const scale = Math.min(1, maxDim / Math.max(bitmap.width, bitmap.height));
+    const w = Math.round(bitmap.width * scale);
+    const h = Math.round(bitmap.height * scale);
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return file;
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    const blob = await new Promise<Blob | null>((res) =>
+      canvas.toBlob(res, "image/jpeg", 0.82)
+    );
+    if (!blob || blob.size >= file.size) return file; // keep original if no win
+    const base = file.name.replace(/\.[^.]+$/, "");
+    return new File([blob], `${base}.jpg`, { type: "image/jpeg" });
+  } catch {
+    return file;
+  }
+}
+
 export default function AgendaBoard({
   items,
   files,
@@ -93,16 +123,17 @@ function AgendaRow({
     });
 
   function onPickFile(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const fd = new FormData();
-    fd.append("file", file);
+    const raw = e.target.files?.[0];
+    if (!raw) return;
+    e.target.value = "";
     start(async () => {
+      const file = await compressImage(raw);
+      const fd = new FormData();
+      fd.append("file", file);
       const res = await uploadAgendaFile(item.id, fd);
       if (res && !res.ok) alert(res.error ?? "Upload failed.");
       router.refresh();
     });
-    e.target.value = "";
   }
 
   // ---- Admin edit view ----
@@ -238,10 +269,21 @@ function AgendaRow({
             <p className="mt-1 text-xs font-medium text-brand-500">{shortenPlace(item.location)}</p>
           ))}
         {files.length > 0 && (
-          <ul className="mt-2 space-y-1">
-            {files.map((f) => (
-              <li key={f.id}>
+          <div className="mt-2 space-y-2">
+            {files.map((f) =>
+              isImage(f.name) ? (
+                <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="block">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={f.url}
+                    alt={f.name}
+                    loading="lazy"
+                    className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
+                  />
+                </a>
+              ) : (
                 <a
+                  key={f.id}
                   href={f.url}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -249,9 +291,9 @@ function AgendaRow({
                 >
                   📎 {f.name}
                 </a>
-              </li>
-            ))}
-          </ul>
+              )
+            )}
+          </div>
         )}
       </div>
     </li>
