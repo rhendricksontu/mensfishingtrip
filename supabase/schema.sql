@@ -61,6 +61,7 @@ create table if not exists fishing_groups (
   capacity          int  not null default 0,
   meet_location      text,          -- where the group meets (address)
   meet_location_name text,          -- friendly name for the meeting spot
+  meet_time          text,          -- when the group meets, e.g. "7:00 AM"
   notes             text,
   created_at        timestamptz not null default now()
 );

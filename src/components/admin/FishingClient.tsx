@@ -9,7 +9,7 @@ import {
   updateAttendee,
 } from "@/app/admin/actions";
 import { SESSION_LABELS } from "@/lib/config";
-import { formatPhone, shortenPlace } from "@/lib/utils";
+import { formatPhone, shortenPlace, to12Hour, to24Hour } from "@/lib/utils";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, FishingGroup, FishingSession } from "@/lib/types";
 
@@ -143,11 +143,17 @@ function GuideCard({
             {members.length}
             {guide.capacity > 0 ? ` / ${guide.capacity}` : ""} Anglers
           </span>
-          {guide.meet_location && (
+          {(guide.meet_location || guide.meet_time) && (
             <p className="text-sm text-brand-600">
-              Meet at:{" "}
+              Meet:{" "}
               <span className="font-medium text-brand-800">
-                {guide.meet_location_name || shortenPlace(guide.meet_location)}
+                {[
+                  guide.meet_location_name ||
+                    (guide.meet_location ? shortenPlace(guide.meet_location) : null),
+                  guide.meet_time,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
               </span>
             </p>
           )}
@@ -272,6 +278,19 @@ function GuideCard({
               ))}
             </select>
           </div>
+          <div>
+            <span className="label">Meeting Time</span>
+            <input
+              type="time"
+              className="input"
+              defaultValue={to24Hour(guide.meet_time ?? "")}
+              onBlur={(e) => {
+                const label = e.target.value ? to12Hour(e.target.value) : null;
+                if (label !== (guide.meet_time ?? null))
+                  run(() => updateFishingGroup(guide.id, { meet_time: label }));
+              }}
+            />
+          </div>
 
           {members.length > 0 && (
             <ul className="divide-y divide-brand-50">
@@ -365,6 +384,7 @@ function AddGuide({
   const [cap, setCap] = useState(4);
   const [when, setWhen] = useState<GuideWhen>("both");
   const [meet, setMeet] = useState(""); // selected meet address
+  const [meetTime, setMeetTime] = useState(""); // 24h HH:MM
 
   const members = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
 
@@ -375,6 +395,7 @@ function AddGuide({
     setCap(4);
     setWhen("both");
     setMeet("");
+    setMeetTime("");
     setOpen(false);
   }
 
@@ -411,7 +432,8 @@ function AddGuide({
           guidePhone,
           guideId,
           meetOpt?.address || null,
-          meetOpt?.name || null
+          meetOpt?.name || null,
+          meetTime ? to12Hour(meetTime) : null
         );
       }
       reset();
@@ -477,16 +499,27 @@ function AddGuide({
         </div>
       </div>
 
-      <div>
-        <span className="label">Meeting Location</span>
-        <select className="input" value={meet} onChange={(e) => setMeet(e.target.value)}>
-          <option value="">No meeting location</option>
-          {locations.map((o) => (
-            <option key={o.address} value={o.address}>
-              {o.name ? `${o.name} · ${shortenPlace(o.address)}` : shortenPlace(o.address)}
-            </option>
-          ))}
-        </select>
+      <div className="flex flex-wrap items-end gap-3">
+        <div className="flex-1">
+          <span className="label">Meeting Location</span>
+          <select className="input h-11" value={meet} onChange={(e) => setMeet(e.target.value)}>
+            <option value="">No meeting location</option>
+            {locations.map((o) => (
+              <option key={o.address} value={o.address}>
+                {o.name ? `${o.name} · ${shortenPlace(o.address)}` : shortenPlace(o.address)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <span className="label">Meeting Time</span>
+          <input
+            type="time"
+            className="input h-11"
+            value={meetTime}
+            onChange={(e) => setMeetTime(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="flex gap-2">

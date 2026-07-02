@@ -328,15 +328,19 @@ function GuideView({
         {session && <p className="text-sm text-brand-600">{SESSION_LABELS[session]}</p>}
       </div>
 
-      {group.meet_location && (
+      {(group.meet_location || group.meet_time) && (
         <p className="text-sm text-brand-700">
-          Meet at:{" "}
-          <MapLink
-            place={group.meet_location}
-            className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-          >
-            {group.meet_location_name || shortenPlace(group.meet_location)}
-          </MapLink>
+          Meet:{" "}
+          {group.meet_location && (
+            <MapLink
+              place={group.meet_location}
+              className="font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+            >
+              {group.meet_location_name || shortenPlace(group.meet_location)}
+            </MapLink>
+          )}
+          {group.meet_location && group.meet_time && " · "}
+          {group.meet_time && <span className="font-medium text-brand-800">{group.meet_time}</span>}
         </p>
       )}
 

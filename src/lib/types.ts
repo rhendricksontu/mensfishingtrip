@@ -27,6 +27,7 @@ export interface FishingGroup {
   capacity: number;
   meet_location: string | null;
   meet_location_name: string | null;
+  meet_time: string | null;
   notes: string | null;
 }
 
