@@ -1,5 +1,5 @@
-import { getLocations, getCabins } from "@/lib/data";
-import type { LocationItem, Cabin } from "@/lib/types";
+import { getAgenda, getCabins } from "@/lib/data";
+import type { Cabin } from "@/lib/types";
 import MapLink from "@/components/MapLink";
 import { shortenPlace, addressLines, addressOneLine } from "@/lib/utils";
 
@@ -7,17 +7,33 @@ export const metadata = { title: "Locations · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
 
 export default async function LocationsPage() {
-  const [locations, cabins] = await Promise.all([getLocations(), getCabins()]);
+  const [agenda, cabins] = await Promise.all([getAgenda(), getCabins()]);
 
-  const empty = locations.length === 0 && cabins.length === 0;
+  // Auto-build the list from the agenda so it always stays in sync: one card per
+  // distinct real-address place used on an agenda item (skip "Cabins" and blanks).
+  const byAddr = new Map<string, { name: string | null; address: string }>();
+  for (const item of agenda) {
+    const address = item.location?.trim();
+    if (!address || !/\d/.test(address)) continue;
+    const key = address.replace(/@.*/, "").trim().toLowerCase();
+    const existing = byAddr.get(key);
+    if (!existing) {
+      byAddr.set(key, { name: item.location_name?.trim() || null, address });
+    } else if (!existing.name && item.location_name?.trim()) {
+      existing.name = item.location_name.trim();
+    }
+  }
+  const places = [...byAddr.values()].sort((a, b) =>
+    (a.name || a.address).localeCompare(b.name || b.address)
+  );
+
+  const empty = cabins.length === 0 && places.length === 0;
 
   return (
     <div className="space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Important Locations</h1>
-        <p className="mt-1 text-brand-600">
-          Cabins, dinner spots, and the river.
-        </p>
+        <p className="mt-1 text-brand-600">Cabins, dinner spots, and the river.</p>
       </div>
 
       {empty ? (
@@ -27,8 +43,8 @@ export default async function LocationsPage() {
           {cabins.map((c) => (
             <CabinCard key={c.id} cabin={c} />
           ))}
-          {locations.map((loc) => (
-            <LocationCard key={loc.id} loc={loc} />
+          {places.map((p, i) => (
+            <PlaceCard key={i} place={p} />
           ))}
         </div>
       )}
@@ -59,18 +75,13 @@ function CabinCard({ cabin }: { cabin: Cabin }) {
   );
 }
 
-function LocationCard({ loc }: { loc: LocationItem }) {
-  // Query uses the full name + address so the maps app lands on the right spot;
-  // the display name is shortened.
-  const place = [loc.name, loc.address].filter(Boolean).join(", ");
-
+function PlaceCard({ place }: { place: { name: string | null; address: string } }) {
+  const addr = shortenPlace(place.address);
   return (
     <div className="card">
-      <h3 className="font-semibold text-brand-800">{shortenPlace(loc.name)}</h3>
-      {loc.address && (
-        <p className="mt-2 text-sm text-brand-600">{shortenPlace(loc.address)}</p>
-      )}
-      <MapLink place={place} className="btn-secondary mt-3">
+      <h3 className="font-semibold text-brand-800">{place.name || addr}</h3>
+      {place.name && <p className="mt-2 text-sm text-brand-600">{addr}</p>}
+      <MapLink place={place.address} className="btn-secondary mt-3">
         Get directions
       </MapLink>
     </div>
