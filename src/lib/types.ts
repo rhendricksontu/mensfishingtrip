@@ -88,6 +88,14 @@ export interface AgendaItem {
   location: string | null;
 }
 
+export interface AgendaFile {
+  id: string;
+  agenda_item_id: string;
+  name: string;
+  path: string;
+  url: string; // public download URL (computed)
+}
+
 export interface LocationItem {
   id: string;
   name: string;

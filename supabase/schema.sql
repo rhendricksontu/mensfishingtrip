@@ -168,6 +168,16 @@ create table if not exists agenda_items (
 );
 create index if not exists agenda_day_idx on agenda_items (trip_day, sort_order);
 
+-- Agenda file attachments (files live in the "agenda-files" Storage bucket).
+create table if not exists agenda_files (
+  id              uuid primary key default gen_random_uuid(),
+  agenda_item_id  uuid references agenda_items(id) on delete cascade,
+  name            text not null,
+  path            text not null,
+  created_at      timestamptz not null default now()
+);
+create index if not exists agenda_files_item_idx on agenda_files (agenda_item_id);
+
 -- ---------------------------------------------------------------------------
 -- Important locations
 -- ---------------------------------------------------------------------------

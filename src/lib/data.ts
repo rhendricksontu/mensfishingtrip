@@ -2,6 +2,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type {
   AgendaItem,
+  AgendaFile,
   Attendee,
   Cabin,
   FishingGroup,
@@ -37,6 +38,24 @@ export function getAgenda(): Promise<AgendaItem[]> {
       .order("trip_day", { ascending: true })
       .order("sort_order", { ascending: true });
     return (data as AgendaItem[]) ?? [];
+  }, []);
+}
+
+export function getAgendaFiles(): Promise<AgendaFile[]> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db
+      .from("agenda_files")
+      .select("*")
+      .order("created_at", { ascending: true });
+    if (!data) return [];
+    return data.map((f) => ({
+      id: f.id,
+      agenda_item_id: f.agenda_item_id,
+      name: f.name,
+      path: f.path,
+      url: db.storage.from("agenda-files").getPublicUrl(f.path).data.publicUrl,
+    })) as AgendaFile[];
   }, []);
 }
 

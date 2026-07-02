@@ -345,3 +345,84 @@ export async function seedReturnFromDown(driver_id: string) {
   }
   revalidatePath("/admin/rides");
 }
+
+// ---- Agenda ---------------------------------------------------------------
+
+export async function createAgendaItem(
+  trip_day: string,
+  patch: { start_time?: string | null; title: string; description?: string | null }
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+  // Place the new item at the end of that day.
+  const { data: last } = await db
+    .from("agenda_items")
+    .select("sort_order")
+    .eq("trip_day", trip_day)
+    .order("sort_order", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  await db.from("agenda_items").insert({
+    trip_day,
+    sort_order: (last?.sort_order ?? 0) + 10,
+    title: patch.title,
+    start_time: patch.start_time || null,
+    description: patch.description || null,
+  });
+  revalidatePath("/");
+}
+
+export async function updateAgendaItem(
+  id: string,
+  patch: {
+    start_time?: string | null;
+    title?: string;
+    description?: string | null;
+    trip_day?: string;
+    sort_order?: number;
+  }
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+  await db.from("agenda_items").update(patch).eq("id", id);
+  revalidatePath("/");
+}
+
+export async function deleteAgendaItem(id: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  // Remove any attached storage objects (the rows cascade with the item).
+  const { data: files } = await db.from("agenda_files").select("path").eq("agenda_item_id", id);
+  if (files?.length) {
+    await db.storage.from("agenda-files").remove(files.map((f) => f.path));
+  }
+  await db.from("agenda_items").delete().eq("id", id);
+  revalidatePath("/");
+}
+
+export async function uploadAgendaFile(agendaItemId: string, formData: FormData) {
+  await requireAdmin();
+  const file = formData.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return { ok: false, error: "No file selected." };
+  }
+  const db = createAdminClient();
+  const safeName = file.name.replace(/[^\w.\-]+/g, "_");
+  const path = `${agendaItemId}/${Date.now()}-${safeName}`;
+  const { error } = await db.storage
+    .from("agenda-files")
+    .upload(path, file, { contentType: file.type || undefined });
+  if (error) return { ok: false, error: error.message };
+  await db.from("agenda_files").insert({ agenda_item_id: agendaItemId, name: file.name, path });
+  revalidatePath("/");
+  return { ok: true };
+}
+
+export async function deleteAgendaFile(id: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const { data } = await db.from("agenda_files").select("path").eq("id", id).maybeSingle();
+  if (data?.path) await db.storage.from("agenda-files").remove([data.path]);
+  await db.from("agenda_files").delete().eq("id", id);
+  revalidatePath("/");
+}
