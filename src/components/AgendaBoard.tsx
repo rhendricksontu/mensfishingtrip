@@ -261,91 +261,94 @@ function AgendaRow({
 
   // ---- Read view (everyone) ----
   return (
-    <li className={`card flex gap-4 ${pending ? "opacity-60" : ""}`}>
-      <div className="w-20 shrink-0 text-sm font-semibold text-brand-600">
-        {item.start_time || "-"}
-      </div>
-      <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-brand-800">{item.title}</h3>
-          {isAdmin && (
-            <button
-              onClick={() => setEditing(true)}
-              aria-label="Edit agenda item"
-              className="shrink-0 text-brand-400 hover:text-brand-700"
-            >
-              <EditIcon />
-            </button>
+    <li className={`card ${pending ? "opacity-60" : ""}`}>
+      <div className="flex gap-4">
+        <div className="w-20 shrink-0 text-sm font-semibold text-brand-600">
+          {item.start_time || "-"}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-semibold text-brand-800">{item.title}</h3>
+            {isAdmin && (
+              <button
+                onClick={() => setEditing(true)}
+                aria-label="Edit agenda item"
+                className="shrink-0 text-brand-400 hover:text-brand-700"
+              >
+                <EditIcon />
+              </button>
+            )}
+          </div>
+          {item.description && (
+            <p className="mt-0.5 whitespace-pre-line text-sm text-brand-600">{item.description}</p>
+          )}
+          {item.location &&
+            (/\d/.test(item.location) ? (
+              <MapLink
+                place={item.location}
+                className="mt-1 inline-block text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+              >
+                {shortenPlace(item.location)}
+              </MapLink>
+            ) : (
+              <p className="mt-1 text-xs font-medium text-brand-500">{shortenPlace(item.location)}</p>
+            ))}
+          {(item.notes || files.length > 0) && (
+            <div className="mt-2 flex flex-wrap gap-2">
+              {item.notes && (
+                <button
+                  type="button"
+                  onClick={() => setShowNotes((v) => !v)}
+                  className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
+                >
+                  {showNotes ? "Hide Notes" : "Show Notes"}
+                </button>
+              )}
+              {files.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setShowFiles((v) => !v)}
+                  className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
+                >
+                  {showFiles ? "Hide Attachments" : `Show Attachments (${files.length})`}
+                </button>
+              )}
+            </div>
           )}
         </div>
-        {item.description && (
-          <p className="mt-0.5 whitespace-pre-line text-sm text-brand-600">{item.description}</p>
-        )}
-        {item.location &&
-          (/\d/.test(item.location) ? (
-            <MapLink
-              place={item.location}
-              className="mt-1 inline-block text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-            >
-              {shortenPlace(item.location)}
-            </MapLink>
-          ) : (
-            <p className="mt-1 text-xs font-medium text-brand-500">{shortenPlace(item.location)}</p>
-          ))}
-        {item.notes && (
-          <div className="mt-2">
-            <button
-              type="button"
-              onClick={() => setShowNotes((v) => !v)}
-              className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
-            >
-              {showNotes ? "Hide Notes" : "Show Notes"}
-            </button>
-            {showNotes && (
-              <p className="mt-2 whitespace-pre-line text-sm text-brand-700">{item.notes}</p>
-            )}
-          </div>
-        )}
-
-        {files.length > 0 && (
-          <div className="mt-2">
-            <button
-              type="button"
-              onClick={() => setShowFiles((v) => !v)}
-              className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2.5 py-1 text-xs font-medium text-brand-700 hover:bg-brand-100"
-            >
-              {showFiles ? "Hide Attachments" : `Show Attachments (${files.length})`}
-            </button>
-            {showFiles && (
-              <div className="mt-2 space-y-2">
-                {files.map((f) =>
-                  isImage(f.name) ? (
-                    <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="block">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={f.url}
-                        alt={f.name}
-                        loading="lazy"
-                        className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
-                      />
-                    </a>
-                  ) : (
-                    <a
-                      key={f.id}
-                      href={fileHref(f)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
-                    >
-                      📎 {f.name}
-                    </a>
-                  )
-                )}
-              </div>
-            )}
-          </div>
-        )}
       </div>
+
+      {/* Expanded panels span the full width of the card */}
+      {showNotes && item.notes && (
+        <p className="mt-3 whitespace-pre-line text-sm text-brand-700">{item.notes}</p>
+      )}
+      {showFiles && files.length > 0 && (
+        <div className="mt-3 space-y-2">
+          {files.map((f) =>
+            isImage(f.name) ? (
+              <a key={f.id} href={f.url} target="_blank" rel="noopener noreferrer" className="block">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={f.url}
+                  alt={f.name}
+                  loading="lazy"
+                  className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
+                />
+              </a>
+            ) : (
+              <a
+                key={f.id}
+                href={fileHref(f)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-xs font-medium text-brand-600 underline decoration-brand-300 underline-offset-2 hover:text-brand-800"
+              >
+                📎 {f.name}
+              </a>
+            )
+          )}
+        </div>
+      )}
     </li>
   );
 }
