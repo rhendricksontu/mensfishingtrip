@@ -7,19 +7,14 @@ import { useEffect, useState } from "react";
 import { classNames } from "@/lib/utils";
 import { signOutAttendee } from "@/app/me/actions";
 
-const LINKS = [
-  { href: "/me", label: "My Fishing Trip" },
-  { href: "/", label: "Agenda" },
-  { href: "/signups", label: "Signups" },
-  { href: "/locations", label: "Locations" },
-];
-
 export default function Nav({
   isAuthed,
   isAdmin,
+  canSeeSignups,
 }: {
   isAuthed: boolean;
   isAdmin: boolean;
+  canSeeSignups: boolean;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -29,9 +24,13 @@ export default function Nav({
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
-  const links = isAdmin
-    ? [...LINKS, { href: "/admin", label: "Organizer" }]
-    : LINKS;
+  const links = [
+    { href: "/me", label: "My Fishing Trip" },
+    { href: "/", label: "Agenda" },
+    ...(canSeeSignups ? [{ href: "/signups", label: "Signups" }] : []),
+    { href: "/locations", label: "Locations" },
+    ...(isAdmin ? [{ href: "/admin", label: "Organizer" }] : []),
+  ];
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);

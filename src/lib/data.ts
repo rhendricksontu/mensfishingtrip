@@ -113,6 +113,18 @@ export async function getTripLocations(): Promise<TripLocation[]> {
   );
 }
 
+// Can this member see the Signups tab? Only if they're a leader or a helper.
+export function isSignupParticipant(attendeeId: string): Promise<boolean> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const [leader, helper] = await Promise.all([
+      db.from("signup_leaders").select("attendee_id").eq("attendee_id", attendeeId).limit(1),
+      db.from("signups").select("id").eq("attendee_id", attendeeId).limit(1),
+    ]);
+    return Boolean(leader.data?.length || helper.data?.length);
+  }, false);
+}
+
 export function getSignupLeaders(): Promise<SignupLeader[]> {
   return safe(async () => {
     const db = createAdminClient();

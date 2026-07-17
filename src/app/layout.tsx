@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
+import { getCurrentAttendee } from "@/lib/attendee";
+import { isSignupParticipant } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -23,13 +25,19 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [user, admin] = await Promise.all([getSessionUser(), getAdminUser()]);
+  const [user, admin, me] = await Promise.all([
+    getSessionUser(),
+    getAdminUser(),
+    getCurrentAttendee(),
+  ]);
   const isAuthed = Boolean(user);
   const isAdmin = Boolean(admin);
+  // Signups tab is only visible to organizers, leaders, and assigned helpers.
+  const canSeeSignups = isAdmin || (me ? await isSignupParticipant(me.id) : false);
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        <Nav isAuthed={isAuthed} isAdmin={isAdmin} />
+        <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       </body>
     </html>
