@@ -28,7 +28,12 @@ export default function SelectWithOther({
         className="input"
         value={sel}
         required={required}
-        onChange={(e) => setSel(e.target.value)}
+        onChange={(e) => {
+          const v = e.target.value;
+          setSel(v);
+          // Clear any typed "Other" text when a standard option is chosen.
+          if (v !== "Other") setOther("");
+        }}
       >
         <option value="" disabled>Select One</option>
         {options.map((o) => (
