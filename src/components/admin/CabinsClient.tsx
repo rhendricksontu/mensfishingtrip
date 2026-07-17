@@ -160,7 +160,7 @@ function UnassignedNote({
         {noRide.length > 0 && (
           <div>
             <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
-              No ride assigned yet
+              No Group Assigned
             </p>
             <ul className="mt-0.5 space-y-1">
               {noRide.map((a) => (
