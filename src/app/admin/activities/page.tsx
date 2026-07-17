@@ -51,9 +51,9 @@ export default async function ActivitiesPage() {
               ) : (
                 <ul className="mt-2 space-y-1.5">
                   {g.people.map((a) => (
-                    <li key={a.id} className="flex items-center justify-between gap-2 text-sm">
+                    <li key={a.id} className="text-sm">
                       <span className="font-medium text-brand-800">{a.name}</span>
-                      <PhoneLink phone={a.phone} className="text-xs text-brand-400 underline" />
+                      <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                     </li>
                   ))}
                 </ul>
@@ -71,12 +71,10 @@ export default async function ActivitiesPage() {
             ) : (
               <ul className="mt-2 space-y-1.5">
                 {others.map((a) => (
-                  <li key={a.id} className="flex items-center justify-between gap-2 text-sm">
-                    <span>
-                      <span className="font-medium text-brand-800">{a.name}</span>
-                      <span className="ml-2 text-brand-500">— {a.activity_other}</span>
-                    </span>
-                    <PhoneLink phone={a.phone} className="text-xs text-brand-400 underline" />
+                  <li key={a.id} className="text-sm">
+                    <span className="font-medium text-brand-800">{a.name}</span>
+                    <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+                    <span className="ml-2 text-brand-500">— {a.activity_other}</span>
                   </li>
                 ))}
               </ul>
