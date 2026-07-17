@@ -26,14 +26,23 @@ export default async function CabinsAdminPage() {
       getVisibility(),
     ]);
 
-  // Anyone who volunteered (as a leader or an assigned volunteer) — used to
-  // flag which unassigned travelers still need a cabin for their duties.
-  const volunteerIds = Array.from(
-    new Set([
-      ...signups.map((s) => s.attendee_id).filter((id): id is string => Boolean(id)),
-      ...signupLeaders.map((l) => l.attendee_id).filter((id): id is string => Boolean(id)),
-    ])
-  );
+  // Each volunteer's assignment(s), labeled by role + day, so unassigned
+  // volunteers can be grouped by what they're volunteering for.
+  const ROLE_LABELS: Record<string, string> = {
+    breakfast_cook: "Breakfast Cook",
+    coffee_maker: "Coffee Maker",
+    guide_lunch: "Guide Lunch Maker",
+  };
+  const label = (role: string, trip_day: string) =>
+    `${ROLE_LABELS[role] ?? role} - ${trip_day.charAt(0).toUpperCase() + trip_day.slice(1)}`;
+  const volunteerAssignments = [
+    ...signups
+      .filter((s) => s.attendee_id)
+      .map((s) => ({ attendee_id: s.attendee_id as string, label: label(s.role, s.trip_day) })),
+    ...signupLeaders
+      .filter((l) => l.attendee_id)
+      .map((l) => ({ attendee_id: l.attendee_id as string, label: label(l.role, l.trip_day) })),
+  ];
 
   return (
     <div className="space-y-4">
@@ -54,7 +63,7 @@ export default async function CabinsAdminPage() {
         attendees={attendees}
         rides={rides}
         ridePassengers={ridePassengers}
-        volunteerIds={volunteerIds}
+        volunteerAssignments={volunteerAssignments}
       />
     </div>
   );

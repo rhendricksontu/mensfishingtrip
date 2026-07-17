@@ -73,38 +73,50 @@ export default function CabinsClient({
   attendees,
   rides,
   ridePassengers,
-  volunteerIds,
+  volunteerAssignments,
 }: {
   cabins: Cabin[];
   attendees: Attendee[];
   rides: Ride[];
   ridePassengers: RidePassenger[];
-  volunteerIds: string[];
+  volunteerAssignments: { attendee_id: string; label: string }[];
 }) {
   const unassigned = attendees.filter((a) => !a.cabin_id);
 
-  // Unassigned travelers who are volunteers — surfaced separately so they get
-  // placed in the right cabin for their volunteering duties. They're excluded
-  // from the plain card below so each person appears in only one place.
-  const volunteerSet = new Set(volunteerIds);
+  // Unassigned travelers who are volunteers — surfaced separately, grouped by
+  // what they're volunteering for, so they get placed in the right cabin for
+  // their duties. They're excluded from the plain card below so each person
+  // appears in only one place.
+  const volunteerSet = new Set(volunteerAssignments.map((v) => v.attendee_id));
   const unassignedVolunteers = unassigned.filter((a) => volunteerSet.has(a.id));
   const unassignedOthers = unassigned.filter((a) => !volunteerSet.has(a.id));
 
   const { groups, noGroup } = groupByVehicle(unassignedOthers, attendees, rides, ridePassengers);
-  const volunteerGrouped = groupByVehicle(
-    unassignedVolunteers,
-    attendees,
-    rides,
-    ridePassengers
-  );
+
+  // Group unassigned volunteers by their volunteer assignment (role + day). A
+  // person who volunteers for more than one thing appears under each.
+  const unassignedById = new Map(unassignedVolunteers.map((a) => [a.id, a]));
+  const byLabel = new Map<string, Map<string, Attendee>>();
+  for (const { attendee_id, label } of volunteerAssignments) {
+    const person = unassignedById.get(attendee_id);
+    if (!person) continue;
+    if (!byLabel.has(label)) byLabel.set(label, new Map());
+    byLabel.get(label)!.set(person.id, person);
+  }
+  const volunteerGroups = Array.from(byLabel.entries())
+    .map(([label, people]) => ({
+      label,
+      people: Array.from(people.values()).sort((x, y) => x.name.localeCompare(y.name)),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   return (
     <div className="space-y-4">
       {unassignedVolunteers.length > 0 && (
         <GroupedUnassigned
           title="Unassigned Travelers - Volunteers"
-          groups={volunteerGrouped.groups}
-          noGroup={volunteerGrouped.noGroup}
+          groups={volunteerGroups}
+          noGroup={[]}
         />
       )}
 
