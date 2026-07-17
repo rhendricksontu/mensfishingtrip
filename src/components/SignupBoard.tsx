@@ -100,11 +100,10 @@ export default function SignupBoard({
     <div className="space-y-6">
       {ROLES.map((roleObj) => {
         const days = daysForRole(roleObj.key);
-        const single = days.length === 1;
         return (
           <section key={roleObj.key}>
             <h2 className="mb-3 text-lg font-bold text-brand-700">{roleObj.label}s</h2>
-            <div className={single ? "flex justify-center" : "grid gap-3 sm:grid-cols-2"}>
+            <div className="grid gap-3 sm:grid-cols-2">
               {days.map((d) => {
                 const key = `${roleObj.key}:${d.key}`;
                 const people = cell(roleObj.key, d.key);
@@ -117,7 +116,7 @@ export default function SignupBoard({
                 const available = members.filter((m) => !inInstance.has(m.id));
 
                 return (
-                  <div key={d.key} className={single ? "card w-full sm:w-1/2" : "card"}>
+                  <div key={d.key} className="card">
                     <div className="flex items-center justify-between gap-2">
                       <h3 className="font-semibold text-brand-800">{d.label}</h3>
                       <div className="flex items-center gap-2">
