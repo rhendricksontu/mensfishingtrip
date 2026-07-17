@@ -10,12 +10,19 @@ import {
 } from "@/app/admin/actions";
 import { SESSION_LABELS } from "@/lib/config";
 import { formatPhone, shortenPlace, to12Hour, to24Hour } from "@/lib/utils";
+import { groupByVehicle } from "@/lib/vehicle-groups";
 import PhoneLink from "@/components/PhoneLink";
-import type { Attendee, FishingGroup, FishingSession } from "@/lib/types";
+import GroupedUnassigned from "@/components/admin/GroupedUnassigned";
+import type { Attendee, FishingGroup, FishingSession, Ride } from "@/lib/types";
 
 interface TripLocation {
   name: string | null;
   address: string;
+}
+
+interface RidePassenger {
+  ride_id: string;
+  attendee_id: string;
 }
 
 const SESSIONS: FishingSession[] = ["saturday_morning", "saturday_afternoon"];
@@ -33,28 +40,27 @@ export default function FishingClient({
   groups,
   attendees,
   locations,
+  rides,
+  ridePassengers,
 }: {
   groups: FishingGroup[];
   attendees: Attendee[];
   locations: TripLocation[];
+  rides: Ride[];
+  ridePassengers: RidePassenger[];
 }) {
   // Only members who said yes to fishing with a guide can be assigned.
   const unassigned = attendees.filter((a) => !a.fishing_group_id && a.fish_with_guide);
+  const grouped = groupByVehicle(unassigned, attendees, rides, ridePassengers);
 
   return (
     <div className="space-y-8">
       {unassigned.length > 0 && (
-        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
-          <p className="font-semibold text-amber-800">Unassigned Anglers</p>
-          <ul className="mt-1.5 space-y-1">
-            {unassigned.map((a) => (
-              <li key={a.id}>
-                <span className="font-medium text-brand-800">{a.name}</span>
-                <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
-              </li>
-            ))}
-          </ul>
-        </div>
+        <GroupedUnassigned
+          title="Unassigned Anglers"
+          groups={grouped.groups}
+          noGroup={grouped.noGroup}
+        />
       )}
 
       {SESSIONS.map((session) => {
