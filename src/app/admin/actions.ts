@@ -20,6 +20,7 @@ export async function setVisibility(key: VisibilityKey, value: boolean) {
   revalidatePath("/admin/cabins");
   revalidatePath("/admin/fishing");
   revalidatePath("/admin/rides");
+  revalidatePath("/admin/volunteers");
   return { ok: true };
 }
 

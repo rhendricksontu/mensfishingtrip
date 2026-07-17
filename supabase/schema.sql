@@ -227,7 +227,8 @@ create table if not exists settings (
 insert into settings (key, value) values
   ('show_cabins', false),
   ('show_fishing', false),
-  ('show_rides', false)
+  ('show_rides', false),
+  ('show_volunteers', false)
 on conflict (key) do nothing;
 
 -- ---------------------------------------------------------------------------

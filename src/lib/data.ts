@@ -18,6 +18,7 @@ const VISIBILITY_DEFAULT: Visibility = {
   show_cabins: false,
   show_fishing: false,
   show_rides: false,
+  show_volunteers: false,
 };
 
 export function isSupabaseConfigured(): boolean {

@@ -1,12 +1,17 @@
 import { requireAdmin } from "@/lib/require-admin";
-import { getSignupLeaders, getAttendees } from "@/lib/data";
+import { getSignupLeaders, getAttendees, getVisibility } from "@/lib/data";
 import AdminVolunteersClient from "@/components/admin/AdminVolunteersClient";
+import VisibilityToggle from "@/components/admin/VisibilityToggle";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminVolunteersPage() {
   await requireAdmin();
-  const [leaders, attendees] = await Promise.all([getSignupLeaders(), getAttendees()]);
+  const [leaders, attendees, visibility] = await Promise.all([
+    getSignupLeaders(),
+    getAttendees(),
+    getVisibility(),
+  ]);
   const members = attendees
     .map((a) => ({ id: a.id, name: a.name, phone: a.phone }))
     .sort((x, y) => x.name.localeCompare(y.name));
@@ -20,6 +25,11 @@ export default async function AdminVolunteersPage() {
           Volunteers tab.
         </p>
       </div>
+      <VisibilityToggle
+        settingKey="show_volunteers"
+        initial={visibility.show_volunteers}
+        label="Show Volunteering to Attendees"
+      />
       <AdminVolunteersClient leaders={leaders} members={members} />
     </div>
   );

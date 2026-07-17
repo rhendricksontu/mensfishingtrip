@@ -203,7 +203,7 @@ export default async function MyTripPage() {
       )}
 
       {/* Volunteering — leader shown like a guide, volunteers like the anglers */}
-      {myVolunteering.length > 0 && (
+      {visibility.show_volunteers && myVolunteering.length > 0 && (
         <div className="space-y-2">
           <h2 className="font-bold text-brand-800">Volunteering</h2>
           <div className="space-y-3">
