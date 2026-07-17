@@ -25,7 +25,7 @@ export default async function RidesAdminPage() {
       <VisibilityToggle
         settingKey="show_rides"
         initial={visibility.show_rides}
-        label="Show ride assignments to attendees"
+        label="Show Ride Assignments to Attendees"
       />
       <RidesClient attendees={attendees} rides={rides} ridePassengers={ridePassengers} />
     </div>

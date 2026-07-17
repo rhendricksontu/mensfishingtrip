@@ -27,7 +27,7 @@ export default async function CabinsAdminPage() {
       <VisibilityToggle
         settingKey="show_cabins"
         initial={visibility.show_cabins}
-        label="Show cabin assignments to attendees"
+        label="Show Cabin Assignments to Attendees"
       />
       <CabinsClient
         cabins={cabins}

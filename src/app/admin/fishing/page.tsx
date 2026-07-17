@@ -35,7 +35,7 @@ export default async function FishingAdminPage() {
       <VisibilityToggle
         settingKey="show_fishing"
         initial={visibility.show_fishing}
-        label="Show fishing assignments to attendees"
+        label="Show Fishing Assignments to Attendees"
       />
       <FishingClient
         groups={groups}
