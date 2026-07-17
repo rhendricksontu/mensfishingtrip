@@ -299,22 +299,31 @@ async function getOrCreateRideId(
 // Flip a person between driver and passenger on the Rides tab. Making someone a
 // driver gives them a default seat count; making them a passenger clears their
 // (empty) ride so no ghost driver row lingers.
-export async function setDriverStatus(attendee_id: string, willing: boolean) {
+export async function setDriverStatus(
+  attendee_id: string,
+  willing: boolean,
+  seats?: number
+) {
   await requireAdmin();
   const db = createAdminClient();
 
   if (willing) {
-    const { data: a } = await db
-      .from("attendees")
-      .select("seat_capacity")
-      .eq("id", attendee_id)
-      .maybeSingle();
-    const seats = a?.seat_capacity && a.seat_capacity > 0 ? a.seat_capacity : 3;
+    let capacity: number;
+    if (typeof seats === "number" && Number.isFinite(seats)) {
+      capacity = Math.max(0, Math.min(20, Math.trunc(seats)));
+    } else {
+      const { data: a } = await db
+        .from("attendees")
+        .select("seat_capacity")
+        .eq("id", attendee_id)
+        .maybeSingle();
+      capacity = a?.seat_capacity && a.seat_capacity > 0 ? a.seat_capacity : 3;
+    }
     const { error } = await db
       .from("attendees")
       .update({
         willing_to_drive: true,
-        seat_capacity: seats,
+        seat_capacity: capacity,
         needs_ride: false,
         ride_preference: "driving",
       })

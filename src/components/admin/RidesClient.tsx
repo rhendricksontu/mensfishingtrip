@@ -30,6 +30,19 @@ export default function RidesClient({
       await setDriverStatus(id, willing);
       router.refresh();
     });
+  // Turning someone into a driver: ask how many seats they can offer.
+  const makeDriver = (id: string, currentSeats?: number) => {
+    const answer = window.prompt(
+      "How many passenger seats can they offer? (not counting themselves)",
+      String(currentSeats && currentSeats > 0 ? currentSeats : 3)
+    );
+    if (answer === null) return;
+    const seats = Math.max(0, Math.min(20, parseInt(answer, 10) || 0));
+    startFlip(async () => {
+      await setDriverStatus(id, true, seats);
+      router.refresh();
+    });
+  };
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
   // Drivers who offered seats; and "self-drivers" who drive but won't take
@@ -80,7 +93,7 @@ export default function RidesClient({
                   <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
                 </span>
                 <button
-                  onClick={() => flip(a.id, true)}
+                  onClick={() => makeDriver(a.id, a.seat_capacity)}
                   disabled={flipping}
                   className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
                 >
@@ -107,7 +120,7 @@ export default function RidesClient({
                 </span>
                 <span className="flex shrink-0 gap-2">
                   <button
-                    onClick={() => flip(a.id, true)}
+                    onClick={() => makeDriver(a.id, a.seat_capacity)}
                     disabled={flipping}
                     className="text-xs text-brand-500 underline hover:text-brand-800"
                   >
@@ -172,7 +185,7 @@ export default function RidesClient({
                       <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
                     </span>
                     <button
-                      onClick={() => flip(d.id, true)}
+                      onClick={() => makeDriver(d.id, d.seat_capacity)}
                       disabled={flipping}
                       className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
                     >
