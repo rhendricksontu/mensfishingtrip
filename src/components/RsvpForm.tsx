@@ -99,7 +99,12 @@ export default function RsvpForm() {
           className="input"
           defaultValue=""
           required
-          onChange={(e) => setRidePref(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setRidePref(v);
+            // Passenger can't offer seats — reset so returning to Driver is fresh.
+            if (v === "riding") setWillingToDrive(false);
+          }}
         >
           <option value="" disabled>Select One</option>
           <option value="driving">Driver</option>
