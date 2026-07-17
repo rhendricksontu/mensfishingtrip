@@ -362,6 +362,17 @@ export async function assignPassenger(
     .from("ride_passengers")
     .upsert({ ride_id: rideId, attendee_id }, { onConflict: "ride_id,attendee_id" });
 
+  // Seating someone settles their RSVP role to passenger (e.g. an "Either").
+  await db
+    .from("attendees")
+    .update({
+      ride_preference: "riding",
+      willing_to_drive: false,
+      seat_capacity: 0,
+      needs_ride: true,
+    })
+    .eq("id", attendee_id);
+
   revalidatePath("/admin/rides");
   revalidatePath("/me");
 }
