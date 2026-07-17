@@ -103,10 +103,11 @@ export default function RsvpForm() {
           <option value="" disabled>Select One</option>
           <option value="driving">Driver</option>
           <option value="riding">Passenger</option>
+          <option value="either">Either</option>
         </select>
       </Field>
 
-      {ridePref === "driving" && (
+      {(ridePref === "driving" || ridePref === "either") && (
         <div className="rounded-lg bg-brand-50 p-4 space-y-4">
           <label className="flex items-start gap-3">
             <input

@@ -22,8 +22,8 @@ const RsvpSchema = z.object({
     .string()
     .trim()
     .refine((v) => normalizePhone(v).length >= 10, "Enter a valid emergency contact phone."),
-  ride_preference: z.enum(["driving", "riding"], {
-    errorMap: () => ({ message: "Choose Driver or Passenger." }),
+  ride_preference: z.enum(["driving", "riding", "either"], {
+    errorMap: () => ({ message: "Choose Driver, Passenger, or Either." }),
   }),
   departure_time: z.string().trim().min(1, "Choose a departure time."),
   preferred_driver: z.string().trim().max(100).optional().default(""),
@@ -79,8 +79,9 @@ export async function submitRsvp(
   const db = createAdminClient();
   const authEmail = authEmailForPhone(d.phone);
 
-  // Drivers can offer seats; passengers need a ride by definition.
-  const willingToDrive = d.ride_preference === "driving" && d.willing_to_drive;
+  // Drivers (and "either") can offer seats; passengers need a ride by definition.
+  const willingToDrive =
+    d.ride_preference !== "riding" && d.willing_to_drive;
   const record = {
     name: d.name,
     fish_with_guide: d.fish_with_guide === "yes",
