@@ -403,6 +403,30 @@ function CabinCard({
           </div>
           )}
           </div>
+          {occupants.length > 0 && (
+            <div>
+              <span className="label">Cabin Host</span>
+              <select
+                className="input"
+                value={host?.id ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  run(async () => {
+                    if (v) await setCabinHost(v, true);
+                    else if (host) await setCabinHost(host.id, false);
+                  });
+                }}
+              >
+                <option value="">No host</option>
+                {occupants.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           <div>
             <span className="label">Capacity</span>
             <input
@@ -441,30 +465,6 @@ function CabinCard({
               })}
             </div>
           </div>
-
-          {occupants.length > 0 && (
-            <div>
-              <span className="label">Cabin Host</span>
-              <select
-                className="input"
-                value={host?.id ?? ""}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  run(async () => {
-                    if (v) await setCabinHost(v, true);
-                    else if (host) await setCabinHost(host.id, false);
-                  });
-                }}
-              >
-                <option value="">No host</option>
-                {occupants.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
 
           {occupants.length > 0 && (
             <ul className="divide-y divide-brand-50">
