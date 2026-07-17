@@ -108,7 +108,16 @@ export default function CabinsClient({
       label,
       people: Array.from(people.values()).sort((x, y) => x.name.localeCompare(y.name)),
     }))
-    .sort((a, b) => a.label.localeCompare(b.label));
+    // Order by role + day, then put the leader group before its volunteers.
+    .sort((a, b) => {
+      const baseA = a.label.replace(/ \(Leader\)$/, "");
+      const baseB = b.label.replace(/ \(Leader\)$/, "");
+      const byBase = baseA.localeCompare(baseB);
+      if (byBase !== 0) return byBase;
+      const leaderA = a.label.endsWith("(Leader)") ? 0 : 1;
+      const leaderB = b.label.endsWith("(Leader)") ? 0 : 1;
+      return leaderA - leaderB;
+    });
 
   return (
     <div className="space-y-4">
