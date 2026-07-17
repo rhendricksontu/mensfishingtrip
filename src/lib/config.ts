@@ -52,6 +52,15 @@ export const ACTIVITY_OPTIONS = [
   { value: "hiking", label: "Hiking" },
 ];
 
+// Events whose location a cabin can be designated for, on the Cabins tab.
+// The `key` matches agenda_items.event_key.
+export const CABIN_EVENT_OPTIONS = [
+  { key: "saturday_breakfast", label: "Saturday Breakfast" },
+  { key: "sunday_breakfast", label: "Sunday Breakfast" },
+  { key: "friday_service", label: "Friday Night Service" },
+  { key: "saturday_service", label: "Saturday Night Service" },
+];
+
 export const RIDE_PREF_LABELS: Record<string, string> = {
   driving: "Driver",
   riding: "Passenger",

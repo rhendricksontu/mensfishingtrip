@@ -163,6 +163,62 @@ export async function deleteCabin(id: string) {
   await db.from("cabins").delete().eq("id", id);
   revalidatePath("/admin/cabins");
   revalidatePath("/me");
+  revalidatePath("/agenda");
+  revalidatePath("/");
+  revalidatePath("/locations");
+}
+
+// Set (or clear) a cabin as the location for a known event (e.g. a breakfast or
+// night service). An event has one location, so assigning it clears the same
+// key from any other cabin. The agenda derives its location from this.
+export async function setCabinEventLocation(
+  cabin_id: string,
+  event_key: string,
+  on: boolean
+) {
+  await requireAdmin();
+  const db = createAdminClient();
+
+  const { data: cabin } = await db
+    .from("cabins")
+    .select("event_locations")
+    .eq("id", cabin_id)
+    .maybeSingle();
+  const current: string[] = cabin?.event_locations ?? [];
+
+  if (on) {
+    // One event, one cabin: remove this key from any other cabin first.
+    const { data: others } = await db
+      .from("cabins")
+      .select("id, event_locations")
+      .neq("id", cabin_id);
+    for (const o of others ?? []) {
+      const locs: string[] = o.event_locations ?? [];
+      if (locs.includes(event_key)) {
+        await db
+          .from("cabins")
+          .update({ event_locations: locs.filter((k) => k !== event_key) })
+          .eq("id", o.id);
+      }
+    }
+    if (!current.includes(event_key)) {
+      await db
+        .from("cabins")
+        .update({ event_locations: [...current, event_key] })
+        .eq("id", cabin_id);
+    }
+  } else {
+    await db
+      .from("cabins")
+      .update({ event_locations: current.filter((k) => k !== event_key) })
+      .eq("id", cabin_id);
+  }
+
+  revalidatePath("/admin/cabins");
+  revalidatePath("/agenda");
+  revalidatePath("/");
+  revalidatePath("/locations");
+  return { ok: true };
 }
 
 // ---- Fishing groups --------------------------------------------------------

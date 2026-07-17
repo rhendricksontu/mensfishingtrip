@@ -42,12 +42,29 @@ async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
 export function getAgenda(): Promise<AgendaItem[]> {
   return safe(async () => {
     const db = createAdminClient();
-    const { data } = await db
-      .from("agenda_items")
-      .select("*")
-      .order("trip_day", { ascending: true })
-      .order("sort_order", { ascending: true });
-    return (data as AgendaItem[]) ?? [];
+    const [{ data }, { data: cabinRows }] = await Promise.all([
+      db
+        .from("agenda_items")
+        .select("*")
+        .order("trip_day", { ascending: true })
+        .order("sort_order", { ascending: true }),
+      db.from("cabins").select("*"),
+    ]);
+    const items = (data as AgendaItem[]) ?? [];
+
+    // A cabin designated for an event drives that event's location.
+    const cabinByEvent = new Map<string, Cabin>();
+    for (const c of (cabinRows as Cabin[]) ?? []) {
+      for (const key of c.event_locations ?? []) cabinByEvent.set(key, c);
+    }
+    return items.map((item) => {
+      const cabin = item.event_key ? cabinByEvent.get(item.event_key) : undefined;
+      if (!cabin) return item;
+      const address = addressOneLine(cabin);
+      return address
+        ? { ...item, location: address, location_name: cabin.name }
+        : item;
+    });
   }, []);
 }
 

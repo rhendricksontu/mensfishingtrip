@@ -28,6 +28,8 @@ export interface Cabin {
   capacity: number;
   notes: string | null;
   sort_order: number;
+  // Event keys this cabin is the designated location for (see CABIN_EVENT_OPTIONS).
+  event_locations: string[];
 }
 
 export interface FishingGroup {
@@ -111,6 +113,8 @@ export interface AgendaItem {
   location: string | null;
   location_name: string | null;
   notes: string | null;
+  // Stable key tying this item to a known event a cabin can host (or null).
+  event_key: string | null;
 }
 
 export interface AgendaFile {

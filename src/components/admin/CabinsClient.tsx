@@ -8,7 +8,9 @@ import {
   deleteCabin,
   updateAttendee,
   setCabinHost,
+  setCabinEventLocation,
 } from "@/app/admin/actions";
+import { CABIN_EVENT_OPTIONS } from "@/lib/config";
 import { formatPhone, addressLines, addressOneLine } from "@/lib/utils";
 import { groupByVehicle } from "@/lib/vehicle-groups";
 import MapLink from "@/components/MapLink";
@@ -208,6 +210,17 @@ function CabinCard({
       {/* Read view */}
       {!editing && (
         <>
+          {cabin.event_locations?.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {CABIN_EVENT_OPTIONS.filter((e) =>
+                cabin.event_locations.includes(e.key)
+              ).map((e) => (
+                <span key={e.key} className="badge bg-brand-100 text-brand-700">
+                  {e.label}
+                </span>
+              ))}
+            </div>
+          )}
           {/* Host, styled like the guide listing on the fishing card:
               bold name, phone below, capacity under that. */}
           {host ? (
@@ -402,6 +415,31 @@ function CabinCard({
                 run(() => updateCabin(cabin.id, { capacity: Number(e.target.value) }))
               }
             />
+          </div>
+
+          <div className="rounded-lg border border-brand-100 p-3">
+            <span className="label">Location for events</span>
+            <p className="mb-2 text-xs text-brand-500">
+              These events will use this cabin&apos;s address.
+            </p>
+            <div className="space-y-2">
+              {CABIN_EVENT_OPTIONS.map((ev) => {
+                const checked = cabin.event_locations?.includes(ev.key) ?? false;
+                return (
+                  <label key={ev.key} className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) =>
+                        run(() => setCabinEventLocation(cabin.id, ev.key, e.target.checked))
+                      }
+                      className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+                    />
+                    <span className="text-sm text-brand-800">{ev.label}</span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
 
           {occupants.length > 0 && (

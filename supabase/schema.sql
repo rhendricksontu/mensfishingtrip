@@ -45,6 +45,7 @@ create table if not exists cabins (
   capacity    int  not null default 0,
   notes       text,
   sort_order  int  not null default 0,
+  event_locations text[] not null default '{}', -- events this cabin is the location for
   created_at  timestamptz not null default now()
 );
 
@@ -178,6 +179,7 @@ create table if not exists agenda_items (
   location      text,                -- street address (for directions)
   location_name text,                -- friendly place name (label)
   notes         text,                -- inline notes/lyrics text
+  event_key     text,                -- stable key a cabin can be the location for
   created_at    timestamptz not null default now()
 );
 create index if not exists agenda_day_idx on agenda_items (trip_day, sort_order);
@@ -308,6 +310,16 @@ from (values
   ('sunday',   '9:00 AM',  20, 'Pack Up & Depart', 'Clean cabins, load up, and travel safe.', 'Cabins')
 ) as v(trip_day, start_time, sort_order, title, description, location)
 where not exists (select 1 from agenda_items);
+
+-- Tag the standard events so a cabin can be set as their location (Cabins tab).
+update agenda_items set event_key = 'friday_service'
+  where event_key is null and trip_day = 'friday'   and start_time = '8:00 PM';
+update agenda_items set event_key = 'saturday_service'
+  where event_key is null and trip_day = 'saturday' and start_time = '8:00 PM';
+update agenda_items set event_key = 'saturday_breakfast'
+  where event_key is null and trip_day = 'saturday' and title ilike '%breakfast%';
+update agenda_items set event_key = 'sunday_breakfast'
+  where event_key is null and trip_day = 'sunday'   and title ilike '%breakfast%';
 
 -- Locations (fill in real addresses / map links in the admin UI or here)
 insert into locations (name, category, address, notes, sort_order)
