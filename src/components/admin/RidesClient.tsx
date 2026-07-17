@@ -60,6 +60,11 @@ export default function RidesClient({
   );
   const unplaced = attendees.filter((a) => !a.willing_to_drive && !seatedToTrip.has(a.id));
 
+  // Drivers who have no one riding down with them yet.
+  const emptyDrivers = drivers.filter(
+    (d) => effective(d, "to_trip").passengers.length === 0
+  );
+
   return (
     <div className="space-y-8">
       {unplaced.length > 0 && (
@@ -70,6 +75,20 @@ export default function RidesClient({
               <li key={a.id}>
                 <span className="font-medium text-brand-800">{a.name}</span>
                 <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {emptyDrivers.length > 0 && (
+        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+          <p className="font-semibold text-amber-800">Drivers with No Passengers</p>
+          <ul className="mt-1.5 space-y-1 text-brand-600">
+            {emptyDrivers.map((d) => (
+              <li key={d.id}>
+                <span className="font-medium text-brand-800">{d.name}</span>
+                <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
               </li>
             ))}
           </ul>
