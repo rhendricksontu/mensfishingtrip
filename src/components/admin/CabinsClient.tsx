@@ -101,7 +101,7 @@ export default function CabinsClient({
     ];
     const members = riders.filter((m) => unassignedIds.has(m.id) && !placed.has(m.id));
     if (members.length > 0) {
-      groups.push({ label: `Rode with ${driver.name}`, people: members });
+      groups.push({ label: `${driver.name}'s Vehicle`, people: members });
       members.forEach((m) => placed.add(m.id));
     }
   }
