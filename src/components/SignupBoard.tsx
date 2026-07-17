@@ -79,17 +79,17 @@ export default function SignupBoard({
     if (!memberId) return;
     start(async () => {
       const res = await assignHelper(r, d, memberId);
-      if (!res.ok) alert(res.error ?? "Could not assign helper.");
+      if (!res.ok) alert(res.error ?? "Could not assign volunteer.");
       router.refresh();
     });
   }
 
   async function handleRemove(id: string) {
-    if (!confirm("Remove this helper?")) return;
+    if (!confirm("Remove this volunteer?")) return;
     setRemoving(id);
     const res = await removeSignup(id);
     setRemoving(null);
-    if (!res.ok) alert(res.error ?? "Could not remove this helper.");
+    if (!res.ok) alert(res.error ?? "Could not remove this volunteer.");
     else router.refresh();
   }
 
@@ -179,9 +179,9 @@ export default function SignupBoard({
                       )}
                     </div>
 
-                    {/* Helpers */}
+                    {/* Volunteers */}
                     {people.length === 0 ? (
-                      <p className="mt-2 text-sm text-brand-400">No helpers yet.</p>
+                      <p className="mt-2 text-sm text-brand-400">No volunteers yet.</p>
                     ) : (
                       <ul className="mt-2 space-y-1.5">
                         {people.map((p) => (
@@ -212,14 +212,14 @@ export default function SignupBoard({
                       </ul>
                     )}
 
-                    {/* Assign a helper (leader/admin only) */}
+                    {/* Assign a volunteer (leader/admin only) */}
                     {manage && available.length > 0 && (
                       <select
                         className="input mt-2"
                         value=""
                         onChange={(e) => e.target.value && assign(roleObj.key, d.key, e.target.value)}
                       >
-                        <option value="">+ Add a helper…</option>
+                        <option value="">+ Add a volunteer…</option>
                         {available.map((m) => (
                           <option key={m.id} value={m.id}>
                             {m.name}

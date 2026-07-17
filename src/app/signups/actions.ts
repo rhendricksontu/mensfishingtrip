@@ -34,7 +34,7 @@ export async function assignHelper(
   const [me, admin] = await Promise.all([getCurrentAttendee(), getAdminUser()]);
   const db = createAdminClient();
   if (!admin && !(await isLeaderOf(db, me?.id, role, trip_day))) {
-    return { ok: false, error: "Only the leader or an organizer can assign helpers." };
+    return { ok: false, error: "Only the leader or an organizer can assign volunteers." };
   }
 
   const { data: member } = await db
@@ -60,7 +60,7 @@ export async function assignHelper(
     name: member.name,
     attendee_id: attendeeId,
   });
-  if (error) return { ok: false, error: "Could not add the helper." };
+  if (error) return { ok: false, error: "Could not add the volunteer." };
 
   revalidatePath("/signups");
   return { ok: true };
@@ -81,7 +81,7 @@ export async function removeSignup(id: string): Promise<{ ok: boolean; error?: s
 
   const [me, admin] = await Promise.all([getCurrentAttendee(), getAdminUser()]);
   if (!admin && !(await isLeaderOf(db, me?.id, row.role as Role, row.trip_day))) {
-    return { ok: false, error: "Only the leader or an organizer can remove helpers." };
+    return { ok: false, error: "Only the leader or an organizer can remove volunteers." };
   }
 
   await db.from("signups").delete().eq("id", id);
