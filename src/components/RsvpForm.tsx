@@ -4,7 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
-import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, PAYMENT } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, PAYMENT } from "@/lib/config";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
 import SelectWithOther from "@/components/SelectWithOther";
@@ -133,13 +133,11 @@ export default function RsvpForm() {
         <SelectWithOther name="departure_time" options={DEPARTURE_TIME_OPTIONS} required />
       </Field>
 
-      <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
-        <SelectWithOther name="departure_location" options={DEPARTURE_LOCATION_OPTIONS} required />
-      </Field>
-
-      <Field label="Preferred Driver" error={err("preferred_driver")}>
-        <input name="preferred_driver" className="input" placeholder="Who you'd like to ride with (optional)" maxLength={100} />
-      </Field>
+      {ridePref !== "driving" && (
+        <Field label="Preferred Driver" error={err("preferred_driver")}>
+          <input name="preferred_driver" className="input" placeholder="Who you'd like to ride with (optional)" maxLength={100} />
+        </Field>
+      )}
 
         </div>
       </fieldset>
