@@ -4,7 +4,7 @@ import { getCurrentAttendee } from "@/lib/attendee";
 import { getAdminUser } from "@/lib/auth";
 import SignupBoard from "@/components/SignupBoard";
 
-export const metadata = { title: "Signups · Men's Fishing Trip" };
+export const metadata = { title: "Volunteers · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
 
 export default async function SignupsPage() {
