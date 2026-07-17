@@ -99,6 +99,8 @@ export default async function MyTripPage() {
   function rideInfo(direction: RideDirection) {
     return findRide(direction) ?? (direction === "from_trip" ? findRide("to_trip") : null);
   }
+  const toInfo = rideInfo("to_trip");
+  const fromInfo = rideInfo("from_trip");
 
   return (
     <div className="space-y-5">
@@ -153,47 +155,45 @@ export default async function MyTripPage() {
         </div>
       )}
 
-      {/* Assignments */}
-      <div className="space-y-4">
-        {/* Cabin */}
-        <div className="space-y-2">
-          <h2 className="font-bold text-brand-800">Cabin</h2>
-          {cabin ? (
-            <CabinView cabin={cabin} occupants={cabinOccupants} meId={me.id} />
-          ) : (
-            <div className="card text-sm text-brand-400">Not assigned yet. Check back soon.</div>
+      {/* Assignments (each section is hidden until there's an assignment) */}
+      {(cabin || guidingGroups.length > 0 || group) && (
+        <div className="space-y-4">
+          {/* Cabin */}
+          {cabin && (
+            <div className="space-y-2">
+              <h2 className="font-bold text-brand-800">Cabin</h2>
+              <CabinView cabin={cabin} occupants={cabinOccupants} meId={me.id} />
+            </div>
+          )}
+
+          {/* Fishing */}
+          {(guidingGroups.length > 0 || group) && (
+            <div className="space-y-2">
+              <h2 className="font-bold text-brand-800">Fishing</h2>
+              {guidingGroups.length > 0 ? (
+                <GuidingView groups={guidingGroups} meId={me.id} />
+              ) : group ? (
+                <GuideView
+                  group={group}
+                  anglers={groupAnglers}
+                  session={me.assigned_session}
+                  meId={me.id}
+                />
+              ) : null}
+            </div>
           )}
         </div>
+      )}
 
-        {/* Fishing */}
-        <div className="space-y-2">
-          <h2 className="font-bold text-brand-800">Fishing</h2>
-          {guidingGroups.length > 0 ? (
-            <GuidingView groups={guidingGroups} meId={me.id} />
-          ) : group ? (
-            <GuideView
-              group={group}
-              anglers={groupAnglers}
-              session={me.assigned_session}
-              meId={me.id}
-            />
-          ) : (
-            <div className="card text-sm text-brand-400">Session not assigned yet.</div>
-          )}
+      {/* Rides — hidden until the member is in a ride */}
+      {(toInfo || fromInfo) && (
+        <div>
+          <h2 className="font-bold text-brand-800">Your Rides</h2>
+          <div className="mt-2">
+            <TripRides toInfo={toInfo} fromInfo={fromInfo} meId={me.id} />
+          </div>
         </div>
-      </div>
-
-      {/* Rides */}
-      <div>
-        <h2 className="font-bold text-brand-800">Your Rides</h2>
-        <div className="mt-2">
-          <TripRides
-            toInfo={rideInfo("to_trip")}
-            fromInfo={rideInfo("from_trip")}
-            meId={me.id}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Editable details */}
       <MyInfoForm attendee={me} />
