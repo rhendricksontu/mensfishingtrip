@@ -32,7 +32,12 @@ export default function RidesClient({
     });
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
+  // Drivers who offered seats; and "self-drivers" who drive but won't take
+  // passengers (RSVP: Driver/Either but not willing to drive others).
   const drivers = attendees.filter((a) => a.willing_to_drive);
+  const selfDrivers = attendees.filter(
+    (a) => !a.willing_to_drive && a.ride_preference === "driving"
+  );
 
   const passengersOf = (rideId: string) =>
     ridePassengers
@@ -50,7 +55,10 @@ export default function RidesClient({
   const seated = new Set<string>();
   drivers.forEach((d) => passengersFor(d).forEach((p) => seated.add(p.id)));
 
-  const unplaced = attendees.filter((a) => !a.willing_to_drive && !seated.has(a.id));
+  // Passengers still needing a ride — excludes anyone driving their own car.
+  const unplaced = attendees.filter(
+    (a) => !a.willing_to_drive && a.ride_preference !== "driving" && !seated.has(a.id)
+  );
   const emptyDrivers = drivers.filter((d) => passengersFor(d).length === 0);
 
   return (
@@ -78,26 +86,62 @@ export default function RidesClient({
         </div>
       )}
 
-      {emptyDrivers.length > 0 && (
+      {(emptyDrivers.length > 0 || selfDrivers.length > 0) && (
         <div className={`card border border-dashed border-amber-200 bg-amber-50/40 text-sm ${flipping ? "opacity-60" : ""}`}>
           <p className="font-semibold text-amber-800">Drivers with No Passengers</p>
-          <ul className="mt-1.5 space-y-1 text-brand-600">
-            {emptyDrivers.map((d) => (
-              <li key={d.id} className="flex items-center justify-between gap-2">
-                <span>
-                  <span className="font-medium text-brand-800">{d.name}</span>
-                  <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
-                </span>
-                <button
-                  onClick={() => flip(d.id, false)}
-                  disabled={flipping}
-                  className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
-                >
-                  Make Passenger
-                </button>
-              </li>
-            ))}
-          </ul>
+
+          {emptyDrivers.length > 0 && (
+            <div className="mt-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+                Willing to Take Passengers
+              </p>
+              <ul className="mt-1 space-y-1 text-brand-600">
+                {emptyDrivers.map((d) => (
+                  <li key={d.id} className="flex items-center justify-between gap-2">
+                    <span>
+                      <span className="font-medium text-brand-800">{d.name}</span>
+                      <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
+                      <span className="ml-2 text-xs text-brand-500">
+                        {d.seat_capacity} {d.seat_capacity === 1 ? "seat" : "seats"}
+                      </span>
+                    </span>
+                    <button
+                      onClick={() => flip(d.id, false)}
+                      disabled={flipping}
+                      className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
+                    >
+                      Make Passenger
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {selfDrivers.length > 0 && (
+            <div className="mt-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+                Not Taking Passengers
+              </p>
+              <ul className="mt-1 space-y-1 text-brand-600">
+                {selfDrivers.map((d) => (
+                  <li key={d.id} className="flex items-center justify-between gap-2">
+                    <span>
+                      <span className="font-medium text-brand-800">{d.name}</span>
+                      <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
+                    </span>
+                    <button
+                      onClick={() => flip(d.id, true)}
+                      disabled={flipping}
+                      className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
+                    >
+                      Take Passengers
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       )}
 
@@ -110,9 +154,14 @@ export default function RidesClient({
 
         {drivers.map((driver) => {
           const passengers = passengersFor(driver);
-          // Drivers can't be someone else's passenger.
+          // Only true passengers are candidates — exclude drivers and anyone
+          // driving their own car.
           const candidates = attendees.filter(
-            (a) => a.id !== driver.id && !a.willing_to_drive && !seated.has(a.id)
+            (a) =>
+              a.id !== driver.id &&
+              !a.willing_to_drive &&
+              a.ride_preference !== "driving" &&
+              !seated.has(a.id)
           );
           return (
             <RideCard

@@ -312,13 +312,23 @@ export async function setDriverStatus(attendee_id: string, willing: boolean) {
     const seats = a?.seat_capacity && a.seat_capacity > 0 ? a.seat_capacity : 3;
     const { error } = await db
       .from("attendees")
-      .update({ willing_to_drive: true, seat_capacity: seats, needs_ride: false })
+      .update({
+        willing_to_drive: true,
+        seat_capacity: seats,
+        needs_ride: false,
+        ride_preference: "driving",
+      })
       .eq("id", attendee_id);
     if (error) return { ok: false, error: error.message };
   } else {
     const { error } = await db
       .from("attendees")
-      .update({ willing_to_drive: false, seat_capacity: 0, needs_ride: true })
+      .update({
+        willing_to_drive: false,
+        seat_capacity: 0,
+        needs_ride: true,
+        ride_preference: "riding",
+      })
       .eq("id", attendee_id);
     if (error) return { ok: false, error: error.message };
     // Drop any (empty) ride row they had as a driver.
