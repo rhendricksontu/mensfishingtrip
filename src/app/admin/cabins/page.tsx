@@ -41,7 +41,10 @@ export default async function CabinsAdminPage() {
       .map((s) => ({ attendee_id: s.attendee_id as string, label: label(s.role, s.trip_day) })),
     ...signupLeaders
       .filter((l) => l.attendee_id)
-      .map((l) => ({ attendee_id: l.attendee_id as string, label: label(l.role, l.trip_day) })),
+      .map((l) => ({
+        attendee_id: l.attendee_id as string,
+        label: `${label(l.role, l.trip_day)} (Leader)`,
+      })),
   ];
 
   return (
