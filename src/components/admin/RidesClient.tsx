@@ -55,9 +55,15 @@ export default function RidesClient({
   const seated = new Set<string>();
   drivers.forEach((d) => passengersFor(d).forEach((p) => seated.add(p.id)));
 
-  // Passengers still needing a ride — excludes anyone driving their own car.
+  // Unseated people who aren't offering seats, split by RSVP ride preference:
+  //  - "riding"  → passengers who still need a ride
+  //  - "either"  → undecided; the organizer picks driver or passenger
+  //  - "driving" → self-drivers (their own car), handled below
   const unplaced = attendees.filter(
-    (a) => !a.willing_to_drive && a.ride_preference !== "driving" && !seated.has(a.id)
+    (a) => !a.willing_to_drive && a.ride_preference === "riding" && !seated.has(a.id)
+  );
+  const undecided = attendees.filter(
+    (a) => !a.willing_to_drive && a.ride_preference === "either" && !seated.has(a.id)
   );
   const emptyDrivers = drivers.filter((d) => passengersFor(d).length === 0);
 
@@ -80,6 +86,41 @@ export default function RidesClient({
                 >
                   Make Driver
                 </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {undecided.length > 0 && (
+        <div className={`card border border-dashed border-amber-200 bg-amber-50/40 text-sm ${flipping ? "opacity-60" : ""}`}>
+          <p className="font-semibold text-amber-800">Unassigned Driver/Passenger</p>
+          <p className="text-xs text-brand-500">
+            Chose &ldquo;Either&rdquo; at RSVP — pick a role or assign them to a car below.
+          </p>
+          <ul className="mt-1.5 space-y-1 text-brand-600">
+            {undecided.map((a) => (
+              <li key={a.id} className="flex items-center justify-between gap-2">
+                <span>
+                  <span className="font-medium text-brand-800">{a.name}</span>
+                  <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+                </span>
+                <span className="flex shrink-0 gap-2">
+                  <button
+                    onClick={() => flip(a.id, true)}
+                    disabled={flipping}
+                    className="text-xs text-brand-500 underline hover:text-brand-800"
+                  >
+                    Make Driver
+                  </button>
+                  <button
+                    onClick={() => flip(a.id, false)}
+                    disabled={flipping}
+                    className="text-xs text-brand-500 underline hover:text-brand-800"
+                  >
+                    Make Passenger
+                  </button>
+                </span>
               </li>
             ))}
           </ul>
