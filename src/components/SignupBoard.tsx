@@ -99,7 +99,11 @@ export default function SignupBoard({
   return (
     <div className="space-y-6">
       {ROLES.map((roleObj) => {
-        const days = daysForRole(roleObj.key);
+        // Admins see every instance; a leader only sees the ones they lead.
+        const days = daysForRole(roleObj.key).filter(
+          (d) => isAdmin || leaderByKey.get(`${roleObj.key}:${d.key}`) === currentAttendeeId
+        );
+        if (days.length === 0) return null;
         return (
           <section key={roleObj.key}>
             <h2 className="mb-3 text-lg font-bold text-brand-700">{roleObj.label}s</h2>
