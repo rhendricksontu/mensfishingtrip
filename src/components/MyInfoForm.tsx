@@ -4,7 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
-import { DEPARTURE_TIME_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, ACTIVITY_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import PhoneLink from "@/components/PhoneLink";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
@@ -28,7 +28,15 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
   const [open, setOpen] = useState(false);
   const [ridePref, setRidePref] = useState<string>(attendee.ride_preference);
   const [willingToDrive, setWillingToDrive] = useState(attendee.willing_to_drive);
+  const [otherActivity, setOtherActivity] = useState(Boolean(attendee.activity_other));
   const err = (k: string) => state.fieldErrors?.[k];
+
+  const activityLabel = (v: string) =>
+    ACTIVITY_OPTIONS.find((o) => o.value === v)?.label ?? v;
+  const activityList = [
+    ...(attendee.activities ?? []).map(activityLabel),
+    attendee.activity_other?.trim() || null,
+  ].filter(Boolean);
 
   // Close the editor and refresh the details once a save succeeds.
   useEffect(() => {
@@ -66,6 +74,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
           {attendee.preferred_driver && <Row label="Preferred Driver" value={attendee.preferred_driver} />}
+          {activityList.length > 0 && <Row label="Activities" value={activityList.join(", ")} />}
         </dl>
       </div>
     );
@@ -86,6 +95,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
             <input name="name" className="input" defaultValue={attendee.name} required />
           </Field>
           <Field label="Do you want to fish with a guide?" error={err("fish_with_guide")}>
+            <p className="mb-1 text-xs text-brand-500">(Fishing Guides, Select &quot;No&quot;)</p>
             <select
               name="fish_with_guide"
               className="input"
@@ -131,14 +141,15 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <option value="" disabled>Select One</option>
           <option value="driving">Driver</option>
           <option value="riding">Passenger</option>
+          <option value="either">Either</option>
         </select>
       </Field>
 
-      {ridePref === "driving" && (
+      {(ridePref === "driving" || ridePref === "either") && (
         <div className="rounded-lg bg-brand-50 p-4 space-y-4">
           <label className="flex items-start gap-3">
             <input type="checkbox" name="willing_to_drive" checked={willingToDrive} onChange={(e) => setWillingToDrive(e.target.checked)} className="mt-1 h-5 w-5 rounded text-brand-600" />
-            <span className="text-sm text-brand-800"><span className="font-semibold">I&apos;m willing to drive others.</span></span>
+            <span className="text-sm text-brand-800"><span className="font-semibold">I&apos;m willing to drive others.</span> I can offer seats in my vehicle.</span>
           </label>
           {willingToDrive && (
             <Field label="Passenger Seats Available (Not Counting You)" error={err("seat_capacity")}>
@@ -157,10 +168,52 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         />
       </Field>
 
-      <Field label="Preferred Driver" error={err("preferred_driver")}>
-        <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you'd like to ride with (optional)" maxLength={100} />
-      </Field>
+      {ridePref !== "driving" && (
+        <Field label="Preferred Driver" error={err("preferred_driver")}>
+          <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you'd like to ride with (optional)" maxLength={100} />
+        </Field>
+      )}
 
+        </div>
+      </fieldset>
+
+      <fieldset className="rounded-lg border border-brand-100 p-4">
+        <legend className="px-1 text-sm font-semibold text-brand-700">Activity Interest</legend>
+        <p className="mb-3 text-xs text-brand-500">Optional — check any you&apos;d be interested in.</p>
+        <div className="space-y-3">
+          {ACTIVITY_OPTIONS.map((a) => (
+            <label key={a.value} className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="activities"
+                value={a.value}
+                defaultChecked={attendee.activities?.includes(a.value)}
+                className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+              />
+              <span className="text-sm text-brand-800">{a.label}</span>
+            </label>
+          ))}
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={otherActivity}
+              onChange={(e) => setOtherActivity(e.target.checked)}
+              className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-sm text-brand-800">Other</span>
+          </label>
+          {otherActivity && (
+            <Field label="Please Specify" error={err("activity_other")}>
+              <input
+                name="activity_other"
+                className="input"
+                defaultValue={attendee.activity_other ?? ""}
+                placeholder="What activity?"
+                maxLength={200}
+                required
+              />
+            </Field>
+          )}
         </div>
       </fieldset>
 

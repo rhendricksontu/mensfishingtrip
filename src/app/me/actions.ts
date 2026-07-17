@@ -26,13 +26,15 @@ const EditSchema = z.object({
     .string()
     .trim()
     .refine((v) => normalizePhone(v).length >= 10, "Enter a valid emergency contact phone."),
-  ride_preference: z.enum(["driving", "riding"], {
-    errorMap: () => ({ message: "Choose Driver or Passenger." }),
+  ride_preference: z.enum(["driving", "riding", "either"], {
+    errorMap: () => ({ message: "Choose Driver, Passenger, or Either." }),
   }),
   departure_time: z.string().trim().min(1, "Choose a departure time."),
   preferred_driver: z.string().trim().max(100).optional().default(""),
   willing_to_drive: z.boolean(),
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
+  activities: z.array(z.enum(["biking", "golfing", "hiking"])).default([]),
+  activity_other: z.string().trim().max(200).optional().default(""),
 });
 
 export interface EditState {
@@ -71,6 +73,8 @@ export async function updateMyRsvp(
     preferred_driver: formData.get("preferred_driver") ?? "",
     willing_to_drive: bool(formData, "willing_to_drive"),
     seat_capacity: formData.get("seat_capacity") || 0,
+    activities: formData.getAll("activities").map(String),
+    activity_other: formData.get("activity_other") ?? "",
   });
 
   if (!parsed.success) {
@@ -83,7 +87,7 @@ export async function updateMyRsvp(
   }
 
   const d = parsed.data;
-  const willingToDrive = d.ride_preference === "driving" && d.willing_to_drive;
+  const willingToDrive = d.ride_preference !== "riding" && d.willing_to_drive;
   const db = createAdminClient();
 
   // Sync the login account when the phone (their username) or password changes.
@@ -124,6 +128,8 @@ export async function updateMyRsvp(
       willing_to_drive: willingToDrive,
       seat_capacity: willingToDrive ? d.seat_capacity : 0,
       needs_ride: d.ride_preference === "riding",
+      activities: d.activities,
+      activity_other: d.activity_other || null,
     })
     .eq("id", me.id);
 
