@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { assignPassenger, unassignPassenger } from "@/app/admin/actions";
+import { assignPassenger, unassignPassenger, setDriverStatus } from "@/app/admin/actions";
 import { formatPhone, normalizePhone } from "@/lib/utils";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Ride } from "@/lib/types";
@@ -23,6 +23,14 @@ export default function RidesClient({
   rides: Ride[];
   ridePassengers: RidePassenger[];
 }) {
+  const router = useRouter();
+  const [flipping, startFlip] = useTransition();
+  const flip = (id: string, willing: boolean) =>
+    startFlip(async () => {
+      await setDriverStatus(id, willing);
+      router.refresh();
+    });
+
   const byId = new Map(attendees.map((a) => [a.id, a]));
   const drivers = attendees.filter((a) => a.willing_to_drive);
 
@@ -48,13 +56,22 @@ export default function RidesClient({
   return (
     <div className="space-y-6">
       {unplaced.length > 0 && (
-        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+        <div className={`card border border-dashed border-amber-200 bg-amber-50/40 text-sm ${flipping ? "opacity-60" : ""}`}>
           <p className="font-semibold text-amber-800">Unassigned Passengers</p>
           <ul className="mt-1.5 space-y-1 text-brand-600">
             {unplaced.map((a) => (
-              <li key={a.id}>
-                <span className="font-medium text-brand-800">{a.name}</span>
-                <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+              <li key={a.id} className="flex items-center justify-between gap-2">
+                <span>
+                  <span className="font-medium text-brand-800">{a.name}</span>
+                  <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+                </span>
+                <button
+                  onClick={() => flip(a.id, true)}
+                  disabled={flipping}
+                  className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
+                >
+                  Make Driver
+                </button>
               </li>
             ))}
           </ul>
@@ -62,13 +79,22 @@ export default function RidesClient({
       )}
 
       {emptyDrivers.length > 0 && (
-        <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
+        <div className={`card border border-dashed border-amber-200 bg-amber-50/40 text-sm ${flipping ? "opacity-60" : ""}`}>
           <p className="font-semibold text-amber-800">Drivers with No Passengers</p>
           <ul className="mt-1.5 space-y-1 text-brand-600">
             {emptyDrivers.map((d) => (
-              <li key={d.id}>
-                <span className="font-medium text-brand-800">{d.name}</span>
-                <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
+              <li key={d.id} className="flex items-center justify-between gap-2">
+                <span>
+                  <span className="font-medium text-brand-800">{d.name}</span>
+                  <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
+                </span>
+                <button
+                  onClick={() => flip(d.id, false)}
+                  disabled={flipping}
+                  className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
+                >
+                  Make Passenger
+                </button>
               </li>
             ))}
           </ul>
