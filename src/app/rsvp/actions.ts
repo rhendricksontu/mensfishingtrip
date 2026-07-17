@@ -89,7 +89,6 @@ export async function submitRsvp(
     emergency_contact_phone: formatPhone(d.emergency_contact_phone),
     ride_preference: d.ride_preference,
     departure_time: d.departure_time || null,
-    departure_location: null,
     preferred_driver: d.preferred_driver || null,
     willing_to_drive: willingToDrive,
     seat_capacity: willingToDrive ? d.seat_capacity : 0,

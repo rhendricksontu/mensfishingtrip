@@ -4,7 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { updateMyRsvp, type EditState } from "@/app/me/actions";
-import { DEPARTURE_TIME_OPTIONS, DEPARTURE_LOCATION_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import PhoneLink from "@/components/PhoneLink";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
@@ -65,7 +65,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <Row label="Ride Preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
           {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
-          {attendee.departure_location && <Row label="Departure/Return Location" value={attendee.departure_location} />}
           {attendee.preferred_driver && <Row label="Preferred Driver" value={attendee.preferred_driver} />}
         </dl>
       </div>
@@ -154,15 +153,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           name="departure_time"
           options={DEPARTURE_TIME_OPTIONS}
           defaultValue={attendee.departure_time ?? ""}
-          required
-        />
-      </Field>
-
-      <Field label="Preferred Departure/Return Location" error={err("departure_location")}>
-        <SelectWithOther
-          name="departure_location"
-          options={DEPARTURE_LOCATION_OPTIONS}
-          defaultValue={attendee.departure_location ?? ""}
           required
         />
       </Field>

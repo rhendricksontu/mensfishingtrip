@@ -30,13 +30,6 @@ export const DEPARTURE_TIME_OPTIONS = [
   "Other",
 ];
 
-export const DEPARTURE_LOCATION_OPTIONS = [
-  "No Preference",
-  "Driver's House",
-  "Crossings - OKC",
-  "Other",
-];
-
 export const TRIP_DAYS = ["friday", "saturday", "sunday"] as const;
 export type TripDay = (typeof TRIP_DAYS)[number];
 

@@ -200,14 +200,9 @@ function RideCard({
         </span>
       </div>
 
-      {((direction === "to_trip" && driver.departure_time) || driver.departure_location) && (
+      {direction === "to_trip" && driver.departure_time && (
         <div className="space-y-0.5 text-xs text-brand-500">
-          {direction === "to_trip" && driver.departure_time && (
-            <p>Preferred Departure: {driver.departure_time}</p>
-          )}
-          {driver.departure_location && (
-            <p>Departure/Return Location: {driver.departure_location}</p>
-          )}
+          <p>Preferred Departure: {driver.departure_time}</p>
         </div>
       )}
       {inherited && (
@@ -251,7 +246,6 @@ function RideCard({
           {candidates.map((a) => {
             const prefs = [
               a.departure_time,
-              a.departure_location,
               a.preferred_driver ? `prefers ${a.preferred_driver}` : null,
             ]
               .filter(Boolean)

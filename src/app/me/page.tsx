@@ -311,12 +311,9 @@ function RideCard({
         </span>
       </div>
 
-      {(driver.departure_time || driver.departure_location) && (
+      {driver.departure_time && (
         <div className="space-y-0.5 text-xs text-brand-500">
-          {driver.departure_time && <p>Preferred Departure: {driver.departure_time}</p>}
-          {driver.departure_location && (
-            <p>Departure/Return Location: {driver.departure_location}</p>
-          )}
+          <p>Preferred Departure: {driver.departure_time}</p>
         </div>
       )}
 

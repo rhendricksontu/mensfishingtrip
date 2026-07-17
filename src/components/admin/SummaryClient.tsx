@@ -188,10 +188,6 @@ export default function SummaryClient({
                 />
                 <Row label="Departure" value={a.departure_time || "Not set"} />
                 <Row
-                  label="Departure/Return Location"
-                  value={a.departure_location || "Not set"}
-                />
-                <Row
                   label="Driver"
                   value={s.rideUnassigned ? <FixLink href="/admin/rides" /> : s.driver}
                   highlight={s.rideUnassigned}
