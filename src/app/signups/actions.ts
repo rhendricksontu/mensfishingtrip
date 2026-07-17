@@ -63,6 +63,7 @@ export async function assignHelper(
   if (error) return { ok: false, error: "Could not add the volunteer." };
 
   revalidatePath("/signups");
+  revalidatePath("/me");
   return { ok: true };
 }
 
@@ -86,6 +87,7 @@ export async function removeSignup(id: string): Promise<{ ok: boolean; error?: s
 
   await db.from("signups").delete().eq("id", id);
   revalidatePath("/signups");
+  revalidatePath("/me");
   return { ok: true };
 }
 
@@ -109,5 +111,6 @@ export async function setSignupLeader(
   }
   revalidatePath("/signups");
   revalidatePath("/admin/volunteers");
+  revalidatePath("/me");
   return { ok: true };
 }

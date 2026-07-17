@@ -52,6 +52,7 @@ export async function updateAttendee(id: string, patch: AttendeePatch) {
   revalidatePath("/admin/roster");
   revalidatePath("/admin/cabins");
   revalidatePath("/admin/fishing");
+  revalidatePath("/me");
   return { ok: true };
 }
 
@@ -129,6 +130,7 @@ export async function updateCabin(
   const db = createAdminClient();
   await db.from("cabins").update(patch).eq("id", id);
   revalidatePath("/admin/cabins");
+  revalidatePath("/me");
 }
 
 // A cabin has at most one host. Marking a new host clears any existing one.
@@ -151,6 +153,7 @@ export async function setCabinHost(attendeeId: string, makeHost: boolean) {
   }
 
   revalidatePath("/admin/cabins");
+  revalidatePath("/me");
 }
 
 export async function deleteCabin(id: string) {
@@ -159,6 +162,7 @@ export async function deleteCabin(id: string) {
   // attendees.cabin_id is ON DELETE SET NULL, so occupants are auto-unassigned.
   await db.from("cabins").delete().eq("id", id);
   revalidatePath("/admin/cabins");
+  revalidatePath("/me");
 }
 
 // ---- Fishing groups --------------------------------------------------------
@@ -206,6 +210,7 @@ export async function updateFishingGroup(
   const db = createAdminClient();
   await db.from("fishing_groups").update(patch).eq("id", id);
   revalidatePath("/admin/fishing");
+  revalidatePath("/me");
 }
 
 export async function deleteFishingGroup(id: string) {
@@ -214,6 +219,7 @@ export async function deleteFishingGroup(id: string) {
   // attendees.fishing_group_id is ON DELETE SET NULL.
   await db.from("fishing_groups").delete().eq("id", id);
   revalidatePath("/admin/fishing");
+  revalidatePath("/me");
 }
 
 // ---- Rides -----------------------------------------------------------------
@@ -223,6 +229,7 @@ export async function createRide(driver_id: string, direction: RideDirection) {
   const db = createAdminClient();
   await db.from("rides").insert({ driver_id, direction });
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 export async function updateRide(
@@ -233,6 +240,7 @@ export async function updateRide(
   const db = createAdminClient();
   await db.from("rides").update(patch).eq("id", id);
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 export async function deleteRide(id: string) {
@@ -240,6 +248,7 @@ export async function deleteRide(id: string) {
   const db = createAdminClient();
   await db.from("rides").delete().eq("id", id);
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 export async function addPassenger(ride_id: string, attendee_id: string) {
@@ -249,6 +258,7 @@ export async function addPassenger(ride_id: string, attendee_id: string) {
     .from("ride_passengers")
     .upsert({ ride_id, attendee_id }, { onConflict: "ride_id,attendee_id" });
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 export async function removePassenger(ride_id: string, attendee_id: string) {
@@ -260,6 +270,7 @@ export async function removePassenger(ride_id: string, attendee_id: string) {
     .eq("ride_id", ride_id)
     .eq("attendee_id", attendee_id);
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 // Driver-centric helpers: the ride row is created on demand for a
@@ -306,6 +317,7 @@ export async function assignPassenger(
   }
 
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 // Remove a passenger from a driver's ride for a direction. Coming-home that's
@@ -335,6 +347,7 @@ export async function unassignPassenger(
     .eq("ride_id", rideId)
     .eq("attendee_id", attendee_id);
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 export async function setRideField(
@@ -347,6 +360,7 @@ export async function setRideField(
   const rideId = await getOrCreateRideId(db, driver_id, direction);
   await db.from("rides").update(patch).eq("id", rideId);
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 // Coming-home defaults to the same passengers as the ride down. This makes the
@@ -377,6 +391,7 @@ export async function seedReturnFromDown(driver_id: string) {
     }
   }
   revalidatePath("/admin/rides");
+  revalidatePath("/me");
 }
 
 // ---- Agenda ---------------------------------------------------------------
