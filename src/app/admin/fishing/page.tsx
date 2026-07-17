@@ -5,19 +5,22 @@ import {
   getTripLocations,
   getRides,
   getRidePassengers,
+  getVisibility,
 } from "@/lib/data";
 import FishingClient from "@/components/admin/FishingClient";
+import VisibilityToggle from "@/components/admin/VisibilityToggle";
 
 export const dynamic = "force-dynamic";
 
 export default async function FishingAdminPage() {
   await requireAdmin();
-  const [groups, attendees, locations, rides, ridePassengers] = await Promise.all([
+  const [groups, attendees, locations, rides, ridePassengers, visibility] = await Promise.all([
     getFishingGroups(),
     getAttendees(),
     getTripLocations(),
     getRides(),
     getRidePassengers(),
+    getVisibility(),
   ]);
 
   return (
@@ -29,6 +32,11 @@ export default async function FishingAdminPage() {
           members to each guide.
         </p>
       </div>
+      <VisibilityToggle
+        settingKey="show_fishing"
+        initial={visibility.show_fishing}
+        label="Show fishing assignments to attendees"
+      />
       <FishingClient
         groups={groups}
         attendees={attendees}

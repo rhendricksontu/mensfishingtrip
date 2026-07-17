@@ -6,6 +6,7 @@ import {
   getRides,
   getRidePassengers,
   getSignups,
+  getVisibility,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
@@ -32,13 +33,14 @@ export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
-  const [attendees, cabins, groups, rides, ridePassengers, signups] = await Promise.all([
+  const [attendees, cabins, groups, rides, ridePassengers, signups, visibility] = await Promise.all([
     getAttendees(),
     getCabins(),
     getFishingGroups(),
     getRides(),
     getRidePassengers(),
     getSignups(),
+    getVisibility(),
   ]);
 
   // This member's volunteer signups (breakfast/coffee/guide lunch).
@@ -101,6 +103,12 @@ export default async function MyTripPage() {
   // One ride card for both directions — we assume the same car going and coming.
   const myRide = rideInfo("to_trip") ?? rideInfo("from_trip");
 
+  // Each card needs BOTH an assignment AND the organizer's go-ahead to show.
+  const showCabin = visibility.show_cabins && Boolean(cabin);
+  const showFishing =
+    visibility.show_fishing && (guidingGroups.length > 0 || Boolean(group));
+  const showRide = visibility.show_rides && Boolean(myRide?.driver);
+
   return (
     <div className="space-y-5">
       <div>
@@ -154,11 +162,11 @@ export default async function MyTripPage() {
         </div>
       )}
 
-      {/* Assignments (each section is hidden until there's an assignment) */}
-      {(cabin || guidingGroups.length > 0 || group) && (
+      {/* Assignments — each card needs an assignment AND organizer visibility. */}
+      {(showCabin || showFishing) && (
         <div className="space-y-4">
           {/* Cabin */}
-          {cabin && (
+          {showCabin && cabin && (
             <div className="space-y-2">
               <h2 className="font-bold text-brand-800">Cabin</h2>
               <CabinView cabin={cabin} occupants={cabinOccupants} meId={me.id} />
@@ -166,7 +174,7 @@ export default async function MyTripPage() {
           )}
 
           {/* Fishing */}
-          {(guidingGroups.length > 0 || group) && (
+          {showFishing && (
             <div className="space-y-2">
               <h2 className="font-bold text-brand-800">Fishing</h2>
               {guidingGroups.length > 0 ? (
@@ -184,8 +192,8 @@ export default async function MyTripPage() {
         </div>
       )}
 
-      {/* Your Ride — hidden until the member is in a car */}
-      {myRide?.driver && (
+      {/* Your Ride — hidden until the member is in a car and the organizer reveals it */}
+      {showRide && myRide?.driver && (
         <div>
           <h2 className="font-bold text-brand-800">Your Ride</h2>
           <div className="mt-2">

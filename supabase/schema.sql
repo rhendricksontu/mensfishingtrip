@@ -216,6 +216,21 @@ create table if not exists admins (
 );
 
 -- ---------------------------------------------------------------------------
+-- Organizer-controlled visibility flags (e.g. reveal cabin/fishing/ride cards)
+-- ---------------------------------------------------------------------------
+create table if not exists settings (
+  key         text primary key,
+  value       boolean not null default false,
+  updated_at  timestamptz not null default now()
+);
+
+insert into settings (key, value) values
+  ('show_cabins', false),
+  ('show_fishing', false),
+  ('show_rides', false)
+on conflict (key) do nothing;
+
+-- ---------------------------------------------------------------------------
 -- updated_at trigger for attendees
 -- ---------------------------------------------------------------------------
 create or replace function set_updated_at()
@@ -249,6 +264,7 @@ alter table ride_passengers enable row level security;
 alter table agenda_items    enable row level security;
 alter table locations       enable row level security;
 alter table admins          enable row level security;
+alter table settings        enable row level security;
 
 -- ============================================================================
 -- SEED DATA

@@ -1,16 +1,18 @@
 import { requireAdmin } from "@/lib/require-admin";
-import { getAttendees, getCabins, getRides, getRidePassengers } from "@/lib/data";
+import { getAttendees, getCabins, getRides, getRidePassengers, getVisibility } from "@/lib/data";
 import CabinsClient from "@/components/admin/CabinsClient";
+import VisibilityToggle from "@/components/admin/VisibilityToggle";
 
 export const dynamic = "force-dynamic";
 
 export default async function CabinsAdminPage() {
   await requireAdmin();
-  const [cabins, attendees, rides, ridePassengers] = await Promise.all([
+  const [cabins, attendees, rides, ridePassengers, visibility] = await Promise.all([
     getCabins(),
     getAttendees(),
     getRides(),
     getRidePassengers(),
+    getVisibility(),
   ]);
 
   return (
@@ -22,6 +24,11 @@ export default async function CabinsAdminPage() {
           host.
         </p>
       </div>
+      <VisibilityToggle
+        settingKey="show_cabins"
+        initial={visibility.show_cabins}
+        label="Show cabin assignments to attendees"
+      />
       <CabinsClient
         cabins={cabins}
         attendees={attendees}

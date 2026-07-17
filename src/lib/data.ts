@@ -11,7 +11,14 @@ import type {
   Ride,
   Signup,
   SignupLeader,
+  Visibility,
 } from "@/lib/types";
+
+const VISIBILITY_DEFAULT: Visibility = {
+  show_cabins: false,
+  show_fishing: false,
+  show_rides: false,
+};
 
 export function isSupabaseConfigured(): boolean {
   return Boolean(
@@ -123,6 +130,19 @@ export function isSignupParticipant(attendeeId: string): Promise<boolean> {
     ]);
     return Boolean(leader.data?.length || helper.data?.length);
   }, false);
+}
+
+// Which My Fishing Trip cards has the organizer revealed to attendees?
+export function getVisibility(): Promise<Visibility> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db.from("settings").select("key, value");
+    const v: Visibility = { ...VISIBILITY_DEFAULT };
+    for (const row of data ?? []) {
+      if (row.key in v) v[row.key as keyof Visibility] = Boolean(row.value);
+    }
+    return v;
+  }, { ...VISIBILITY_DEFAULT });
 }
 
 export function getSignupLeaders(): Promise<SignupLeader[]> {

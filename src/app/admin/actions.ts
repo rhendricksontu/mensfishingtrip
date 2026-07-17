@@ -4,7 +4,24 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/require-admin";
 import { sanitizeNotes } from "@/lib/sanitize";
-import type { FishingSession, RideDirection } from "@/lib/types";
+import type { FishingSession, RideDirection, VisibilityKey } from "@/lib/types";
+
+// ---- Attendee-facing card visibility --------------------------------------
+
+// Toggle whether attendees see their cabin / fishing / ride card on /me.
+export async function setVisibility(key: VisibilityKey, value: boolean) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const { error } = await db
+    .from("settings")
+    .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: "key" });
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/me");
+  revalidatePath("/admin/cabins");
+  revalidatePath("/admin/fishing");
+  revalidatePath("/admin/rides");
+  return { ok: true };
+}
 
 // ---- Attendee assignment / payment updates --------------------------------
 

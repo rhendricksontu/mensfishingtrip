@@ -3,6 +3,14 @@ export type FishingSession = "saturday_morning" | "saturday_afternoon";
 export type SignupRole = "breakfast_cook" | "coffee_maker" | "guide_lunch";
 export type RideDirection = "to_trip" | "from_trip";
 
+// Organizer-controlled visibility flags for the My Fishing Trip cards.
+export type VisibilityKey = "show_cabins" | "show_fishing" | "show_rides";
+export interface Visibility {
+  show_cabins: boolean;
+  show_fishing: boolean;
+  show_rides: boolean;
+}
+
 export interface Cabin {
   id: string;
   name: string;

@@ -1,15 +1,17 @@
 import { requireAdmin } from "@/lib/require-admin";
-import { getAttendees, getRides, getRidePassengers } from "@/lib/data";
+import { getAttendees, getRides, getRidePassengers, getVisibility } from "@/lib/data";
 import RidesClient from "@/components/admin/RidesClient";
+import VisibilityToggle from "@/components/admin/VisibilityToggle";
 
 export const dynamic = "force-dynamic";
 
 export default async function RidesAdminPage() {
   await requireAdmin();
-  const [attendees, rides, ridePassengers] = await Promise.all([
+  const [attendees, rides, ridePassengers, visibility] = await Promise.all([
     getAttendees(),
     getRides(),
     getRidePassengers(),
+    getVisibility(),
   ]);
 
   return (
@@ -20,6 +22,11 @@ export default async function RidesAdminPage() {
           Drivers (who offered seats at RSVP) appear automatically.
         </p>
       </div>
+      <VisibilityToggle
+        settingKey="show_rides"
+        initial={visibility.show_rides}
+        label="Show ride assignments to attendees"
+      />
       <RidesClient attendees={attendees} rides={rides} ridePassengers={ridePassengers} />
     </div>
   );
