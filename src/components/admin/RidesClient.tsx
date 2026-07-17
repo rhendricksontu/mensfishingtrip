@@ -76,8 +76,6 @@ export default function RidesClient({
       )}
 
       <section className="space-y-3">
-        <h2 className="text-lg font-bold text-brand-700">Ride Assignments</h2>
-
         {drivers.length === 0 && (
           <p className="text-sm text-brand-400">
             No drivers yet. People who pick &ldquo;Driver&rdquo; and offer seats appear here.
