@@ -139,6 +139,22 @@ export async function updateMyRsvp(
   return { ok: true };
 }
 
+// Self-service: a member who can no longer make the trip removes their own
+// RSVP and login. FKs cascade (signups, rides, passengers) or set null.
+export async function deleteMyAccount(): Promise<void> {
+  const me = await getCurrentAttendee();
+  if (me) {
+    const db = createAdminClient();
+    if (me.user_id) {
+      await db.auth.admin.deleteUser(me.user_id).catch(() => {});
+    }
+    await db.from("attendees").delete().eq("id", me.id);
+  }
+  const supabase = createSupabaseServerClient();
+  await supabase.auth.signOut();
+  redirect("/");
+}
+
 export async function signOutAttendee(): Promise<void> {
   const supabase = createSupabaseServerClient();
   await supabase.auth.signOut();

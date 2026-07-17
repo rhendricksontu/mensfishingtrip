@@ -3,7 +3,7 @@
 import { useFormState, useFormStatus } from "react-dom";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { updateMyRsvp, type EditState } from "@/app/me/actions";
+import { updateMyRsvp, deleteMyAccount, type EditState } from "@/app/me/actions";
 import { DEPARTURE_TIME_OPTIONS, ACTIVITY_OPTIONS, RIDE_PREF_LABELS } from "@/lib/config";
 import PhoneLink from "@/components/PhoneLink";
 import PhoneInput from "@/components/PhoneInput";
@@ -76,6 +76,25 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           {attendee.preferred_driver && <Row label="Preferred Driver" value={attendee.preferred_driver} />}
           {activityList.length > 0 && <Row label="Activities" value={activityList.join(", ")} />}
         </dl>
+
+        <div className="mt-4 border-t border-brand-50 pt-3">
+          <form
+            action={deleteMyAccount}
+            onSubmit={(e) => {
+              if (
+                !confirm(
+                  "Can't make the trip? This permanently deletes your RSVP and account. This can't be undone."
+                )
+              ) {
+                e.preventDefault();
+              }
+            }}
+          >
+            <button type="submit" className="text-sm text-red-600 underline hover:text-red-700">
+              Can&apos;t make the trip? Delete my account
+            </button>
+          </form>
+        </div>
       </div>
     );
   }
