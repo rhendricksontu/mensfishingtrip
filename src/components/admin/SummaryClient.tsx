@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { SESSION_LABELS, RIDE_PREF_LABELS } from "@/lib/config";
+import { SESSION_LABELS, RIDE_PREF_LABELS, ACTIVITY_OPTIONS } from "@/lib/config";
 import { setAttendeeRole, deleteAttendee } from "@/app/admin/actions";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Cabin, FishingGroup, Ride } from "@/lib/types";
@@ -168,6 +168,7 @@ export default function SummaryClient({
             </button>
             {open && (
               <dl className="mt-3 space-y-1.5 border-t border-brand-50 pt-3 text-sm">
+                <SectionHeading>RSVP</SectionHeading>
                 <Row
                   label="Cell Phone"
                   value={<PhoneLink phone={a.phone} className="font-medium text-brand-800 underline" />}
@@ -182,16 +183,24 @@ export default function SummaryClient({
                     />
                   }
                 />
+                <Row label="Fish with a Guide" value={a.fish_with_guide ? "Yes" : "No"} />
                 <Row
                   label="Ride Preference"
                   value={RIDE_PREF_LABELS[a.ride_preference] ?? "Not set"}
                 />
+                {a.willing_to_drive && (
+                  <Row
+                    label="Willing to Drive"
+                    value={`Yes · ${a.seat_capacity} seat${a.seat_capacity === 1 ? "" : "s"}`}
+                  />
+                )}
                 <Row label="Departure" value={a.departure_time || "Not set"} />
-                <Row
-                  label="Driver"
-                  value={s.rideUnassigned ? <FixLink href="/admin/rides" /> : s.driver}
-                  highlight={s.rideUnassigned}
-                />
+                {a.preferred_driver && <Row label="Preferred Driver" value={a.preferred_driver} />}
+                {activityListFor(a).length > 0 && (
+                  <Row label="Activities" value={activityListFor(a).join(", ")} />
+                )}
+
+                <SectionHeading>Assignments</SectionHeading>
                 <Row
                   label="Cabin"
                   value={s.cabinUnassigned ? <FixLink href="/admin/cabins" /> : s.cabin}
@@ -204,6 +213,11 @@ export default function SummaryClient({
                     highlight={s.fishingUnassigned}
                   />
                 )}
+                <Row
+                  label="Driver"
+                  value={s.rideUnassigned ? <FixLink href="/admin/rides" /> : s.driver}
+                  highlight={s.rideUnassigned}
+                />
                 <Row
                   label="Payment"
                   value={s.paid ? "Paid" : <FixLink href="/admin/ar" label="Unpaid" />}
@@ -241,6 +255,24 @@ export default function SummaryClient({
       })}
       </ul>
     </div>
+  );
+}
+
+// Activity interests (mapped to labels) plus any free-text "other".
+function activityListFor(a: Attendee): string[] {
+  const label = (v: string) => ACTIVITY_OPTIONS.find((o) => o.value === v)?.label ?? v;
+  return [
+    ...(a.activities ?? []).map(label),
+    a.activity_other?.trim() || null,
+  ].filter(Boolean) as string[];
+}
+
+// Small group heading inside the details panel (RSVP / Assignments).
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="pt-1 text-xs font-semibold uppercase tracking-wide text-brand-400">
+      {children}
+    </p>
   );
 }
 
