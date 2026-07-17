@@ -38,11 +38,14 @@ export function groupByVehicle(
     ];
     const members = riders.filter((m) => targetIds.has(m.id) && !placed.has(m.id));
     if (members.length > 0) {
+      members.sort((a, b) => a.name.localeCompare(b.name));
       groups.push({ label: `${driver.name}'s Vehicle`, people: members });
       members.forEach((m) => placed.add(m.id));
     }
   }
 
-  const noGroup = people.filter((a) => !placed.has(a.id));
+  const noGroup = people
+    .filter((a) => !placed.has(a.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
   return { groups, noGroup };
 }

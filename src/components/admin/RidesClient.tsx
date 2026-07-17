@@ -45,18 +45,19 @@ export default function RidesClient({
   };
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
+  const byName = (a: Attendee, b: Attendee) => a.name.localeCompare(b.name);
   // Drivers who offered seats; and "self-drivers" who drive but won't take
   // passengers (RSVP: Driver/Either but not willing to drive others).
-  const drivers = attendees.filter((a) => a.willing_to_drive);
-  const selfDrivers = attendees.filter(
-    (a) => !a.willing_to_drive && a.ride_preference === "driving"
-  );
+  const drivers = attendees.filter((a) => a.willing_to_drive).sort(byName);
+  const selfDrivers = attendees
+    .filter((a) => !a.willing_to_drive && a.ride_preference === "driving")
+    .sort(byName);
 
   const passengersOf = (rideId: string) =>
-    ridePassengers
+    (ridePassengers
       .filter((p) => p.ride_id === rideId)
       .map((p) => byId.get(p.attendee_id))
-      .filter(Boolean) as Attendee[];
+      .filter(Boolean) as Attendee[]).sort(byName);
 
   // A driver's passengers (the single ride, both directions).
   function passengersFor(driver: Attendee) {
@@ -72,12 +73,12 @@ export default function RidesClient({
   //  - "riding"  → passengers who still need a ride
   //  - "either"  → undecided; the organizer picks driver or passenger
   //  - "driving" → self-drivers (their own car), handled below
-  const unplaced = attendees.filter(
-    (a) => !a.willing_to_drive && a.ride_preference === "riding" && !seated.has(a.id)
-  );
-  const undecided = attendees.filter(
-    (a) => !a.willing_to_drive && a.ride_preference === "either" && !seated.has(a.id)
-  );
+  const unplaced = attendees
+    .filter((a) => !a.willing_to_drive && a.ride_preference === "riding" && !seated.has(a.id))
+    .sort(byName);
+  const undecided = attendees
+    .filter((a) => !a.willing_to_drive && a.ride_preference === "either" && !seated.has(a.id))
+    .sort(byName);
   const emptyDrivers = drivers.filter((d) => passengersFor(d).length === 0);
 
   return (
@@ -201,13 +202,15 @@ export default function RidesClient({
           const passengers = passengersFor(driver);
           // Only true passengers are candidates — exclude drivers and anyone
           // driving their own car.
-          const candidates = attendees.filter(
-            (a) =>
-              a.id !== driver.id &&
-              !a.willing_to_drive &&
-              a.ride_preference !== "driving" &&
-              !seated.has(a.id)
-          );
+          const candidates = attendees
+            .filter(
+              (a) =>
+                a.id !== driver.id &&
+                !a.willing_to_drive &&
+                a.ride_preference !== "driving" &&
+                !seated.has(a.id)
+            )
+            .sort(byName);
           return (
             <RideCard
               key={driver.id}
