@@ -25,7 +25,7 @@ export default function Nav({
     setOpen(false);
   }, [pathname]);
   const links = [
-    { href: "/me", label: "My Fishing Trip" },
+    { href: "/me", label: "My Trip" },
     { href: "/", label: "Agenda" },
     ...(canSeeSignups ? [{ href: "/signups", label: "Volunteers" }] : []),
     { href: "/locations", label: "Locations" },
@@ -38,7 +38,7 @@ export default function Nav({
   return (
     <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
+        <Link href="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
           <Image
             src="/trout.png"
             alt=""
@@ -46,18 +46,18 @@ export default function Nav({
             height={32}
             className="h-8 w-8 rounded-full bg-cream object-cover ring-1 ring-white/30"
           />
-          <span>Men&apos;s Fishing Trip</span>
+          <span className="whitespace-nowrap">Men&apos;s Fishing Trip</span>
         </Link>
 
         {isAuthed ? (
           <>
-            <nav className="hidden sm:flex items-center gap-1">
+            <nav className="hidden lg:flex items-center gap-0.5">
               {links.map((l) => (
                 <Link
                   key={l.href}
                   href={l.href}
                   className={classNames(
-                    "rounded-md px-3 py-1.5 text-sm font-medium",
+                    "whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium",
                     isActive(l.href)
                       ? "bg-cream text-brand-700"
                       : "text-white hover:bg-brand-600"
@@ -69,7 +69,7 @@ export default function Nav({
               <form action={signOutAttendee}>
                 <button
                   type="submit"
-                  className="rounded-md px-3 py-1.5 text-sm font-medium hover:bg-brand-600"
+                  className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-brand-600"
                 >
                   Log Out
                 </button>
@@ -77,7 +77,7 @@ export default function Nav({
             </nav>
 
             <button
-              className="sm:hidden rounded-md p-2 hover:bg-brand-600"
+              className="lg:hidden rounded-md p-2 hover:bg-brand-600"
               onClick={() => setOpen((v) => !v)}
               aria-label="Toggle menu"
               aria-expanded={open}
@@ -102,7 +102,7 @@ export default function Nav({
       </div>
 
       {isAuthed && open && (
-        <nav className="sm:hidden border-t border-brand-600 bg-brand-700 px-2 pb-3">
+        <nav className="lg:hidden border-t border-brand-600 bg-brand-700 px-2 pb-3">
           {links.map((l) => (
             <Link
               key={l.href}
