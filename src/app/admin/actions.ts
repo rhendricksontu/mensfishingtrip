@@ -115,8 +115,7 @@ export async function createCabin(
   name: string,
   capacity: number,
   address?: CabinAddress,
-  events?: string[],
-  hostId?: string | null
+  events?: string[]
 ) {
   await requireAdmin();
   const db = createAdminClient();
@@ -134,25 +133,13 @@ export async function createCabin(
     }
   }
 
-  const { data: created } = await db
+  await db
     .from("cabins")
-    .insert({ name, capacity, ...(address ?? {}), event_locations: eventLocations })
-    .select("id")
-    .single();
-
-  // Assign the chosen traveler to the new cabin as its host.
-  if (hostId && created) {
-    await db
-      .from("attendees")
-      .update({ cabin_id: created.id, is_cabin_host: true })
-      .eq("id", hostId);
-  }
-
+    .insert({ name, capacity, ...(address ?? {}), event_locations: eventLocations });
   revalidatePath("/admin/cabins");
   revalidatePath("/agenda");
   revalidatePath("/");
   revalidatePath("/locations");
-  revalidatePath("/me");
 }
 
 export async function updateCabin(

@@ -144,7 +144,7 @@ export default function CabinsClient({
         />
       ))}
 
-      <AddCabin travelers={unassigned} />
+      <AddCabin />
     </div>
   );
 }
@@ -546,7 +546,7 @@ function CabinCard({
   );
 }
 
-function AddCabin({ travelers }: { travelers: Attendee[] }) {
+function AddCabin() {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [open, setOpen] = useState(false);
@@ -558,7 +558,6 @@ function AddCabin({ travelers }: { travelers: Attendee[] }) {
   const [zip, setZip] = useState("");
   const [capacity, setCapacity] = useState(15);
   const [events, setEvents] = useState<string[]>([]);
-  const [hostId, setHostId] = useState("");
 
   const toggleEvent = (key: string, on: boolean) =>
     setEvents((prev) => (on ? [...prev, key] : prev.filter((k) => k !== key)));
@@ -576,8 +575,7 @@ function AddCabin({ travelers }: { travelers: Attendee[] }) {
           state: stateField.trim() || null,
           zip: zip.trim() || null,
         },
-        events,
-        hostId || null
+        events
       );
       setName("");
       setAddress1("");
@@ -586,7 +584,6 @@ function AddCabin({ travelers }: { travelers: Attendee[] }) {
       setStateField("");
       setZip("");
       setEvents([]);
-      setHostId("");
       setOpen(false);
       router.refresh();
     });
@@ -633,24 +630,6 @@ function AddCabin({ travelers }: { travelers: Attendee[] }) {
           ))}
         </div>
       </div>
-
-      {travelers.length > 0 && (
-        <div>
-          <span className="label">Cabin Host</span>
-          <select
-            className="input"
-            value={hostId}
-            onChange={(e) => setHostId(e.target.value)}
-          >
-            <option value="">No host</option>
-            {travelers.map((a) => (
-              <option key={a.id} value={a.id}>
-                {a.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
 
       <div className="flex items-end gap-3">
         <div>
