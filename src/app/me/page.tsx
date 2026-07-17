@@ -12,7 +12,6 @@ import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
-import TripRides from "@/components/trip/TripRides";
 import type {
   Attendee,
   Cabin,
@@ -99,8 +98,8 @@ export default async function MyTripPage() {
   function rideInfo(direction: RideDirection) {
     return findRide(direction) ?? (direction === "from_trip" ? findRide("to_trip") : null);
   }
-  const toInfo = rideInfo("to_trip");
-  const fromInfo = rideInfo("from_trip");
+  // One ride card for both directions — we assume the same car going and coming.
+  const myRide = rideInfo("to_trip") ?? rideInfo("from_trip");
 
   return (
     <div className="space-y-5">
@@ -185,12 +184,12 @@ export default async function MyTripPage() {
         </div>
       )}
 
-      {/* Rides — hidden until the member is in a ride */}
-      {(toInfo || fromInfo) && (
+      {/* Your Ride — hidden until the member is in a car */}
+      {myRide?.driver && (
         <div>
-          <h2 className="font-bold text-brand-800">Your Rides</h2>
+          <h2 className="font-bold text-brand-800">Your Ride</h2>
           <div className="mt-2">
-            <TripRides toInfo={toInfo} fromInfo={fromInfo} meId={me.id} />
+            <RideCard info={myRide} meId={me.id} />
           </div>
         </div>
       )}
@@ -281,6 +280,63 @@ function CabinView({
 // Read-only fishing group card, mirroring the organizer guide card.
 // For a member who guides: one GuideView card per session they guide, so it
 // looks identical to the non-guide fishing card (guide name + phone included).
+// Read-only ride card — one car for both directions (To Broken Bow assumed).
+function RideCard({
+  info,
+  meId,
+}: {
+  info: { driver: Attendee | null; passengers: Attendee[] };
+  meId: string;
+}) {
+  const driver = info.driver;
+  if (!driver) return null;
+  const seatsLeft = driver.seat_capacity - info.passengers.length;
+  const over = seatsLeft < 0;
+
+  return (
+    <div className="card space-y-3">
+      <div>
+        <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+          Driver
+        </span>
+        <div className="flex flex-wrap items-baseline gap-2">
+          <h3 className="font-bold text-brand-800">
+            {driver.name}
+            {driver.id === meId && " (You)"}
+          </h3>
+          <PhoneLink phone={driver.phone} />
+        </div>
+        <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+          {info.passengers.length}/{driver.seat_capacity} Seats
+        </span>
+      </div>
+
+      {(driver.departure_time || driver.departure_location) && (
+        <div className="space-y-0.5 text-xs text-brand-500">
+          {driver.departure_time && <p>Preferred Departure: {driver.departure_time}</p>}
+          {driver.departure_location && (
+            <p>Departure/Return Location: {driver.departure_location}</p>
+          )}
+        </div>
+      )}
+
+      {info.passengers.length > 0 && (
+        <ul className="divide-y divide-brand-50">
+          {info.passengers.map((p) => (
+            <li key={p.id} className="py-2 text-sm">
+              <span className="font-medium text-brand-800">
+                {p.name}
+                {p.id === meId && " (You)"}
+              </span>{" "}
+              <PhoneLink phone={p.phone} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function GuidingView({
   groups,
   meId,
