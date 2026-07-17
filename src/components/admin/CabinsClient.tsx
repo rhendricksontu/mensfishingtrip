@@ -443,32 +443,47 @@ function CabinCard({
           </div>
 
           {occupants.length > 0 && (
+            <div>
+              <span className="label">Cabin Host</span>
+              <select
+                className="input"
+                value={host?.id ?? ""}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  run(async () => {
+                    if (v) await setCabinHost(v, true);
+                    else if (host) await setCabinHost(host.id, false);
+                  });
+                }}
+              >
+                <option value="">No host</option>
+                {occupants.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {occupants.length > 0 && (
             <ul className="divide-y divide-brand-50">
               {occupants.map((a) => (
                 <li key={a.id} className="flex items-center justify-between gap-2 py-2">
-                  <div>
-                    <span className="text-sm font-medium text-brand-800">{a.name}</span>
-                  </div>
                   <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => run(() => setCabinHost(a.id, !a.is_cabin_host))}
-                      className={`badge ${
-                        a.is_cabin_host
-                          ? "bg-olive-600 text-white"
-                          : "bg-brand-50 text-brand-500 ring-1 ring-brand-200"
-                      }`}
-                    >
-                      {a.is_cabin_host ? "Host" : "Make Host"}
-                    </button>
-                    <button
-                      onClick={() =>
-                        run(() => updateAttendee(a.id, { cabin_id: null, is_cabin_host: false }))
-                      }
-                      className="text-xs text-brand-400 underline hover:text-red-600"
-                    >
-                      Remove
-                    </button>
+                    <span className="text-sm font-medium text-brand-800">{a.name}</span>
+                    {a.is_cabin_host && (
+                      <span className="badge bg-olive-600 text-white">Host</span>
+                    )}
                   </div>
+                  <button
+                    onClick={() =>
+                      run(() => updateAttendee(a.id, { cabin_id: null, is_cabin_host: false }))
+                    }
+                    className="text-xs text-brand-400 underline hover:text-red-600"
+                  >
+                    Remove
+                  </button>
                 </li>
               ))}
             </ul>
