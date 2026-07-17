@@ -126,12 +126,10 @@ export default async function MyTripPage() {
     return { ride, driver, passengers, iAmDriver: Boolean(asDriver) };
   }
 
-  // Coming-home inherits the ride to Broken Bow until it's customized.
-  function rideInfo(direction: RideDirection) {
-    return findRide(direction) ?? (direction === "from_trip" ? findRide("to_trip") : null);
-  }
-  // One ride card for both directions — we assume the same car going and coming.
-  const myRide = rideInfo("to_trip") ?? rideInfo("from_trip");
+  // One car both ways — the Rides tab manages the single "to_trip" ride, so
+  // that's the sole source of truth for a member's ride (no from_trip fallback,
+  // which could otherwise surface a stale assignment).
+  const myRide = findRide("to_trip");
 
   // Each card needs BOTH an assignment AND the organizer's go-ahead to show.
   const showCabin = visibility.show_cabins && Boolean(cabin);
