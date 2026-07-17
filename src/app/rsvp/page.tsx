@@ -25,7 +25,7 @@ export default async function RsvpPage() {
         <Link href="/login" className="font-semibold text-brand-700 underline">
           Log in
         </Link>{" "}
-        to see your ride, cabin, and fishing group info.
+        to see men&apos;s fishing trip details.
       </div>
 
       <RsvpForm />
