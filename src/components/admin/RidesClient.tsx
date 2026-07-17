@@ -179,18 +179,9 @@ export default function RidesClient({
               </p>
               <ul className="mt-1 space-y-1 text-brand-600">
                 {selfDrivers.map((d) => (
-                  <li key={d.id} className="flex items-center justify-between gap-2">
-                    <span>
-                      <span className="font-medium text-brand-800">{d.name}</span>
-                      <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
-                    </span>
-                    <button
-                      onClick={() => makeDriver(d.id, d.seat_capacity)}
-                      disabled={flipping}
-                      className="shrink-0 text-xs text-brand-500 underline hover:text-brand-800"
-                    >
-                      Take Passengers
-                    </button>
+                  <li key={d.id}>
+                    <span className="font-medium text-brand-800">{d.name}</span>
+                    <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
                   </li>
                 ))}
               </ul>
