@@ -542,23 +542,33 @@ function AddCabin() {
   const [stateField, setStateField] = useState("");
   const [zip, setZip] = useState("");
   const [capacity, setCapacity] = useState(15);
+  const [events, setEvents] = useState<string[]>([]);
+
+  const toggleEvent = (key: string, on: boolean) =>
+    setEvents((prev) => (on ? [...prev, key] : prev.filter((k) => k !== key)));
 
   function add() {
     if (name.trim().length < 1) return;
     start(async () => {
-      await createCabin(name.trim(), capacity, {
-        address1: address1.trim() || null,
-        address2: address2.trim() || null,
-        city: city.trim() || null,
-        state: stateField.trim() || null,
-        zip: zip.trim() || null,
-      });
+      await createCabin(
+        name.trim(),
+        capacity,
+        {
+          address1: address1.trim() || null,
+          address2: address2.trim() || null,
+          city: city.trim() || null,
+          state: stateField.trim() || null,
+          zip: zip.trim() || null,
+        },
+        events
+      );
       setName("");
       setAddress1("");
       setAddress2("");
       setCity("");
       setStateField("");
       setZip("");
+      setEvents([]);
       setOpen(false);
       router.refresh();
     });
@@ -585,6 +595,27 @@ function AddCabin() {
           <input className="input" inputMode="numeric" placeholder="Zip Code" value={zip} onChange={(e) => setZip(e.target.value)} />
         </div>
       </div>
+
+      <div className="rounded-lg border border-brand-100 p-3">
+        <span className="label">Location for events</span>
+        <p className="mb-2 text-xs text-brand-500">
+          These events will use this cabin&apos;s address.
+        </p>
+        <div className="space-y-2">
+          {CABIN_EVENT_OPTIONS.map((ev) => (
+            <label key={ev.key} className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                checked={events.includes(ev.key)}
+                onChange={(e) => toggleEvent(ev.key, e.target.checked)}
+                className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+              />
+              <span className="text-sm text-brand-800">{ev.label}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       <div className="flex items-end gap-3">
         <div>
           <span className="label">Capacity</span>

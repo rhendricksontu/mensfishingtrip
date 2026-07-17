@@ -114,12 +114,32 @@ interface CabinAddress {
 export async function createCabin(
   name: string,
   capacity: number,
-  address?: CabinAddress
+  address?: CabinAddress,
+  events?: string[]
 ) {
   await requireAdmin();
   const db = createAdminClient();
-  await db.from("cabins").insert({ name, capacity, ...(address ?? {}) });
+  const eventLocations = events ?? [];
+
+  // One event, one cabin: take these keys away from any other cabin.
+  if (eventLocations.length) {
+    const { data: others } = await db.from("cabins").select("id, event_locations");
+    for (const o of others ?? []) {
+      const locs: string[] = o.event_locations ?? [];
+      const kept = locs.filter((k) => !eventLocations.includes(k));
+      if (kept.length !== locs.length) {
+        await db.from("cabins").update({ event_locations: kept }).eq("id", o.id);
+      }
+    }
+  }
+
+  await db
+    .from("cabins")
+    .insert({ name, capacity, ...(address ?? {}), event_locations: eventLocations });
   revalidatePath("/admin/cabins");
+  revalidatePath("/agenda");
+  revalidatePath("/");
+  revalidatePath("/locations");
 }
 
 export async function updateCabin(
