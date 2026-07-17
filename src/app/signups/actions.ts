@@ -108,5 +108,6 @@ export async function setSignupLeader(
     await db.from("signup_leaders").delete().eq("role", role).eq("trip_day", trip_day);
   }
   revalidatePath("/signups");
+  revalidatePath("/admin/volunteers");
   return { ok: true };
 }

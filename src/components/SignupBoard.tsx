@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { assignHelper, removeSignup, setSignupLeader } from "@/app/signups/actions";
+import { assignHelper, removeSignup } from "@/app/signups/actions";
 import PhoneLink from "@/components/PhoneLink";
 import type { Signup, SignupLeader, SignupRole } from "@/lib/types";
 
@@ -29,15 +29,6 @@ function daysForRole(role: SignupRole) {
   return role === "guide_lunch" ? DAYS.filter((d) => d.key === "saturday") : DAYS;
 }
 
-function EditIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
-    </svg>
-  );
-}
-
 export default function SignupBoard({
   signups,
   leaders,
@@ -56,7 +47,6 @@ export default function SignupBoard({
   const router = useRouter();
   const [removing, setRemoving] = useState<string | null>(null);
   const [, start] = useTransition();
-  const [editingLeader, setEditingLeader] = useState<string | null>(null);
 
   const memberById = new Map(members.map((m) => [m.id, m]));
   const leaderByKey = new Map(
@@ -66,14 +56,6 @@ export default function SignupBoard({
   // Admin, or the leader of this specific instance, may add/remove helpers.
   const canManage = (key: string) =>
     isAdmin || (currentAttendeeId !== null && leaderByKey.get(key) === currentAttendeeId);
-
-  function setLeader(r: SignupRole, d: string, attendeeId: string | null) {
-    start(async () => {
-      const res = await setSignupLeader(r, d, attendeeId);
-      if (!res.ok) alert(res.error ?? "Could not set the leader.");
-      router.refresh();
-    });
-  }
 
   function assign(r: SignupRole, d: string, memberId: string) {
     if (!memberId) return;
@@ -115,7 +97,6 @@ export default function SignupBoard({
                 const manage = canManage(key);
                 const leaderId = leaderByKey.get(key) ?? null;
                 const leader = leaderId ? memberById.get(leaderId) : null;
-                const editing = editingLeader === key;
                 const inInstance = new Set(people.map((p) => p.attendee_id));
                 const available = members.filter((m) => !inInstance.has(m.id));
 
@@ -123,52 +104,19 @@ export default function SignupBoard({
                   <div key={d.key} className="card">
                     <div className="flex items-center justify-between gap-2">
                       <h3 className="font-semibold text-brand-800">{d.label}</h3>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`badge ${met ? "bg-olive-100 text-olive-800" : "bg-amber-100 text-amber-800"}`}
-                        >
-                          {people.length} of {roleObj.min}
-                        </span>
-                        {isAdmin && (
-                          <button
-                            onClick={() => setEditingLeader((k) => (k === key ? null : key))}
-                            aria-label="Edit leader"
-                            className="text-brand-400 hover:text-brand-700"
-                          >
-                            <EditIcon />
-                          </button>
-                        )}
-                      </div>
+                      <span
+                        className={`badge ${met ? "bg-olive-100 text-olive-800" : "bg-amber-100 text-amber-800"}`}
+                      >
+                        {people.length} of {roleObj.min}
+                      </span>
                     </div>
                     <p className={`mt-1 text-xs font-medium ${met ? "text-olive-700" : "text-amber-700"}`}>
                       {met ? "Minimum Met" : `${roleObj.min - people.length} More Needed`}
                     </p>
 
-                    {/* Leader */}
+                    {/* Leader (set by organizers on the Organizer › Volunteers tab) */}
                     <div className="mt-2 border-t border-brand-50 pt-2">
-                      {editing ? (
-                        <>
-                          <span className="label">Leader</span>
-                          <select
-                            value={leaderId ?? ""}
-                            onChange={(e) => setLeader(roleObj.key, d.key, e.target.value || null)}
-                            className="input"
-                          >
-                            <option value="">No leader</option>
-                            {members.map((m) => (
-                              <option key={m.id} value={m.id}>
-                                {m.name}
-                              </option>
-                            ))}
-                          </select>
-                          <button
-                            onClick={() => setEditingLeader(null)}
-                            className="btn-secondary mt-2 text-sm"
-                          >
-                            Done
-                          </button>
-                        </>
-                      ) : leader ? (
+                      {leader ? (
                         <p className="text-sm">
                           <span className="badge mr-1 bg-olive-600 text-white">Leader</span>
                           <span className="font-medium text-brand-800">{leader.name}</span>
