@@ -32,9 +32,9 @@ export default async function SignupsPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-bold text-brand-800">Breakfast, Coffee & Guide Lunches</h1>
+        <h1 className="text-2xl font-bold text-brand-800">Volunteer Tracking</h1>
         <p className="mt-1 text-brand-600">
-          Leaders assign their volunteers for each meal.
+          Leaders assign their volunteers.
         </p>
       </div>
       <SignupBoard
