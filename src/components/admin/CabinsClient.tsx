@@ -82,12 +82,15 @@ export default function CabinsClient({
   volunteerIds: string[];
 }) {
   const unassigned = attendees.filter((a) => !a.cabin_id);
-  const { groups, noGroup } = groupByVehicle(unassigned, attendees, rides, ridePassengers);
 
   // Unassigned travelers who are volunteers — surfaced separately so they get
-  // placed in the right cabin for their volunteering duties.
+  // placed in the right cabin for their volunteering duties. They're excluded
+  // from the plain card below so each person appears in only one place.
   const volunteerSet = new Set(volunteerIds);
   const unassignedVolunteers = unassigned.filter((a) => volunteerSet.has(a.id));
+  const unassignedOthers = unassigned.filter((a) => !volunteerSet.has(a.id));
+
+  const { groups, noGroup } = groupByVehicle(unassignedOthers, attendees, rides, ridePassengers);
   const volunteerGrouped = groupByVehicle(
     unassignedVolunteers,
     attendees,
@@ -105,7 +108,7 @@ export default function CabinsClient({
         />
       )}
 
-      {unassigned.length > 0 && (
+      {unassignedOthers.length > 0 && (
         <GroupedUnassigned title="Unassigned Travelers" groups={groups} noGroup={noGroup} />
       )}
 
