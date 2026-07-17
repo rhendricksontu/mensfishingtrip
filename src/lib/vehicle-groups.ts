@@ -44,6 +44,7 @@ export function groupByVehicle(
     }
   }
 
+  groups.sort((a, b) => a.label.localeCompare(b.label));
   const noGroup = people
     .filter((a) => !placed.has(a.id))
     .sort((a, b) => a.name.localeCompare(b.name));
