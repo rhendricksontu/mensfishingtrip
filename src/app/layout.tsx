@@ -3,7 +3,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
-import { isSignupParticipant } from "@/lib/data";
+import { isSignupLeader } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -32,8 +32,8 @@ export default async function RootLayout({
   ]);
   const isAuthed = Boolean(user);
   const isAdmin = Boolean(admin);
-  // Signups tab is only visible to organizers, leaders, and assigned helpers.
-  const canSeeSignups = isAdmin || (me ? await isSignupParticipant(me.id) : false);
+  // Volunteers tab is only visible to organizers and leaders.
+  const canSeeSignups = isAdmin || (me ? await isSignupLeader(me.id) : false);
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
