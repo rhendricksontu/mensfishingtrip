@@ -6,6 +6,7 @@ import {
   getRides,
   getRidePassengers,
   getSignups,
+  getSignupLeaders,
   getVisibility,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
@@ -33,22 +34,50 @@ export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
-  const [attendees, cabins, groups, rides, ridePassengers, signups, visibility] = await Promise.all([
-    getAttendees(),
-    getCabins(),
-    getFishingGroups(),
-    getRides(),
-    getRidePassengers(),
-    getSignups(),
-    getVisibility(),
-  ]);
-
-  // This member's volunteer signups (breakfast/coffee/guide lunch).
-  const mySignups = signups
-    .filter((s) => s.attendee_id === me.id)
-    .sort((a, b) => a.trip_day.localeCompare(b.trip_day));
+  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility] =
+    await Promise.all([
+      getAttendees(),
+      getCabins(),
+      getFishingGroups(),
+      getRides(),
+      getRidePassengers(),
+      getSignups(),
+      getSignupLeaders(),
+      getVisibility(),
+    ]);
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
+
+  // Volunteering — each role+day instance this member is part of, either as the
+  // leader or as an assigned volunteer. Mirrors the fishing card: the leader is
+  // shown like a guide and the volunteers like the anglers in the group.
+  const myVolunteerKeys = new Set<string>();
+  for (const s of signups) {
+    if (s.attendee_id === me.id) myVolunteerKeys.add(`${s.role}:${s.trip_day}`);
+  }
+  for (const l of signupLeaders) {
+    if (l.attendee_id === me.id) myVolunteerKeys.add(`${l.role}:${l.trip_day}`);
+  }
+  const myVolunteering = Array.from(myVolunteerKeys)
+    .map((k) => {
+      const [role, trip_day] = k.split(":") as [SignupRole, string];
+      const leaderRow = signupLeaders.find((l) => l.role === role && l.trip_day === trip_day);
+      const leader = leaderRow?.attendee_id ? byId.get(leaderRow.attendee_id) ?? null : null;
+      const volunteers = signups
+        .filter((s) => s.role === role && s.trip_day === trip_day)
+        .map((s) => {
+          const a = s.attendee_id ? byId.get(s.attendee_id) : null;
+          return {
+            id: s.id,
+            attendeeId: s.attendee_id,
+            name: a?.name ?? s.name,
+            phone: a?.phone ?? "",
+          };
+        })
+        .sort((x, y) => x.name.localeCompare(y.name));
+      return { role, trip_day, leader, volunteers };
+    })
+    .sort((a, b) => a.trip_day.localeCompare(b.trip_day) || a.role.localeCompare(b.role));
 
   // Cabin (all occupants, for the read-only card)
   const cabin = cabins.find((c) => c.id === me.cabin_id) || null;
@@ -143,25 +172,6 @@ export default async function MyTripPage() {
         </div>
       )}
 
-      {/* Volunteer signups */}
-      {mySignups.length > 0 && (
-        <div className="card">
-          <h2 className="font-bold text-brand-800">Volunteer Signups</h2>
-          <ul className="mt-2 divide-y divide-brand-50">
-            {mySignups.map((s) => (
-              <li key={s.id} className="py-2 text-sm">
-                <span className="font-medium text-brand-800">
-                  {SIGNUP_ROLE_LABELS[s.role]}
-                </span>
-                <span className="ml-2 text-xs text-brand-400">
-                  {s.trip_day.charAt(0).toUpperCase() + s.trip_day.slice(1)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       {/* Assignments — each card needs an assignment AND organizer visibility. */}
       {(showCabin || showFishing) && (
         <div className="space-y-4">
@@ -189,6 +199,25 @@ export default async function MyTripPage() {
               ) : null}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Volunteering — leader shown like a guide, volunteers like the anglers */}
+      {myVolunteering.length > 0 && (
+        <div className="space-y-2">
+          <h2 className="font-bold text-brand-800">Volunteering</h2>
+          <div className="space-y-3">
+            {myVolunteering.map((v) => (
+              <VolunteerView
+                key={`${v.role}:${v.trip_day}`}
+                roleLabel={SIGNUP_ROLE_LABELS[v.role]}
+                dayLabel={v.trip_day.charAt(0).toUpperCase() + v.trip_day.slice(1)}
+                leader={v.leader}
+                volunteers={v.volunteers}
+                meId={me.id}
+              />
+            ))}
+          </div>
         </div>
       )}
 
@@ -419,6 +448,64 @@ function GuideView({
                 {a.id === meId && " (You)"}
               </span>{" "}
               <PhoneLink phone={a.phone} />
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// Read-only volunteering card, mirroring the fishing guide card: the role's
+// leader is shown like a guide, and the assigned volunteers like the anglers.
+function VolunteerView({
+  roleLabel,
+  dayLabel,
+  leader,
+  volunteers,
+  meId,
+}: {
+  roleLabel: string;
+  dayLabel: string;
+  leader: Attendee | null;
+  volunteers: { id: string; attendeeId: string | null; name: string; phone: string }[];
+  meId: string;
+}) {
+  return (
+    <div className="card space-y-3">
+      <div>
+        {leader ? (
+          <>
+            <span className="mb-1 inline-block rounded-full bg-olive-600 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-cream">
+              Leader
+            </span>
+            <div className="flex flex-wrap items-baseline gap-2">
+              <h3 className="font-bold text-brand-800">
+                {leader.name}
+                {leader.id === meId && " (You)"}
+              </h3>
+              <PhoneLink phone={leader.phone} />
+            </div>
+          </>
+        ) : (
+          <span className="mb-1 inline-block rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-amber-900">
+            No Leader Yet
+          </span>
+        )}
+        <p className="text-sm text-brand-600">
+          {roleLabel} · {dayLabel}
+        </p>
+      </div>
+
+      {volunteers.length > 0 && (
+        <ul className="divide-y divide-brand-50">
+          {volunteers.map((v) => (
+            <li key={v.id} className="py-2 text-sm">
+              <span className="font-medium text-brand-800">
+                {v.name}
+                {v.attendeeId === meId && " (You)"}
+              </span>{" "}
+              {v.phone && <PhoneLink phone={v.phone} />}
             </li>
           ))}
         </ul>
