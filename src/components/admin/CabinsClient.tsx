@@ -12,7 +12,7 @@ import {
 import { formatPhone, addressLines, addressOneLine } from "@/lib/utils";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
-import type { Attendee, Cabin } from "@/lib/types";
+import type { Attendee, Cabin, Ride } from "@/lib/types";
 
 function EditIcon() {
   return (
@@ -61,18 +61,55 @@ function parseLegacyAddress(raw: string): {
   };
 }
 
+interface RidePassenger {
+  ride_id: string;
+  attendee_id: string;
+}
+
 export default function CabinsClient({
   cabins,
   attendees,
+  rides,
+  ridePassengers,
 }: {
   cabins: Cabin[];
   attendees: Attendee[];
+  rides: Ride[];
+  ridePassengers: RidePassenger[];
 }) {
   const unassigned = attendees.filter((a) => !a.cabin_id);
 
+  // Group unassigned travelers by who they rode down with (To Broken Bow), so
+  // ride-mates can be placed in the same cabin together.
+  const byId = new Map(attendees.map((a) => [a.id, a]));
+  const unassignedIds = new Set(unassigned.map((a) => a.id));
+  const groups: { label: string; people: Attendee[] }[] = [];
+  const placed = new Set<string>();
+
+  const toRides = rides.filter(
+    (r) => r.direction === "to_trip" && r.driver_id && byId.get(r.driver_id)?.willing_to_drive
+  );
+  for (const ride of toRides) {
+    const driver = ride.driver_id ? byId.get(ride.driver_id) : null;
+    if (!driver) continue;
+    const riders = [
+      driver,
+      ...ridePassengers
+        .filter((p) => p.ride_id === ride.id)
+        .map((p) => byId.get(p.attendee_id))
+        .filter((a): a is Attendee => Boolean(a)),
+    ];
+    const members = riders.filter((m) => unassignedIds.has(m.id) && !placed.has(m.id));
+    if (members.length > 0) {
+      groups.push({ label: `Rode with ${driver.name}`, people: members });
+      members.forEach((m) => placed.add(m.id));
+    }
+  }
+  const noRide = unassigned.filter((a) => !placed.has(a.id));
+
   return (
     <div className="space-y-4">
-      {unassigned.length > 0 && <UnassignedNote people={unassigned} />}
+      {unassigned.length > 0 && <UnassignedNote groups={groups} noRide={noRide} />}
 
       {cabins.map((c) => (
         <CabinCard
@@ -88,19 +125,51 @@ export default function CabinsClient({
   );
 }
 
-// Amber exposure of members still needing an assignment, stacked one per line.
-function UnassignedNote({ people }: { people: Attendee[] }) {
+// Amber exposure of members still needing a cabin, grouped by who they rode
+// down with so ride-mates can be placed together.
+function UnassignedNote({
+  groups,
+  noRide,
+}: {
+  groups: { label: string; people: Attendee[] }[];
+  noRide: Attendee[];
+}) {
+  const Person = ({ a }: { a: Attendee }) => (
+    <li>
+      <span className="font-medium text-brand-800">{a.name}</span>
+      <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+    </li>
+  );
+
   return (
     <div className="card border border-dashed border-amber-200 bg-amber-50/40 text-sm">
       <p className="font-semibold text-amber-800">Unassigned Travelers</p>
-      <ul className="mt-1.5 space-y-1">
-        {people.map((a) => (
-          <li key={a.id}>
-            <span className="font-medium text-brand-800">{a.name}</span>
-            <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
-          </li>
+      <div className="mt-2 space-y-3">
+        {groups.map((g) => (
+          <div key={g.label}>
+            <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+              {g.label}
+            </p>
+            <ul className="mt-0.5 space-y-1">
+              {g.people.map((a) => (
+                <Person key={a.id} a={a} />
+              ))}
+            </ul>
+          </div>
         ))}
-      </ul>
+        {noRide.length > 0 && (
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+              No ride assigned yet
+            </p>
+            <ul className="mt-0.5 space-y-1">
+              {noRide.map((a) => (
+                <Person key={a.id} a={a} />
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

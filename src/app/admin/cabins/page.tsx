@@ -1,12 +1,17 @@
 import { requireAdmin } from "@/lib/require-admin";
-import { getAttendees, getCabins } from "@/lib/data";
+import { getAttendees, getCabins, getRides, getRidePassengers } from "@/lib/data";
 import CabinsClient from "@/components/admin/CabinsClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function CabinsAdminPage() {
   await requireAdmin();
-  const [cabins, attendees] = await Promise.all([getCabins(), getAttendees()]);
+  const [cabins, attendees, rides, ridePassengers] = await Promise.all([
+    getCabins(),
+    getAttendees(),
+    getRides(),
+    getRidePassengers(),
+  ]);
 
   return (
     <div className="space-y-4">
@@ -17,7 +22,12 @@ export default async function CabinsAdminPage() {
           host.
         </p>
       </div>
-      <CabinsClient cabins={cabins} attendees={attendees} />
+      <CabinsClient
+        cabins={cabins}
+        attendees={attendees}
+        rides={rides}
+        ridePassengers={ridePassengers}
+      />
     </div>
   );
 }
