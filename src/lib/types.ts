@@ -47,6 +47,8 @@ export interface Attendee {
   willing_to_drive: boolean;
   seat_capacity: number;
   needs_ride: boolean;
+  activities: string[];
+  activity_other: string | null;
   fish_with_guide: boolean;
   cabin_id: string | null;
   is_cabin_host: boolean;

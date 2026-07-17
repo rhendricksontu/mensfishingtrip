@@ -29,6 +29,8 @@ const RsvpSchema = z.object({
   preferred_driver: z.string().trim().max(100).optional().default(""),
   willing_to_drive: z.boolean(),
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
+  activities: z.array(z.enum(["biking", "golfing", "hiking"])).default([]),
+  activity_other: z.string().trim().max(200).optional().default(""),
 });
 
 export interface RsvpState {
@@ -64,6 +66,8 @@ export async function submitRsvp(
     preferred_driver: formData.get("preferred_driver") ?? "",
     willing_to_drive: bool(formData, "willing_to_drive"),
     seat_capacity: formData.get("seat_capacity") || 0,
+    activities: formData.getAll("activities").map(String),
+    activity_other: formData.get("activity_other") ?? "",
   });
 
   if (!parsed.success) {
@@ -94,6 +98,8 @@ export async function submitRsvp(
     willing_to_drive: willingToDrive,
     seat_capacity: willingToDrive ? d.seat_capacity : 0,
     needs_ride: d.ride_preference === "riding",
+    activities: d.activities,
+    activity_other: d.activity_other || null,
   };
 
   // Is there already a row for this person (e.g. admin pre-added them)?

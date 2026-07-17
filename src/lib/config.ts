@@ -44,6 +44,14 @@ export const SESSION_LABELS: Record<string, string> = {
   saturday_afternoon: "Saturday Afternoon",
 };
 
+// Optional activity interests collected on the RSVP form. "Other" is handled
+// separately with a free-text field (`activity_other`).
+export const ACTIVITY_OPTIONS = [
+  { value: "biking", label: "Biking" },
+  { value: "golfing", label: "Golfing" },
+  { value: "hiking", label: "Hiking" },
+];
+
 export const RIDE_PREF_LABELS: Record<string, string> = {
   driving: "Driver",
   riding: "Passenger",

@@ -4,7 +4,7 @@ import { useFormState, useFormStatus } from "react-dom";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { submitRsvp, type RsvpState } from "@/app/rsvp/actions";
-import { DEPARTURE_TIME_OPTIONS, PAYMENT } from "@/lib/config";
+import { DEPARTURE_TIME_OPTIONS, ACTIVITY_OPTIONS, PAYMENT } from "@/lib/config";
 import PhoneInput from "@/components/PhoneInput";
 import PasswordInput from "@/components/PasswordInput";
 import SelectWithOther from "@/components/SelectWithOther";
@@ -24,6 +24,7 @@ export default function RsvpForm() {
   const [state, formAction] = useFormState(submitRsvp, initialState);
   const [ridePref, setRidePref] = useState("");
   const [willingToDrive, setWillingToDrive] = useState(false);
+  const [otherActivity, setOtherActivity] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
   const [formValid, setFormValid] = useState(false);
@@ -32,8 +33,8 @@ export default function RsvpForm() {
   const recheck = () => {
     requestAnimationFrame(() => setFormValid(formRef.current?.checkValidity() ?? false));
   };
-  // Re-check when conditional fields (driver options) appear or disappear.
-  useEffect(() => { recheck(); }, [ridePref, willingToDrive]);
+  // Re-check when conditional fields (driver / activity options) appear or disappear.
+  useEffect(() => { recheck(); }, [ridePref, willingToDrive, otherActivity]);
 
   const err = (k: string) => state.fieldErrors?.[k];
 
@@ -140,6 +141,38 @@ export default function RsvpForm() {
         </Field>
       )}
 
+        </div>
+      </fieldset>
+
+      <fieldset className="rounded-lg border border-brand-100 p-4">
+        <legend className="px-1 text-sm font-semibold text-brand-700">Activity Interest</legend>
+        <p className="mb-3 text-xs text-brand-500">Optional — check any you&apos;d be interested in.</p>
+        <div className="space-y-3">
+          {ACTIVITY_OPTIONS.map((a) => (
+            <label key={a.value} className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="activities"
+                value={a.value}
+                className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+              />
+              <span className="text-sm text-brand-800">{a.label}</span>
+            </label>
+          ))}
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={otherActivity}
+              onChange={(e) => setOtherActivity(e.target.checked)}
+              className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"
+            />
+            <span className="text-sm text-brand-800">Other</span>
+          </label>
+          {otherActivity && (
+            <Field label="Please Specify" error={err("activity_other")}>
+              <input name="activity_other" className="input" placeholder="What activity?" maxLength={200} required />
+            </Field>
+          )}
         </div>
       </fieldset>
 

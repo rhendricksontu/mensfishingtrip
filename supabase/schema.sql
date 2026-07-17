@@ -81,6 +81,8 @@ create table if not exists attendees (
   ride_preference          ride_preference not null default 'either',
   departure_time           text,                 -- e.g. "Friday Morning (8am-12pm)"
   preferred_driver         text,                 -- free-text: who they'd like to ride with
+  activities               text[] not null default '{}', -- optional interests (biking/golfing/hiking)
+  activity_other           text,                 -- free-text "other" activity interest
   willing_to_drive         boolean not null default false,
   seat_capacity            int not null default 0, -- passenger seats available (excludes driver)
   needs_ride               boolean not null default false, -- wants to be partnered with a driver
