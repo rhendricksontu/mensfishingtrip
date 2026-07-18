@@ -22,10 +22,10 @@ export const getAdminUser = cache(async function getAdminUser(): Promise<AdminUs
   }
 
   try {
-    const supabase = createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Reuse the single cached session lookup (getSessionUser) instead of calling
+    // getUser() again — concurrent getUser() calls within one render race to
+    // rotate the refresh token and can invalidate the session (surprise logout).
+    const user = await getSessionUser();
 
     if (!user) return null;
     const db = createAdminClient();

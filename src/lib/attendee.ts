@@ -1,8 +1,8 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getSessionUser } from "@/lib/auth";
 import type { Attendee } from "@/lib/types";
 
 // The logged-in attendee's RSVP row, or null if not logged in / no RSVP.
@@ -17,10 +17,9 @@ export const getCurrentAttendee = cache(async function getCurrentAttendee(): Pro
   }
 
   try {
-    const supabase = createSupabaseServerClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Reuse the one cached session lookup so a render doesn't fire several
+    // concurrent getUser() calls that race to rotate the refresh token.
+    const user = await getSessionUser();
     if (!user) return null;
 
     const db = createAdminClient();
