@@ -127,11 +127,12 @@ export default async function MyTripPage() {
 
   // One car both ways — the Rides tab manages the single "to_trip" ride, so
   // that's the sole source of truth for a member's ride (no from_trip fallback,
-  // which could otherwise surface a stale assignment). A willing driver with no
-  // passengers yet has no ride row, so show them their own (empty) driver card.
+  // which could otherwise surface a stale assignment). Any driver (offering
+  // seats or driving themselves) with no ride row still sees their own card.
+  const iAmDriver = me.willing_to_drive || me.ride_preference === "driving";
   const myRide =
     findRide("to_trip") ??
-    (me.willing_to_drive ? { driver: me, passengers: [] as Attendee[] } : null);
+    (iAmDriver ? { driver: me, passengers: [] as Attendee[] } : null);
 
   // Each card needs BOTH an assignment AND the organizer's go-ahead to show.
   const showCabin = visibility.show_cabins && Boolean(cabin);
@@ -328,6 +329,7 @@ function RideCard({
 }) {
   const driver = info.driver;
   if (!driver) return null;
+  const takingPassengers = driver.willing_to_drive;
   const seatsLeft = driver.seat_capacity - info.passengers.length;
   const over = seatsLeft < 0;
 
@@ -344,9 +346,13 @@ function RideCard({
           </h3>
           <PhoneLink phone={driver.phone} />
         </div>
-        <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
-          {info.passengers.length}/{driver.seat_capacity} Seats
-        </span>
+        {takingPassengers ? (
+          <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
+            {info.passengers.length}/{driver.seat_capacity} Seats
+          </span>
+        ) : (
+          <span className="text-sm text-brand-500">Driving yourself</span>
+        )}
       </div>
 
       {driver.departure_time && (
