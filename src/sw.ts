@@ -2,9 +2,9 @@ import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
 import { CacheFirst, ExpirationPlugin, NetworkFirst, Serwist } from "serwist";
 
-// The member-facing routes we warm ahead of time so the whole app works
-// offline even if the user hasn't navigated there yet (see CacheWarmer).
-const APP_ROUTES = ["/me", "/agenda", "/locations", "/signups"];
+// Routes we cache/warm so the app works offline even if the user hasn't opened
+// them yet (see CacheWarmer). "/admin" covers all organizer tabs.
+const APP_ROUTES = ["/me", "/agenda", "/locations", "/signups", "/admin"];
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -41,7 +41,8 @@ const serwist = new Serwist({
     // online, last-warmed copy offline. Must come before defaultCache, whose
     // page rule only matches actual navigations.
     {
-      matcher: ({ url, sameOrigin }) =>
+      matcher: ({ request, url, sameOrigin }) =>
+        request.method === "GET" &&
         sameOrigin &&
         APP_ROUTES.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`)),
       handler: new NetworkFirst({

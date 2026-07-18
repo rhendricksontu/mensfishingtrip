@@ -36,10 +36,25 @@ export default async function RootLayout({
   const isAdmin = Boolean(admin);
   // Volunteers tab is only visible to organizers and leaders.
   const canSeeSignups = isAdmin || (me ? await isSignupLeader(me.id) : false);
-  // Member pages to pre-cache for offline use (only ones this user can open).
-  const warmRoutes = me
-    ? ["/me", "/agenda", "/locations", ...(canSeeSignups ? ["/signups"] : [])]
-    : [];
+  // Pages to pre-cache for offline use — only ones this user can open.
+  const warmRoutes: string[] = [];
+  if (isAuthed) warmRoutes.push("/agenda", "/locations");
+  if (me) {
+    warmRoutes.push("/me");
+    if (canSeeSignups) warmRoutes.push("/signups");
+  }
+  if (isAdmin) {
+    warmRoutes.push(
+      "/admin/summary",
+      "/admin/ar",
+      "/admin/rides",
+      "/admin/cabins",
+      "/admin/fishing",
+      "/admin/volunteers",
+      "/admin/activities",
+      "/admin/roster"
+    );
+  }
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
