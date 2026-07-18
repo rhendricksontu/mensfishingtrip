@@ -44,6 +44,30 @@ function bool(formData: FormData, key: string): boolean {
   return v === "on" || v === "true" || v === "1";
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+// A rate-limit / transient auth error is worth retrying; a real error
+// (e.g. "already registered") is not.
+function isTransientAuthError(error: unknown): boolean {
+  const e = error as { status?: number; message?: string } | null;
+  if (!e) return false;
+  if (e.status === 429 || e.status === 503) return true;
+  return /rate limit|too many|timeout|temporarily|unavailable/i.test(e.message ?? "");
+}
+
+// Retry a Supabase auth call through a brief rate-limit blip so a burst of
+// RSVPs doesn't surface an error to a user who filled out the whole form.
+async function retryAuth<T extends { error: unknown }>(fn: () => Promise<T>): Promise<T> {
+  const delays = [300, 800, 1600];
+  let result = await fn();
+  for (const d of delays) {
+    if (!isTransientAuthError(result.error)) return result;
+    await sleep(d);
+    result = await fn();
+  }
+  return result;
+}
+
 // When a select's value is "Other", use the paired free-text "<key>_other".
 function otherOr(formData: FormData, key: string): string {
   const sel = String(formData.get(key) ?? "");
@@ -112,12 +136,14 @@ export async function submitRsvp(
   }
 
   // Create the login account (pre-confirmed, so no SMS/email needed).
-  const { data: created, error: createErr } = await db.auth.admin.createUser({
-    email: authEmail,
-    password: d.password,
-    email_confirm: true,
-    user_metadata: { name: d.name, phone: d.phone },
-  });
+  const { data: created, error: createErr } = await retryAuth(() =>
+    db.auth.admin.createUser({
+      email: authEmail,
+      password: d.password,
+      email_confirm: true,
+      user_metadata: { name: d.name, phone: d.phone },
+    })
+  );
 
   if (createErr || !created?.user) {
     const msg = createErr?.message?.toLowerCase() ?? "";
@@ -163,10 +189,9 @@ export async function submitRsvp(
   // Their account is already saved; if the auto-login hiccups under load, send
   // them to the login page rather than an unauthenticated bounce to home.
   const supabase = createSupabaseServerClient();
-  const { error: signInErr } = await supabase.auth.signInWithPassword({
-    email: authEmail,
-    password: d.password,
-  });
+  const { error: signInErr } = await retryAuth(() =>
+    supabase.auth.signInWithPassword({ email: authEmail, password: d.password })
+  );
   if (signInErr) redirect("/login");
 
   redirect("/me");
