@@ -118,3 +118,22 @@ const serwist = new Serwist({
 });
 
 serwist.addEventListeners();
+
+// On every new-version activation, drop the runtime DOCUMENT caches. Those hold
+// page HTML that references specific (old) JS chunk hashes; keeping them across
+// deploys means a stale document keeps loading old code offline — the reason the
+// app appeared to "not update" without a manual remove/re-add. The precache is
+// already versioned+cleaned by Serwist, and next-static/attachments are
+// content-hashed (safe to keep). Fresh documents get re-fetched online and
+// re-warmed by LiveSync within seconds.
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      await Promise.all([
+        caches.delete("trip-pages"),
+        caches.delete("pages-rsc"),
+        caches.delete("pages-rsc-prefetch"),
+      ]);
+    })()
+  );
+});
