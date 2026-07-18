@@ -147,15 +147,8 @@ export default async function MyTripPage() {
         <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
       </div>
 
-      {/* Payment */}
-      {me.paid ? (
-        <div className="card bg-brand-50">
-          <div>
-            <p className="font-semibold text-brand-800">You&apos;re paid up. Thank you!</p>
-            <p className="text-sm text-brand-600">${PAYMENT.amount} received.</p>
-          </div>
-        </div>
-      ) : (
+      {/* Payment — the paid state is shown as a pill on the Your RSVP card. */}
+      {!me.paid && (
         <div className="card border-l-4 border-amber-400">
           <p className="font-semibold text-brand-800">Fishing Trip Cost: ${PAYMENT.amount} (not yet received)</p>
           <p className="mt-1 text-sm text-brand-600">

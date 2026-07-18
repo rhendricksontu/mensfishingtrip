@@ -67,8 +67,8 @@ export default function SyncIndicator({ version }: { version: number }) {
     : pending
       ? "Syncing…"
       : outOfSync
-        ? "Online — Tap to Sync"
-        : "Online — Synced";
+        ? "Online: Tap to Sync"
+        : "Online: Synced";
   const dot = !online
     ? "bg-red-500 shadow-[0_0_5px_1px_#ef4444]"
     : pending || outOfSync

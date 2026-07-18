@@ -50,7 +50,18 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
     return (
       <div className="card">
         <div className="flex items-center justify-between">
-          <h2 className="font-bold text-brand-800">Your RSVP</h2>
+          <span className="flex items-center gap-2">
+            <h2 className="font-bold text-brand-800">Your RSVP</h2>
+            <span
+              className={`badge ${
+                attendee.paid
+                  ? "bg-olive-600 text-white"
+                  : "bg-amber-100 text-amber-800"
+              }`}
+            >
+              {attendee.paid ? "Paid" : "Unpaid"}
+            </span>
+          </span>
           <button onClick={() => setOpen(true)} className="btn-secondary text-sm">Edit</button>
         </div>
         <dl className="mt-3 space-y-1.5 text-sm">
