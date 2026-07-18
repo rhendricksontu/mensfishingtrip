@@ -8,14 +8,14 @@ import { useEffect } from "react";
 // of a raw "application error". Must render its own <html>/<body>.
 export default function GlobalError({ reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      const key = "offlineReloadAt";
-      const last = Number(sessionStorage.getItem(key) || "0");
-      if (Date.now() - last > 4000) {
-        sessionStorage.setItem(key, String(Date.now()));
-        window.location.reload();
-        return;
-      }
+    // A failed background refresh as the network drops can crash the render
+    // before navigator.onLine flips. Reload (serves the cached document) rather
+    // than trusting navigator.onLine; loop-guarded so a real error can't spin.
+    const key = "offlineReloadAt";
+    const last = Number(sessionStorage.getItem(key) || "0");
+    if (Date.now() - last > 5000) {
+      sessionStorage.setItem(key, String(Date.now()));
+      window.location.reload();
     }
   }, []);
 
@@ -34,9 +34,9 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
         }}
       >
         <div>
-          <p style={{ fontWeight: 600 }}>Something went wrong.</p>
+          <p style={{ fontWeight: 600 }}>Reconnecting…</p>
           <p style={{ fontSize: "0.875rem", color: "#5f7185", marginTop: "0.25rem" }}>
-            If you&apos;re offline, this page may not be saved yet.
+            One moment — if this stays, tap below.
           </p>
           <button
             onClick={() => reset()}
