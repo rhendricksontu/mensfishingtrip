@@ -17,12 +17,25 @@ export default function Nav({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  // Log out needs the server; hide it offline so it can't hit the offline screen.
+  const [online, setOnline] = useState(true);
 
   // Close the mobile menu on any route change (e.g. after login/logout), since
   // the Nav persists in the layout and would otherwise keep its open state.
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const update = () => setOnline(navigator.onLine !== false);
+    update();
+    window.addEventListener("online", update);
+    window.addEventListener("offline", update);
+    return () => {
+      window.removeEventListener("online", update);
+      window.removeEventListener("offline", update);
+    };
+  }, []);
   const links = [
     { href: "/me", label: "My Trip" },
     { href: "/agenda", label: "Agenda" },
@@ -82,14 +95,16 @@ export default function Nav({
                   {l.label}
                 </a>
               ))}
-              <form action={signOutAttendee}>
-                <button
-                  type="submit"
-                  className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-brand-600"
-                >
-                  Log Out
-                </button>
-              </form>
+              {online && (
+                <form action={signOutAttendee}>
+                  <button
+                    type="submit"
+                    className="whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium hover:bg-brand-600"
+                  >
+                    Log Out
+                  </button>
+                </form>
+              )}
             </nav>
 
             <button
@@ -140,14 +155,16 @@ export default function Nav({
               {l.label}
             </a>
           ))}
-          <form action={signOutAttendee}>
-            <button
-              type="submit"
-              className="block w-full rounded-md px-3 py-2.5 text-left text-base font-medium hover:bg-brand-600"
-            >
-              Log Out
-            </button>
-          </form>
+          {online && (
+            <form action={signOutAttendee}>
+              <button
+                type="submit"
+                className="block w-full rounded-md px-3 py-2.5 text-left text-base font-medium hover:bg-brand-600"
+              >
+                Log Out
+              </button>
+            </form>
+          )}
         </nav>
       )}
     </header>
