@@ -346,12 +346,10 @@ function RideCard({
           </h3>
           <PhoneLink phone={driver.phone} />
         </div>
-        {takingPassengers ? (
+        {takingPassengers && (
           <span className={`text-sm ${over ? "font-semibold text-red-600" : "text-brand-500"}`}>
             {info.passengers.length}/{driver.seat_capacity} Seats
           </span>
-        ) : (
-          <span className="text-sm text-brand-500">Driving yourself</span>
         )}
       </div>
 
