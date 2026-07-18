@@ -1,6 +1,12 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { CacheFirst, ExpirationPlugin, NetworkFirst, Serwist } from "serwist";
+import {
+  CacheableResponsePlugin,
+  CacheFirst,
+  ExpirationPlugin,
+  NetworkFirst,
+  Serwist,
+} from "serwist";
 
 // Routes we cache/warm so the app works offline even if the user hasn't opened
 // them yet (see CacheWarmer). "/admin" covers all organizer tabs.
@@ -28,6 +34,8 @@ const serwist = new Serwist({
       handler: new CacheFirst({
         cacheName: "trip-attachments",
         plugins: [
+          // Cache opaque (no-cors) responses too, so pre-warmed images store.
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
           new ExpirationPlugin({
             maxEntries: 150,
             maxAgeSeconds: 60 * 60 * 24 * 60, // 60 days

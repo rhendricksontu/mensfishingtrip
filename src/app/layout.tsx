@@ -7,7 +7,9 @@ import CacheWarmer from "@/components/CacheWarmer";
 import ServiceWorkerUpdater from "@/components/ServiceWorkerUpdater";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
-import { isSignupLeader } from "@/lib/data";
+import { isSignupLeader, getAgendaFiles } from "@/lib/data";
+
+const IMAGE_RE = /\.(png|jpe?g|webp|gif)$/i;
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +59,10 @@ export default async function RootLayout({
       "/admin/roster"
     );
   }
+  // Agenda image attachments to pre-download so they open offline unviewed.
+  const warmAssets = isAuthed
+    ? (await getAgendaFiles()).filter((f) => IMAGE_RE.test(f.name)).map((f) => f.url)
+    : [];
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
@@ -65,7 +71,7 @@ export default async function RootLayout({
             interrupt an organizer mid-edit; form pages are skipped entirely. */}
         <ServiceWorkerUpdater />
         <LiveRefresh enabled={isAuthed} />
-        <CacheWarmer routes={warmRoutes} />
+        <CacheWarmer routes={warmRoutes} assets={warmAssets} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
         {isAuthed && <SyncIndicator />}
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
