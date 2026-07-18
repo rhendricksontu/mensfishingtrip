@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { classNames } from "@/lib/utils";
@@ -65,14 +64,18 @@ export default function Nav({
           href={isAuthed ? "/me" : "/"}
           className="flex shrink-0 items-center gap-2 font-bold tracking-tight"
         >
-          <Image
+          {/* Plain <img> on the precached /trout.png: eager load + sync decode
+              so it paints with the rest of the header on every full-page nav —
+              no lazy-load flash/blip — and still works offline. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src="/trout.png"
             alt=""
             width={32}
             height={32}
-            // Serve the precached file directly (not the /_next/image optimizer
-            // URL, which isn't cached) so the avatar shows offline.
-            unoptimized
+            loading="eager"
+            decoding="sync"
+            fetchPriority="high"
             className="h-8 w-8 rounded-full bg-cream object-cover ring-1 ring-white/30"
           />
           <span className="whitespace-nowrap">Men&apos;s Fishing Trip</span>
