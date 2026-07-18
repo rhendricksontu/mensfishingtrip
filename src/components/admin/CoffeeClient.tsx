@@ -88,9 +88,9 @@ function CoffeeRow({ row }: { row: Row }) {
       }`}
     >
       <div className="min-w-0">
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-center gap-2">
           <span className="font-semibold text-brand-700">{order.pickup_time}</span>
-          <span className="truncate font-medium text-brand-800">{order.drink}</span>
+          <span className="badge bg-brand-100 text-brand-700">{order.drink}</span>
         </div>
         <div className="mt-0.5 flex items-baseline gap-2 text-sm">
           <span className="truncate text-brand-700">{name}</span>
