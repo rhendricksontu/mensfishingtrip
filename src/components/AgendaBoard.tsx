@@ -128,6 +128,9 @@ function AgendaRow({
   const [editing, setEditing] = useState(false);
   // Only one panel open at a time — notes and attachments are mutually exclusive.
   const [expanded, setExpanded] = useState<"notes" | "files" | null>(null);
+  // Full-screen image viewer. Opens in-app (the image bytes are cached) instead
+  // of navigating to the Supabase URL, which fails offline.
+  const [lightbox, setLightbox] = useState<AgendaFile | null>(null);
   const showNotes = expanded === "notes";
   const showFiles = expanded === "files";
 
@@ -358,7 +361,12 @@ function AgendaRow({
           {files.map((f) =>
             isImage(f.name) ? (
               <div key={f.id} className="relative">
-                <a href={f.url} target="_blank" rel="noopener noreferrer" className="block">
+                <button
+                  type="button"
+                  onClick={() => setLightbox(f)}
+                  className="block w-full"
+                  aria-label={`View ${f.name} full screen`}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={f.url}
@@ -366,7 +374,7 @@ function AgendaRow({
                     loading="lazy"
                     className="mx-auto block max-h-[80vh] max-w-full rounded-lg border border-brand-100"
                   />
-                </a>
+                </button>
                 {isAdmin && (
                   <button
                     type="button"
@@ -403,6 +411,30 @@ function AgendaRow({
               </div>
             )
           )}
+        </div>
+      )}
+      {lightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setLightbox(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
+        >
+          <button
+            type="button"
+            onClick={() => setLightbox(null)}
+            aria-label="Close"
+            className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-2xl leading-none text-white hover:bg-white/25"
+          >
+            ×
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightbox.url}
+            alt={lightbox.name}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-full max-w-full rounded-lg object-contain"
+          />
         </div>
       )}
     </li>

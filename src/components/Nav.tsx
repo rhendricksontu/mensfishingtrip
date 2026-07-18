@@ -54,6 +54,9 @@ export default function Nav({
             alt=""
             width={32}
             height={32}
+            // Serve the precached file directly (not the /_next/image optimizer
+            // URL, which isn't cached) so the avatar shows offline.
+            unoptimized
             className="h-8 w-8 rounded-full bg-cream object-cover ring-1 ring-white/30"
           />
           <span className="whitespace-nowrap">Men&apos;s Fishing Trip</span>
