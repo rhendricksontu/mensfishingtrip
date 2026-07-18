@@ -63,6 +63,21 @@ const serwist = new Serwist({
         ],
       }),
     },
+    // All build assets (JS + CSS + media), matched by URL so the cache-warmer's
+    // plain fetch() populates them — not just <script>/<link> loads. Without
+    // this, a page warmed but never opened online loads offline unstyled or
+    // missing chunks. Immutable (content-hashed), so CacheFirst.
+    {
+      matcher: ({ url, sameOrigin }) =>
+        sameOrigin && url.pathname.startsWith("/_next/static/"),
+      handler: new CacheFirst({
+        cacheName: "next-static",
+        plugins: [
+          new CacheableResponsePlugin({ statuses: [0, 200] }),
+          new ExpirationPlugin({ maxEntries: 250, maxAgeSeconds: 60 * 60 * 24 * 30 }),
+        ],
+      }),
+    },
     // Everything else: Serwist's tuned Next.js defaults.
     ...defaultCache,
   ],
