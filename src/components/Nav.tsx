@@ -48,7 +48,10 @@ export default function Nav({
   return (
     <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-        <a href="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
+        <a
+          href={isAuthed ? "/me" : "/"}
+          className="flex shrink-0 items-center gap-2 font-bold tracking-tight"
+        >
           <Image
             src="/trout.png"
             alt=""
