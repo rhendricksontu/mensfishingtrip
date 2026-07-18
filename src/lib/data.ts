@@ -152,6 +152,16 @@ export function isSignupLeader(attendeeId: string): Promise<boolean> {
   }, false);
 }
 
+// A monotonic counter bumped on every data change (DB trigger). The client
+// polls this via /api/version to detect "out of sync" cheaply.
+export function getDataVersion(): Promise<number> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db.from("data_version").select("version").eq("id", 1).maybeSingle();
+    return Number(data?.version ?? 0);
+  }, 0);
+}
+
 // Which My Fishing Trip cards has the organizer revealed to attendees?
 export function getVisibility(): Promise<Visibility> {
   return safe(async () => {

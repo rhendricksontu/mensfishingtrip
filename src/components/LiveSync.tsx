@@ -101,10 +101,10 @@ export default function LiveSync({
     };
 
     onForeground(); // initial run
-    // Live updates on the page you're viewing: every 10s.
-    const liveId = setInterval(refresh, 10000);
-    // Offline prep (re-cache page documents): slow — every 2 min, plus on
-    // foreground/reconnect. Immutable assets aren't re-fetched at all.
+    // No constant refresh timer — the SyncIndicator flags new data and the user
+    // taps to sync (or it refreshes on foreground/reconnect below). We only keep
+    // a slow timer to re-cache page documents for offline. Immutable assets
+    // aren't re-fetched at all.
     const warmId = setInterval(() => void warm(), 120000);
 
     const onVisible = () => {
@@ -124,7 +124,6 @@ export default function LiveSync({
 
     return () => {
       cancelled = true;
-      clearInterval(liveId);
       clearInterval(warmId);
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);

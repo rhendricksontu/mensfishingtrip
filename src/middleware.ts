@@ -59,6 +59,6 @@ export const config = {
   // the service worker / manifest (they must be reachable when logged out, or
   // the auth redirect below would break registration and install).
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sw.js|swe-worker-.*|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!api/version|_next/static|_next/image|favicon.ico|sw.js|swe-worker-.*|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

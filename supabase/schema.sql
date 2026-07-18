@@ -256,6 +256,44 @@ create trigger attendees_set_updated_at
   for each row execute function set_updated_at();
 
 -- ---------------------------------------------------------------------------
+-- Data version counter — bumped on every change so the app can cheaply detect
+-- "out of sync" without re-fetching whole pages (see /api/version).
+-- ---------------------------------------------------------------------------
+create table if not exists data_version (
+  id      int primary key default 1,
+  version bigint not null default 0
+);
+insert into data_version (id, version) values (1, 0) on conflict (id) do nothing;
+
+create or replace function bump_data_version()
+returns trigger
+language plpgsql
+as $bump$
+begin
+  update data_version set version = version + 1 where id = 1;
+  return null;
+end;
+$bump$;
+
+do $triggers$
+declare
+  t text;
+begin
+  foreach t in array array[
+    'attendees', 'cabins', 'fishing_groups', 'rides', 'ride_passengers',
+    'signups', 'signup_leaders', 'agenda_items', 'agenda_files', 'settings'
+  ]
+  loop
+    execute format('drop trigger if exists %I on %I', 'bump_ver_' || t, t);
+    execute format(
+      'create trigger %I after insert or update or delete on %I for each statement execute function bump_data_version()',
+      'bump_ver_' || t, t
+    );
+  end loop;
+end
+$triggers$;
+
+-- ---------------------------------------------------------------------------
 -- Row Level Security
 -- All app access goes through the server using the SECRET API key, which
 -- BYPASSES RLS. We enable RLS with NO permissive policies so that the

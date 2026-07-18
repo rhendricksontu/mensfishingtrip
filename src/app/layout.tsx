@@ -6,7 +6,7 @@ import LiveSync from "@/components/LiveSync";
 import ServiceWorkerUpdater from "@/components/ServiceWorkerUpdater";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
-import { isSignupLeader, getAgendaFiles } from "@/lib/data";
+import { isSignupLeader, getAgendaFiles, getDataVersion } from "@/lib/data";
 
 const IMAGE_RE = /\.(png|jpe?g|webp|gif)$/i;
 
@@ -62,15 +62,18 @@ export default async function RootLayout({
   const warmAssets = isAuthed
     ? (await getAgendaFiles()).filter((f) => IMAGE_RE.test(f.name)).map((f) => f.url)
     : [];
+  // Data version at render time — the SyncIndicator compares this to the live
+  // value to show "Tap to Sync" when the server has newer data.
+  const dataVersion = isAuthed ? await getDataVersion() : 0;
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {/* On foreground: refresh once, then warm the offline cache; then live
-            updates every 10s + re-warm every 30s. Skips edits/forms/offline. */}
+        {/* Refreshes on foreground/reconnect and warms the offline cache; no
+            constant polling — the SyncIndicator flags when there's new data. */}
         <ServiceWorkerUpdater />
         <LiveSync enabled={isAuthed} routes={warmRoutes} assets={warmAssets} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
-        {isAuthed && <SyncIndicator />}
+        {isAuthed && <SyncIndicator version={dataVersion} />}
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       </body>
     </html>

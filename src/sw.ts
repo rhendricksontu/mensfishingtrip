@@ -5,6 +5,7 @@ import {
   CacheFirst,
   ExpirationPlugin,
   NetworkFirst,
+  NetworkOnly,
   Serwist,
 } from "serwist";
 
@@ -30,6 +31,11 @@ const serwist = new Serwist({
   // instead of letting the SW serve the cached document.
   navigationPreload: false,
   runtimeCaching: [
+    // API (e.g. the version check) is always live — never cache.
+    {
+      matcher: ({ url, sameOrigin }) => sameOrigin && url.pathname.startsWith("/api/"),
+      handler: new NetworkOnly(),
+    },
     // Agenda attachments (song sheets, maps) from Supabase Storage: they never
     // change once uploaded, so serve from cache and keep them offline.
     {
