@@ -25,10 +25,11 @@ const DAYS = [
 ];
 
 // The card instances for a role. Guide lunches are Saturday-only; coffee makers
-// are one combined crew (same people both mornings); breakfast runs each day.
+// and breakfast cooks are each one combined crew (same people both mornings).
 function instancesForRole(role: SignupRole): { key: string; label: string }[] {
   if (role === "guide_lunch") return [{ key: "saturday", label: "Saturday" }];
-  if (role === "coffee_maker") return [{ key: "both", label: "Saturday & Sunday" }];
+  if (role === "coffee_maker" || role === "breakfast_cook")
+    return [{ key: "both", label: "Saturday & Sunday" }];
   return DAYS;
 }
 
