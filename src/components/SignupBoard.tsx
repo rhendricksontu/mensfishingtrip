@@ -91,7 +91,7 @@ export default function SignupBoard({
         return (
           <section key={roleObj.key}>
             <h2 className="mb-3 text-lg font-bold text-brand-700">{roleObj.label}s</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-3">
               {days.map((d) => {
                 const key = `${roleObj.key}:${d.key}`;
                 const people = cell(roleObj.key, d.key);

@@ -58,7 +58,7 @@ export default function AdminVolunteersClient({
   const renderRole = (role: { key: SignupRole; label: string }) => (
         <section key={role.key}>
           <h2 className="mb-3 text-lg font-bold text-brand-700">{role.label}s</h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="space-y-3">
             {instancesForRole(role.key).map((d) => {
               const key = `${role.key}:${d.key}`;
               const leaderId = leaderByKey.get(key) ?? null;
