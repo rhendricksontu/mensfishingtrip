@@ -26,6 +26,24 @@ const serwist = new Serwist({
   // Take over promptly so a new deploy's assets/pages are served on relaunch.
   skipWaiting: true,
   clientsClaim: true,
+  // Safety net: if a request can't be served (offline), serve the cached page
+  // for that navigation (ignoreVary is the key — Next sets a Vary header), or a
+  // clean offline message — never the browser's "can't open the page" error.
+  catchHandler: async ({ request }) => {
+    if (request.mode === "navigate") {
+      const cached = await caches.match(request, { ignoreVary: true, ignoreSearch: true });
+      if (cached) return cached;
+      return new Response(
+        "<!doctype html><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'>" +
+          "<body style='font-family:system-ui,sans-serif;text-align:center;padding:2rem;color:#202d3a'>" +
+          "<p style='font-weight:600'>Offline</p>" +
+          "<p style='color:#5f7185;font-size:.9rem'>This page isn't saved offline yet. Reconnect and open it once.</p>" +
+          "</body>",
+        { headers: { "Content-Type": "text/html; charset=utf-8" } }
+      );
+    }
+    return Response.error();
+  },
   // Off on purpose: with navigation preload, iOS Safari fires its own network
   // request for a navigation and, offline, shows "Safari can't open the page"
   // instead of letting the SW serve the cached document.
