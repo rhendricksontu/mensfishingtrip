@@ -151,6 +151,11 @@ export async function updateCabin(
   await db.from("cabins").update(patch).eq("id", id);
   revalidatePath("/admin/cabins");
   revalidatePath("/me");
+  // A cabin's name/address feeds the Locations page and any event it's the
+  // location for on the agenda.
+  revalidatePath("/locations");
+  revalidatePath("/agenda");
+  revalidatePath("/");
 }
 
 // A cabin has at most one host. Marking a new host clears any existing one.
