@@ -2,7 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { setCoffeeReady } from "@/app/admin/actions";
+import { setCoffeeReady, clearCoffeeOrder } from "@/app/admin/actions";
 import { COFFEE_DAYS } from "@/lib/config";
 import { to24Hour } from "@/lib/utils";
 import PhoneLink from "@/components/PhoneLink";
@@ -75,6 +75,12 @@ function CoffeeRow({ row }: { row: Row }) {
       router.refresh();
     });
 
+  const clear = () =>
+    start(async () => {
+      await clearCoffeeOrder(order.id);
+      router.refresh();
+    });
+
   return (
     <li
       className={`flex items-center justify-between gap-3 rounded-lg border p-3 ${
@@ -89,23 +95,32 @@ function CoffeeRow({ row }: { row: Row }) {
         <p className="text-sm text-brand-600">{order.drink}</p>
         {phone && <PhoneLink phone={phone} className="text-xs text-brand-400 underline" />}
       </div>
-      {ready ? (
+      <div className="flex shrink-0 flex-col items-end gap-1.5">
+        {ready ? (
+          <button
+            onClick={() => toggle(false)}
+            disabled={pending}
+            className="rounded-full bg-olive-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-olive-700 disabled:opacity-60"
+          >
+            Ready ✓
+          </button>
+        ) : (
+          <button
+            onClick={() => toggle(true)}
+            disabled={pending}
+            className="btn-primary text-sm"
+          >
+            Ready for Pickup
+          </button>
+        )}
         <button
-          onClick={() => toggle(false)}
+          onClick={clear}
           disabled={pending}
-          className="shrink-0 rounded-full bg-olive-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-olive-700 disabled:opacity-60"
+          className="text-xs text-brand-400 underline hover:text-red-600 disabled:opacity-60"
         >
-          Ready ✓
+          Clear from queue
         </button>
-      ) : (
-        <button
-          onClick={() => toggle(true)}
-          disabled={pending}
-          className="btn-primary shrink-0 text-sm"
-        >
-          Ready for Pickup
-        </button>
-      )}
+      </div>
     </li>
   );
 }

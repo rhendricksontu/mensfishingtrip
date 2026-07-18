@@ -23,6 +23,21 @@ export async function setCoffeeReady(orderId: string, ready: boolean) {
   return { ok: true };
 }
 
+// Organizer clears a picked-up order off the queue — for when the attendee got
+// their coffee but forgot to tap "I picked up my order".
+export async function clearCoffeeOrder(orderId: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const { error } = await db
+    .from("coffee_orders")
+    .update({ status: "picked_up", updated_at: new Date().toISOString() })
+    .eq("id", orderId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/coffee");
+  revalidatePath("/me");
+  return { ok: true };
+}
+
 // ---- Attendee-facing card visibility --------------------------------------
 
 // Toggle whether attendees see their cabin / fishing / ride card on /me.

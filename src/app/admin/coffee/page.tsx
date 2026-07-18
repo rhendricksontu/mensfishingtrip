@@ -13,8 +13,10 @@ export default async function CoffeePage() {
       <div>
         <h2 className="text-lg font-bold text-brand-800">Coffee Queue</h2>
         <p className="text-sm text-brand-600">
-          Orders by pickup time. Tap “Ready for Pickup” when a drink is done —
-          the attendee gets a banner and confirms pickup to clear it.
+          Orders are sorted by pickup time. Tap “Ready for Pickup” when a drink
+          is done. The attendee gets a banner on their My Trip page and confirms
+          pickup to clear it. You can also clear the order from the queue once it
+          has been picked up if the attendee forgets.
         </p>
       </div>
       <CoffeeClient orders={orders} attendees={attendees} />
