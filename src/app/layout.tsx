@@ -3,6 +3,7 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 import LiveRefresh from "@/components/LiveRefresh";
 import CacheWarmer from "@/components/CacheWarmer";
+import ServiceWorkerUpdater from "@/components/ServiceWorkerUpdater";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
 import { isSignupLeader } from "@/lib/data";
@@ -61,6 +62,7 @@ export default async function RootLayout({
         {/* Keep the nav + page live for members on the pages that change most.
             Admins are skipped so their editors aren't disrupted mid-change.
             The Volunteers page polls itself (faster) so it isn't listed here. */}
+        <ServiceWorkerUpdater />
         <LiveRefresh enabled={!isAdmin} activePrefixes={["/me", "/agenda"]} />
         <CacheWarmer routes={warmRoutes} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
