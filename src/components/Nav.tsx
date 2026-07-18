@@ -111,7 +111,7 @@ export default function Nav({
           <Link
             href="/"
             aria-label="Home"
-            className="rounded-md bg-cream p-2 text-brand-700 hover:bg-cream-200"
+            className="p-2 text-cream hover:text-cream-200"
           >
             <svg
               width="20"
