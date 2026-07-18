@@ -30,3 +30,8 @@ next-env.d.ts
 
 # vercel
 .vercel
+
+# serwist (service worker generated at build)
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js

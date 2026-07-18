@@ -55,8 +55,10 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Refresh the auth session on all app routes (skip static assets & images).
+  // Refresh the auth session on all app routes. Skip static assets, images, and
+  // the service worker / manifest (they must be reachable when logged out, or
+  // the auth redirect below would break registration and install).
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw.js|swe-worker-.*|manifest.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };
