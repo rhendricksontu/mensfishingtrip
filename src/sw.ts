@@ -25,7 +25,10 @@ const serwist = new Serwist({
   // Take over promptly so a new deploy's assets/pages are served on relaunch.
   skipWaiting: true,
   clientsClaim: true,
-  navigationPreload: true,
+  // Off on purpose: with navigation preload, iOS Safari fires its own network
+  // request for a navigation and, offline, shows "Safari can't open the page"
+  // instead of letting the SW serve the cached document.
+  navigationPreload: false,
   runtimeCaching: [
     // Agenda attachments (song sheets, maps) from Supabase Storage: they never
     // change once uploaded, so serve from cache and keep them offline.
