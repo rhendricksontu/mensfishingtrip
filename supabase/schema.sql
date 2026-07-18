@@ -146,6 +146,8 @@ create table if not exists signup_leaders (
   attendee_id  uuid references attendees(id) on delete cascade,
   primary key (role, trip_day)
 );
+-- Read in the layout on every request (nav gating for leaders).
+create index if not exists signup_leaders_attendee_idx on signup_leaders (attendee_id);
 
 -- ---------------------------------------------------------------------------
 -- Rides (admin ride tracking): a driver carries 0+ passengers in a direction
@@ -165,6 +167,8 @@ create table if not exists ride_passengers (
   attendee_id   uuid references attendees(id) on delete cascade,
   primary key (ride_id, attendee_id)
 );
+-- Read on My Trip to find a member's ride (PK only covers ride_id-first lookups).
+create index if not exists ride_passengers_attendee_idx on ride_passengers (attendee_id);
 
 -- ---------------------------------------------------------------------------
 -- Agenda items

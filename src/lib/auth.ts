@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -9,7 +10,8 @@ export interface AdminUser {
 
 // Returns the logged-in admin, or null if not authenticated / not an admin.
 // An "admin" is a Supabase Auth user whose email is in the `admins` table.
-export async function getAdminUser(): Promise<AdminUser | null> {
+// Cached per request so repeat calls (layout + page) don't re-hit auth/DB.
+export const getAdminUser = cache(async function getAdminUser(): Promise<AdminUser | null> {
   // Before Supabase env vars are set, there is no session, treat as logged out.
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
@@ -52,10 +54,10 @@ export async function getAdminUser(): Promise<AdminUser | null> {
   } catch {
     return null;
   }
-}
+});
 
 // The logged-in Supabase user (any role), or null. Cheap session check.
-export async function getSessionUser() {
+export const getSessionUser = cache(async function getSessionUser() {
   if (
     !process.env.NEXT_PUBLIC_SUPABASE_URL ||
     !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
@@ -71,7 +73,7 @@ export async function getSessionUser() {
   } catch {
     return null;
   }
-}
+});
 
 // True if the email is allowed to register as an admin (env allowlist).
 export function isEmailAllowlisted(email: string): boolean {
