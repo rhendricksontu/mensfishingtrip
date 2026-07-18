@@ -3,18 +3,19 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-// A status pill backed by a cheap poll of /api/version (a few bytes) that
-// detects when the server has newer data than what's on screen. When it does,
-// it AUTO-refreshes (router.refresh) so changes — e.g. your coffee being marked
-// ready — appear on their own within a few seconds, no tap needed. Auto-refresh
-// only runs while online + visible and once per change, so a network drop has
-// nothing to crash (and the offline boundary reloads on reconnect anyway). The
-// pill still works as a manual sync fallback.
+// A near-invisible sync helper. It polls /api/version (a few bytes) and, when
+// the server has newer data than what's on screen, AUTO-refreshes so changes —
+// e.g. your coffee being marked ready — appear on their own, no tap needed. It
+// shows NOTHING while synced or mid-sync. Only two things ever render: "Offline"
+// when the device is offline, and a manual "Tap to Sync" fallback if the app has
+// been out of sync for 30s+ (i.e. auto-refresh didn't resolve it).
 export default function SyncIndicator({ version }: { version: number }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [online, setOnline] = useState(true);
   const [latest, setLatest] = useState(version);
+  // Whether the out-of-sync state has persisted long enough to offer a manual tap.
+  const [showTap, setShowTap] = useState(false);
   // The version we've already auto-refreshed for, so we don't loop on one change.
   const refreshedFor = useRef(version);
 
@@ -81,18 +82,27 @@ export default function SyncIndicator({ version }: { version: number }) {
   }, [latest, version, online, pending, router]);
 
   const outOfSync = online && latest > version;
-  const label = !online
-    ? "Offline"
-    : pending
-      ? "Syncing…"
-      : outOfSync
-        ? "Online: Tap to Sync"
-        : "Online: Synced";
-  const dot = !online
-    ? "bg-red-500 shadow-[0_0_5px_1px_#ef4444]"
-    : pending || outOfSync
-      ? "bg-amber-400 shadow-[0_0_5px_1px_#fbbf24]"
-      : "bg-green-500 shadow-[0_0_5px_1px_#22c55e]";
+
+  // Only offer a manual "Tap to Sync" if we've stayed out of sync for 30s+ (i.e.
+  // auto-refresh didn't clear it). While synced or mid-sync, keep it hidden.
+  useEffect(() => {
+    if (!outOfSync || pending) {
+      setShowTap(false);
+      return;
+    }
+    const id = setTimeout(() => setShowTap(true), 30000);
+    return () => clearTimeout(id);
+  }, [outOfSync, pending]);
+
+  // Render nothing unless offline, or stuck out of sync long enough to tap.
+  const mode = !online ? "offline" : outOfSync && showTap ? "tap" : null;
+  if (!mode) return null;
+
+  const label = mode === "offline" ? "Offline" : "Tap to Sync";
+  const dot =
+    mode === "offline"
+      ? "bg-red-500 shadow-[0_0_5px_1px_#ef4444]"
+      : "bg-amber-400 shadow-[0_0_5px_1px_#fbbf24]";
 
   return (
     <div className="flex justify-center pt-2">
