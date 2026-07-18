@@ -75,11 +75,13 @@ function CoffeeRow({ row }: { row: Row }) {
       router.refresh();
     });
 
-  const clear = () =>
+  const clear = () => {
+    if (!confirm(`Clear ${name}'s ${order.drink} from the queue?`)) return;
     start(async () => {
       await clearCoffeeOrder(order.id);
       router.refresh();
     });
+  };
 
   return (
     <li
