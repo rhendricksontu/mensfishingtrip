@@ -45,14 +45,8 @@ export default function CoffeeOrderButton({
       ? [existing.pickup_time, ...times]
       : times;
 
-  // No order and no times left: ordering for this day has closed.
-  if (!existing && times.length === 0) {
-    return (
-      <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-500">
-        Coffee ordering for this morning has closed.
-      </p>
-    );
-  }
+  // No order and no times left: ordering for this day has closed — show nothing.
+  if (!existing && times.length === 0) return null;
 
   if (!open) {
     return (
