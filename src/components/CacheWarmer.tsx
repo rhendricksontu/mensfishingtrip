@@ -5,12 +5,13 @@ import { useEffect } from "react";
 // Proactively caches pages (and agenda image attachments) while online so the
 // app works offline even if the user hasn't opened those tabs/images yet.
 //
-// Reliability: rather than warming once and hoping every fetch lands, we check
-// what's actually in the cache and (re)fetch only what's missing — on load,
-// on reconnect, and periodically while online. So a fetch that failed on weak
-// signal simply gets retried next cycle until everything is stored. We fetch
-// the full HTML document (not router.prefetch, which pollutes Next's client
-// Router Cache); the service worker caches it for offline navigation.
+// Runs on load, on reconnect, and every 30s while online:
+//  - Pages are re-fetched each cycle, so the cached copy stays current — a
+//    change made before going offline is captured (NetworkFirst updates cache).
+//  - Images are fetched only if missing (they never change once uploaded).
+// A fetch that failed on weak signal is simply retried next cycle. We fetch the
+// full HTML document (not router.prefetch, which pollutes Next's client Router
+// Cache); the service worker caches it for offline navigation.
 export default function CacheWarmer({
   routes,
   assets = [],
@@ -25,21 +26,20 @@ export default function CacheWarmer({
 
     let cancelled = false;
 
-    // Fetch only targets not already cached, so repeat runs are cheap and any
-    // previously-failed fetch is retried until it succeeds.
     const warm = async () => {
       if (!navigator.onLine) return;
-      const targets: { url: string; opts: RequestInit }[] = [
-        ...routes.map((url) => ({ url, opts: { credentials: "include" as const } })),
-        // Cross-origin Storage images: no-cors mirrors an <img> load so the
-        // service worker's CacheFirst rule stores them for offline.
-        ...assets.map((url) => ({ url, opts: { mode: "no-cors" as const } })),
-      ];
-      for (const { url, opts } of targets) {
+      // Pages: always re-fetch to keep the offline copy fresh.
+      for (const url of routes) {
+        if (cancelled) return;
+        fetch(url, { credentials: "include" }).catch(() => {});
+      }
+      // Images: cross-origin Storage assets, no-cors (mirrors an <img> load so
+      // the SW's CacheFirst rule stores them). Fetch only if not already cached.
+      for (const url of assets) {
         if (cancelled) return;
         try {
           const hit = await caches.match(url);
-          if (!hit) fetch(url, opts).catch(() => {});
+          if (!hit) fetch(url, { mode: "no-cors" }).catch(() => {});
         } catch {
           /* ignore */
         }
