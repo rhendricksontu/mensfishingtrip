@@ -82,8 +82,6 @@ export default function SignupBoard({
   const cell = (roleKey: SignupRole, dayKey: string) =>
     signups.filter((s) => s.role === roleKey && s.trip_day === dayKey);
 
-  const byKey = (k: SignupRole) => ROLES.find((r) => r.key === k)!;
-
   const renderRole = (roleObj: { key: SignupRole; label: string; min: number }) => {
         // Admins see every instance; a leader only sees the ones they lead.
         const days = instancesForRole(roleObj.key).filter(
@@ -93,7 +91,7 @@ export default function SignupBoard({
         return (
           <section key={roleObj.key}>
             <h2 className="mb-3 text-lg font-bold text-brand-700">{roleObj.label}s</h2>
-            <div className="space-y-3">
+            <div className="grid gap-3 sm:grid-cols-2">
               {days.map((d) => {
                 const key = `${roleObj.key}:${d.key}`;
                 const people = cell(roleObj.key, d.key);
@@ -190,14 +188,5 @@ export default function SignupBoard({
         );
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Breakfast Cooks and Coffee Makers share a row. */}
-      <div className="grid grid-cols-2 items-start gap-3">
-        {renderRole(byKey("breakfast_cook"))}
-        {renderRole(byKey("coffee_maker"))}
-      </div>
-      {renderRole(byKey("guide_lunch"))}
-    </div>
-  );
+  return <div className="space-y-6">{ROLES.map((r) => renderRole(r))}</div>;
 }

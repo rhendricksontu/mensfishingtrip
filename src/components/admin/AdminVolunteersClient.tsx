@@ -55,12 +55,10 @@ export default function AdminVolunteersClient({
     });
   }
 
-  const byKey = (k: SignupRole) => ROLES.find((r) => r.key === k)!;
-
   const renderRole = (role: { key: SignupRole; label: string }) => (
         <section key={role.key}>
           <h2 className="mb-3 text-lg font-bold text-brand-700">{role.label}s</h2>
-          <div className="space-y-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             {instancesForRole(role.key).map((d) => {
               const key = `${role.key}:${d.key}`;
               const leaderId = leaderByKey.get(key) ?? null;
@@ -104,12 +102,7 @@ export default function AdminVolunteersClient({
 
   return (
     <div className={`space-y-6 ${pending ? "opacity-60" : ""}`}>
-      {/* Breakfast Cooks and Coffee Makers share a row. */}
-      <div className="grid grid-cols-2 items-start gap-3">
-        {renderRole(byKey("breakfast_cook"))}
-        {renderRole(byKey("coffee_maker"))}
-      </div>
-      {renderRole(byKey("guide_lunch"))}
+      {ROLES.map((r) => renderRole(r))}
     </div>
   );
 }
