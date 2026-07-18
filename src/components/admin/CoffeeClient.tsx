@@ -30,11 +30,11 @@ export default function CoffeeClient({
         const a = byId.get(o.attendee_id);
         return { order: o, name: a?.name ?? "Unknown", phone: a?.phone ?? "" };
       })
-      // Earliest pickup first; ties broken alphabetically.
+      // Earliest pickup first; for the same time, first order placed goes first.
       .sort(
         (x, y) =>
           to24Hour(x.order.pickup_time).localeCompare(to24Hour(y.order.pickup_time)) ||
-          x.name.localeCompare(y.name)
+          x.order.created_at.localeCompare(y.order.created_at)
       );
 
   return (
@@ -90,10 +90,12 @@ function CoffeeRow({ row }: { row: Row }) {
       <div className="min-w-0">
         <div className="flex items-baseline gap-2">
           <span className="font-semibold text-brand-700">{order.pickup_time}</span>
-          <span className="truncate font-medium text-brand-800">{name}</span>
+          <span className="truncate font-medium text-brand-800">{order.drink}</span>
         </div>
-        <p className="text-sm text-brand-600">{order.drink}</p>
-        {phone && <PhoneLink phone={phone} className="text-xs text-brand-400 underline" />}
+        <div className="mt-0.5 flex items-baseline gap-2 text-sm">
+          <span className="truncate text-brand-700">{name}</span>
+          {phone && <PhoneLink phone={phone} className="shrink-0 text-brand-400 underline" />}
+        </div>
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1.5">
         {ready ? (
@@ -118,7 +120,7 @@ function CoffeeRow({ row }: { row: Row }) {
           disabled={pending}
           className="text-xs text-brand-400 underline hover:text-red-600 disabled:opacity-60"
         >
-          Clear from queue
+          Clear from Queue
         </button>
       </div>
     </li>
