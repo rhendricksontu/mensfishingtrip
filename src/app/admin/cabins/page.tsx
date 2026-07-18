@@ -33,24 +33,19 @@ export default async function CabinsAdminPage() {
     coffee_maker: "Coffee Maker",
     guide_lunch: "Guide Lunch Maker",
   };
-  // Coffee makers and breakfast cooks cover both days, so their labels don't
-  // call out a day; guide lunches are day-specific.
-  const dayTag = (role: string, trip_day: string) =>
-    role === "guide_lunch"
-      ? ` - ${trip_day.charAt(0).toUpperCase() + trip_day.slice(1)}`
-      : "";
+  // Every volunteer role is a single crew now, so labels don't call out a day.
   const volunteerAssignments = [
     ...signups
       .filter((s) => s.attendee_id)
       .map((s) => ({
         attendee_id: s.attendee_id as string,
-        label: `${ROLE_LABELS[s.role] ?? s.role}s${dayTag(s.role, s.trip_day)}`,
+        label: `${ROLE_LABELS[s.role] ?? s.role}s`,
       })),
     ...signupLeaders
       .filter((l) => l.attendee_id)
       .map((l) => ({
         attendee_id: l.attendee_id as string,
-        label: `${ROLE_LABELS[l.role] ?? l.role} Leader${dayTag(l.role, l.trip_day)}`,
+        label: `${ROLE_LABELS[l.role] ?? l.role} Leader`,
       })),
   ];
 
