@@ -23,6 +23,13 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
+  // Vercel appends a deployment id (?dpl=…) to every static asset request, but
+  // the precache stores clean URLs — so the query made every chunk lookup miss,
+  // surfacing offline as "ChunkLoadError: Loading chunk … failed". Strip dpl (and
+  // the usual tracking params) when matching the precache so chunks resolve.
+  precacheOptions: {
+    ignoreURLParametersMatching: [/^dpl$/, /^utm_/, /^fbclid$/],
+  },
   // Take over promptly so a new deploy's assets/pages are served on relaunch.
   skipWaiting: true,
   clientsClaim: true,
@@ -105,7 +112,9 @@ const serwist = new Serwist({
         sameOrigin && url.pathname.startsWith("/_next/static/"),
       handler: new CacheFirst({
         cacheName: "next-static",
-        matchOptions: { ignoreVary: true },
+        // ignoreSearch drops Vercel's ?dpl= too, for any chunk the warmer cached
+        // at runtime (stored without the query) rather than via the precache.
+        matchOptions: { ignoreVary: true, ignoreSearch: true },
         plugins: [
           new CacheableResponsePlugin({ statuses: [0, 200] }),
           new ExpirationPlugin({ maxEntries: 250, maxAgeSeconds: 60 * 60 * 24 * 30 }),
