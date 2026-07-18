@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
-// A status pill that doubles as a manual sync. It cheaply polls /api/version
-// (a few bytes) to detect when the server has newer data than what's on screen,
-// showing "Online — Tap to Sync". Tapping pulls the update (router.refresh),
-// after which `version` (the rendered value) catches up and it reads "Synced".
+// A status pill backed by a cheap poll of /api/version (a few bytes) that
+// detects when the server has newer data than what's on screen. When it does,
+// it AUTO-refreshes (router.refresh) so changes — e.g. your coffee being marked
+// ready — appear on their own within a few seconds, no tap needed. Auto-refresh
+// only runs while online + visible and once per change, so a network drop has
+// nothing to crash (and the offline boundary reloads on reconnect anyway). The
+// pill still works as a manual sync fallback.
 export default function SyncIndicator({ version }: { version: number }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [online, setOnline] = useState(true);
   const [latest, setLatest] = useState(version);
+  // The version we've already auto-refreshed for, so we don't loop on one change.
+  const refreshedFor = useRef(version);
 
   useEffect(() => {
     const update = () => setOnline(navigator.onLine !== false);
@@ -45,7 +50,7 @@ export default function SyncIndicator({ version }: { version: number }) {
       }
     };
     check();
-    const id = setInterval(check, 15000);
+    const id = setInterval(check, 10000);
     const onVisible = () => {
       if (document.visibilityState === "visible") check();
     };
@@ -60,6 +65,20 @@ export default function SyncIndicator({ version }: { version: number }) {
       window.removeEventListener("online", onVisible);
     };
   }, []);
+
+  // Auto-refresh when the server has newer data — but only while online and the
+  // tab is visible, and only once per new version (guarded so a failed refresh
+  // can't spin). A refresh that succeeds re-renders with a newer `version`,
+  // which settles this back to "Synced".
+  useEffect(() => {
+    if (!online || pending) return;
+    if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
+    if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+    if (latest > version && refreshedFor.current !== latest) {
+      refreshedFor.current = latest;
+      start(() => router.refresh());
+    }
+  }, [latest, version, online, pending, router]);
 
   const outOfSync = online && latest > version;
   const label = !online
