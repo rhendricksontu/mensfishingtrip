@@ -54,11 +54,20 @@ export default function LiveSync({
     };
 
     const hasCaches = typeof caches !== "undefined";
-    // Warm each page for offline: cache the HTML document AND the JS/CSS chunks
-    // it references (parsed from the HTML) — otherwise a page you never opened
-    // online is missing its chunks and throws on load. Also cache un-cached
-    // images. Re-runs keep the document fresh; cached chunks are served
-    // instantly so re-fetching them is cheap.
+    // Fetch an immutable asset (chunk/image) only if it isn't already cached —
+    // they're content-hashed, so once is forever. Avoids re-downloading them.
+    const cacheIfMissing = async (url: string, opts: RequestInit) => {
+      if (!hasCaches) return;
+      try {
+        if (!(await caches.match(url))) fetch(url, opts).catch(() => {});
+      } catch {
+        /* ignore */
+      }
+    };
+
+    // Warm each page for offline: re-fetch the HTML document (so the offline
+    // copy stays current), and cache the JS/CSS it references + images — but
+    // only the ones not already cached, since those never change.
     const warm = async () => {
       if (!online || navigator.onLine === false) return;
       for (const url of routes) {
@@ -73,21 +82,15 @@ export default function LiveSync({
             if (seen.has(m[1])) continue;
             seen.add(m[1]);
             if (cancelled) return;
-            fetch(m[1]).catch(() => {});
+            await cacheIfMissing(m[1], {});
           }
         } catch {
           /* ignore */
         }
       }
-      if (!hasCaches) return;
       for (const url of assets) {
         if (cancelled) return;
-        try {
-          const hit = await caches.match(url);
-          if (!hit) fetch(url, { mode: "no-cors" }).catch(() => {});
-        } catch {
-          /* ignore */
-        }
+        await cacheIfMissing(url, { mode: "no-cors" });
       }
     };
 
@@ -98,8 +101,11 @@ export default function LiveSync({
     };
 
     onForeground(); // initial run
+    // Live updates on the page you're viewing: every 10s.
     const liveId = setInterval(refresh, 10000);
-    const warmId = setInterval(() => void warm(), 30000);
+    // Offline prep (re-cache page documents): slow — every 2 min, plus on
+    // foreground/reconnect. Immutable assets aren't re-fetched at all.
+    const warmId = setInterval(() => void warm(), 120000);
 
     const onVisible = () => {
       if (document.visibilityState === "visible") onForeground();
