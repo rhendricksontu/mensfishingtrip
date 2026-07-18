@@ -45,7 +45,9 @@ export default function LiveSync({
           if (!res.ok || !type.includes("text/html")) continue;
           const html = await res.text();
           const seen = new Set<string>();
-          for (const m of html.matchAll(/["'](\/_next\/static\/[^"']+?\.(?:js|css))["']/g)) {
+          // Every build asset the page references (js, css, fonts, media…), so
+          // it renders fully offline — not just the .js/.css.
+          for (const m of html.matchAll(/["'](\/_next\/static\/[^"'?]+?\.[a-z0-9]+)["']/gi)) {
             if (seen.has(m[1])) continue;
             seen.add(m[1]);
             if (cancelled) return;
