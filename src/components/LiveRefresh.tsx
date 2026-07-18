@@ -3,24 +3,28 @@
 import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-// Don't auto-refresh long, in-progress forms out from under someone.
-const SKIP_PREFIXES = ["/rsvp", "/login", "/reset"];
-
 // Keeps server-rendered content (and the nav) fresh for a user who leaves the
 // tab open. We can't use Supabase realtime here (RLS exposes nothing to the
 // browser), so we re-fetch on an interval and — for an instant feel — whenever
 // the tab regains focus. router.refresh() preserves scroll and input.
+//
+// `activePrefixes` limits polling to matching routes (omit to always poll where
+// the component is rendered).
 export default function LiveRefresh({
   enabled = true,
   intervalMs = 10000,
+  activePrefixes,
 }: {
   enabled?: boolean;
   intervalMs?: number;
+  activePrefixes?: string[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const active =
-    enabled && !SKIP_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const inScope =
+    !activePrefixes ||
+    activePrefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+  const active = enabled && inScope;
 
   useEffect(() => {
     if (!active) return;

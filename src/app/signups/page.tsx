@@ -34,7 +34,7 @@ export default async function SignupsPage() {
     <div className="space-y-5">
       {/* Poll faster here so a leader who's removed is bounced to My Trip
           promptly (the access check above redirects on the next refresh). */}
-      <LiveRefresh intervalMs={4000} />
+      <LiveRefresh enabled={!isAdmin} intervalMs={4000} />
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Volunteer Tracking</h1>
         <p className="mt-1 text-brand-600">

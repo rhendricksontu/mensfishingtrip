@@ -38,9 +38,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {/* Keep the nav + page live for members (e.g. volunteer changes);
-            admins are skipped so their editors aren't disrupted mid-change. */}
-        <LiveRefresh enabled={!isAdmin} />
+        {/* Keep the nav + page live for members on the pages that change most.
+            Admins are skipped so their editors aren't disrupted mid-change.
+            The Volunteers page polls itself (faster) so it isn't listed here. */}
+        <LiveRefresh enabled={!isAdmin} activePrefixes={["/me", "/agenda"]} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       </body>
