@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import SyncIndicator from "@/components/SyncIndicator";
 import LiveRefresh from "@/components/LiveRefresh";
 import CacheWarmer from "@/components/CacheWarmer";
 import ServiceWorkerUpdater from "@/components/ServiceWorkerUpdater";
@@ -66,6 +67,7 @@ export default async function RootLayout({
         <LiveRefresh enabled={isAuthed} />
         <CacheWarmer routes={warmRoutes} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
+        {isAuthed && <SyncIndicator />}
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       </body>
     </html>
