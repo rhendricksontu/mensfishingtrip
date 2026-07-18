@@ -15,7 +15,7 @@ export default async function LoginPage() {
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Log In</h1>
         <p className="mt-1 text-brand-600">
-          Use the cell phone and password you set when you RSVP&apos;d.
+          Use the info you set when you RSVP&apos;d.
         </p>
       </div>
       <AttendeeLoginForm />
