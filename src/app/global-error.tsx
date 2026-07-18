@@ -6,7 +6,7 @@ import { useEffect } from "react";
 // failed router.refresh() that re-renders the layout when the network drops).
 // When offline, reload once (loop-guarded) so the cached document loads instead
 // of a raw "application error". Must render its own <html>/<body>.
-export default function GlobalError() {
+export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
   useEffect(() => {
     // Reload when the connection returns (serves the cached/fresh document).
     const reload = () => window.location.reload();
@@ -41,6 +41,11 @@ export default function GlobalError() {
           <p style={{ fontWeight: 600 }}>You&apos;re Offline</p>
           <p style={{ fontSize: "0.875rem", color: "#5f7185", marginTop: "0.25rem" }}>
             Once you&apos;re reconnected, the page will reload.
+          </p>
+          {/* TEMP diagnostic — surface the real crash so we can fix it, then remove. */}
+          <p style={{ fontSize: "11px", color: "#f87171", marginTop: "0.75rem", textAlign: "left", wordBreak: "break-word" }}>
+            {error?.name}: {error?.message}
+            {error?.digest ? ` (digest ${error.digest})` : ""}
           </p>
         </div>
       </body>
