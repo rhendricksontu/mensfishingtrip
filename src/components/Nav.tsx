@@ -56,6 +56,7 @@ export default function Nav({
                 <Link
                   key={l.href}
                   href={l.href}
+                  prefetch={false}
                   className={classNames(
                     "whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium",
                     isActive(l.href)
@@ -107,6 +108,7 @@ export default function Nav({
             <Link
               key={l.href}
               href={l.href}
+              prefetch={false}
               onClick={() => setOpen(false)}
               className={classNames(
                 "block rounded-md px-3 py-2.5 text-base font-medium",

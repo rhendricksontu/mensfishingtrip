@@ -25,6 +25,7 @@ export default function AdminTabs() {
           <Link
             key={t.href}
             href={t.href}
+            prefetch={false}
             aria-current={active ? "page" : undefined}
             className={classNames(
               "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ring-1",
