@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -40,19 +39,16 @@ export default function Nav({
     return pathname.startsWith(href);
   };
 
-  // Offline, client-side routing (RSC fetch) fails; force a full-page navigation
-  // so the cached document loads instead.
-  const offlineFullNav = (e: { preventDefault: () => void }, href: string) => {
-    if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      e.preventDefault();
-      window.location.assign(href);
-    }
-  };
-
+  // Every nav uses a full-page load (plain <a>), not client-side routing. This
+  // makes offline navigation bulletproof — the service worker serves the cached
+  // document with no RSC fetch to fail and no reliance on navigator.onLine (which
+  // lags when the connection drops). Online it's a fresh NetworkFirst document,
+  // which also sidesteps client-side router-cache staleness. Assets are cached,
+  // so the repaint is quick.
   return (
     <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
+        <a href="/" className="flex shrink-0 items-center gap-2 font-bold tracking-tight">
           <Image
             src="/trout.png"
             alt=""
@@ -61,17 +57,15 @@ export default function Nav({
             className="h-8 w-8 rounded-full bg-cream object-cover ring-1 ring-white/30"
           />
           <span className="whitespace-nowrap">Men&apos;s Fishing Trip</span>
-        </Link>
+        </a>
 
         {isAuthed ? (
           <>
             <nav className="hidden lg:flex items-center gap-0.5">
               {links.map((l) => (
-                <Link
+                <a
                   key={l.href}
                   href={l.href}
-                  prefetch={false}
-                  onClick={(e) => offlineFullNav(e, l.href)}
                   className={classNames(
                     "whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium",
                     isActive(l.href)
@@ -80,7 +74,7 @@ export default function Nav({
                   )}
                 >
                   {l.label}
-                </Link>
+                </a>
               ))}
               <form action={signOutAttendee}>
                 <button
@@ -108,33 +102,28 @@ export default function Nav({
             </button>
           </>
         ) : pathname === "/login" ? (
-          <Link
+          <a
             href="/"
             className="whitespace-nowrap px-2.5 py-1.5 text-sm font-medium text-cream hover:text-cream-200"
           >
             Home
-          </Link>
+          </a>
         ) : (
-          <Link
+          <a
             href="/login"
             className="whitespace-nowrap px-2.5 py-1.5 text-sm font-medium text-cream hover:text-cream-200"
           >
             Log In
-          </Link>
+          </a>
         )}
       </div>
 
       {isAuthed && open && (
         <nav className="lg:hidden border-t border-brand-600 bg-brand-700 px-2 pb-3">
           {links.map((l) => (
-            <Link
+            <a
               key={l.href}
               href={l.href}
-              prefetch={false}
-              onClick={(e) => {
-                offlineFullNav(e, l.href);
-                setOpen(false);
-              }}
               className={classNames(
                 "block rounded-md px-3 py-2.5 text-base font-medium",
                 isActive(l.href)
@@ -143,7 +132,7 @@ export default function Nav({
               )}
             >
               {l.label}
-            </Link>
+            </a>
           ))}
           <form action={signOutAttendee}>
             <button

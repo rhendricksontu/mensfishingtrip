@@ -2,7 +2,6 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { SESSION_LABELS, RIDE_PREF_LABELS, ACTIVITY_OPTIONS } from "@/lib/config";
 import { setAttendeeRole, deleteAttendee } from "@/app/admin/actions";
 import PhoneLink from "@/components/PhoneLink";
@@ -288,9 +287,9 @@ function Chip({ children }: { children: React.ReactNode }) {
 // A flagged value that links to the tab where you can fix it.
 function FixLink({ href, label = "Unassigned" }: { href: string; label?: string }) {
   return (
-    <Link href={href} className="font-semibold text-amber-700 underline">
+    <a href={href} className="font-semibold text-amber-700 underline">
       {label}
-    </Link>
+    </a>
   );
 }
 
