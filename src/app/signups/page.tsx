@@ -18,9 +18,9 @@ export default async function SignupsPage() {
 
   const isAdmin = Boolean(admin);
   const isLeader = me ? leaders.some((l) => l.attendee_id === me.id) : false;
-  // Only organizers and leaders may view this page. Volunteers see their role
-  // on the My Trip page instead.
-  if (!isAdmin && !isLeader) redirect("/");
+  // Only organizers and leaders may view this page. Anyone else (e.g. a leader
+  // who was just removed) is bounced to My Trip, where they see their role.
+  if (!isAdmin && !isLeader) redirect("/me");
 
   // Phone by attendee id, so each helper can be listed with their number.
   const phoneById: Record<string, string> = {};
