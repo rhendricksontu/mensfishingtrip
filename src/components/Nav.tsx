@@ -26,7 +26,7 @@ export default function Nav({
   }, [pathname]);
   const links = [
     { href: "/me", label: "My Trip" },
-    { href: "/", label: "Agenda" },
+    { href: "/agenda", label: "Agenda" },
     ...(canSeeSignups ? [{ href: "/signups", label: "Volunteers" }] : []),
     { href: "/locations", label: "Locations" },
     ...(isAdmin ? [{ href: "/admin", label: "Organizer" }] : []),

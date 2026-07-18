@@ -1,12 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
+import { getCurrentAttendee } from "@/lib/attendee";
 import AgendaView from "@/components/AgendaView";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  // Signed-in members land on the agenda; everyone else sees the welcome screen.
+  // Signed-in members land on My Trip. Admins who log in by email (no attendee
+  // row) still see the agenda here; everyone else sees the welcome screen.
+  const me = await getCurrentAttendee();
+  if (me) redirect("/me");
   const isAuthed = Boolean(await getSessionUser());
   if (isAuthed) return <AgendaView />;
 
