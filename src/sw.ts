@@ -1,6 +1,10 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
-import { CacheFirst, ExpirationPlugin, Serwist } from "serwist";
+import { CacheFirst, ExpirationPlugin, NetworkFirst, Serwist } from "serwist";
+
+// The member-facing routes we warm ahead of time so the whole app works
+// offline even if the user hasn't navigated there yet (see CacheWarmer).
+const APP_ROUTES = ["/me", "/agenda", "/locations", "/signups"];
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -32,8 +36,22 @@ const serwist = new Serwist({
         ],
       }),
     },
-    // Everything else: Serwist's tuned Next.js defaults. Pages use NetworkFirst,
-    // so online users get fresh data and offline users see the last-loaded copy.
+    // The core member pages, matched by path for any request (document or RSC)
+    // so cache-warming (a plain fetch) populates them. NetworkFirst = fresh
+    // online, last-warmed copy offline. Must come before defaultCache, whose
+    // page rule only matches actual navigations.
+    {
+      matcher: ({ url, sameOrigin }) =>
+        sameOrigin &&
+        APP_ROUTES.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`)),
+      handler: new NetworkFirst({
+        cacheName: "trip-pages",
+        plugins: [
+          new ExpirationPlugin({ maxEntries: 64, maxAgeSeconds: 60 * 60 * 24 * 7 }),
+        ],
+      }),
+    },
+    // Everything else: Serwist's tuned Next.js defaults.
     ...defaultCache,
   ],
 });
