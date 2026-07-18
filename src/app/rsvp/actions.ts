@@ -160,8 +160,14 @@ export async function submitRsvp(
   }
 
   // Sign them in (sets the session cookie) and send them to their dashboard.
+  // Their account is already saved; if the auto-login hiccups under load, send
+  // them to the login page rather than an unauthenticated bounce to home.
   const supabase = createSupabaseServerClient();
-  await supabase.auth.signInWithPassword({ email: authEmail, password: d.password });
+  const { error: signInErr } = await supabase.auth.signInWithPassword({
+    email: authEmail,
+    password: d.password,
+  });
+  if (signInErr) redirect("/login");
 
   redirect("/me");
 }
