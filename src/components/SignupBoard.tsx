@@ -14,7 +14,7 @@ interface Member {
 
 // `min` is the number of helpers needed per day for each role.
 const ROLES: { key: SignupRole; label: string; min: number }[] = [
-  { key: "breakfast_cook", label: "Breakfast Cook", min: 8 },
+  { key: "breakfast_cook", label: "Breakfast Cook", min: 4 },
   { key: "coffee_maker", label: "Coffee Maker", min: 4 },
   { key: "guide_lunch", label: "Guide Lunch Maker", min: 4 },
 ];
