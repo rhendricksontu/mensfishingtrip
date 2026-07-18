@@ -89,17 +89,15 @@ function CoffeeRow({ row }: { row: Row }) {
         ready ? "border-olive-300 bg-olive-50" : "border-brand-100"
       }`}
     >
-      <div className="min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-brand-700">{order.pickup_time}</span>
+      <div className="min-w-0 space-y-1">
+        <p className="font-semibold text-brand-700">{order.pickup_time}</p>
+        <p>
           <span className="inline-flex items-center rounded-full bg-[#6f4e37] px-3 py-0.5 font-medium text-cream">
             {order.drink}
           </span>
-        </div>
-        <div className="mt-0.5 flex items-baseline gap-2 text-sm">
-          <span className="truncate text-brand-700">{name}</span>
-          {phone && <PhoneLink phone={phone} className="shrink-0 text-brand-400 underline" />}
-        </div>
+        </p>
+        <p className="truncate text-sm text-brand-800">{name}</p>
+        {phone && <PhoneLink phone={phone} className="block text-sm text-brand-400 underline" />}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1.5">
         {ready ? (
