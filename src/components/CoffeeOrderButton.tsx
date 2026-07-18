@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { useRouter } from "next/navigation";
 import { placeCoffeeOrder, cancelCoffeeOrder, type CoffeeState } from "@/app/coffee/actions";
-import { COFFEE_DRINKS, COFFEE_PICKUP_TIMES } from "@/lib/config";
+import { COFFEE_DRINKS, futureCoffeePickupTimes } from "@/lib/config";
 import type { CoffeeDay, CoffeeOrder } from "@/lib/types";
 
 const initial: CoffeeState = { ok: false };
@@ -37,7 +37,22 @@ export default function CoffeeOrderButton({
     }
   }, [state, router]);
 
-  const times = COFFEE_PICKUP_TIMES[day];
+  // Only upcoming slots — past pickup times drop off as the morning progresses.
+  const times = futureCoffeePickupTimes(day);
+  // Keep the current order's time selectable when editing, even if it just passed.
+  const timeOptions =
+    existing?.pickup_time && !times.includes(existing.pickup_time)
+      ? [existing.pickup_time, ...times]
+      : times;
+
+  // No order and no times left: ordering for this day has closed.
+  if (!existing && times.length === 0) {
+    return (
+      <p className="mt-3 rounded-lg bg-brand-50 p-3 text-sm text-brand-500">
+        Coffee ordering for this morning has closed.
+      </p>
+    );
+  }
 
   if (!open) {
     return (
@@ -96,7 +111,7 @@ export default function CoffeeOrderButton({
           <option value="" disabled>
             Select a time
           </option>
-          {times.map((t) => (
+          {timeOptions.map((t) => (
             <option key={t} value={t}>
               {t}
             </option>

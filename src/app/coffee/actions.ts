@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getCurrentAttendee } from "@/lib/attendee";
-import { COFFEE_DRINKS, COFFEE_PICKUP_TIMES } from "@/lib/config";
+import { COFFEE_DRINKS, isCoffeePickupAvailable } from "@/lib/config";
 
 const OrderSchema = z.object({
   day: z.enum(["saturday", "sunday"]),
@@ -35,12 +35,20 @@ export async function placeCoffeeOrder(
   if (!parsed.success) return { ok: false, error: "Please choose a drink and pickup time." };
 
   const { day, drink, pickup_time } = parsed.data;
-  // Guard the pickup time against the day's allowed window.
-  if (!COFFEE_PICKUP_TIMES[day].includes(pickup_time)) {
-    return { ok: false, error: "That pickup time isn't available." };
-  }
 
   const db = createAdminClient();
+  // Allow keeping an already-placed time even if it just passed; a new or
+  // changed time must still be upcoming.
+  const { data: current } = await db
+    .from("coffee_orders")
+    .select("pickup_time")
+    .eq("attendee_id", me.id)
+    .eq("day", day)
+    .maybeSingle();
+  if (current?.pickup_time !== pickup_time && !isCoffeePickupAvailable(day, pickup_time)) {
+    return { ok: false, error: "That pickup time is no longer available." };
+  }
+
   const { error } = await db.from("coffee_orders").upsert(
     {
       attendee_id: me.id,

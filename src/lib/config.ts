@@ -2,6 +2,8 @@
 // Trip-wide configuration. Change these values to update the whole site.
 // ----------------------------------------------------------------------------
 
+import { to24Hour } from "@/lib/utils";
+
 export const TRIP = {
   name: "2026 Men's Fishing Trip",
   shortName: "Fishing Trip",
@@ -103,3 +105,34 @@ export const COFFEE_DAYS = [
   { day: "saturday", label: "Saturday" },
   { day: "sunday", label: "Sunday" },
 ] as const;
+
+// Calendar date of each coffee day (Central). Trip Saturday/Sunday, Sep 2026.
+const COFFEE_DATES: Record<"saturday" | "sunday", string> = {
+  saturday: "2026-09-26",
+  sunday: "2026-09-27",
+};
+// Those September dates fall in Central Daylight Time (UTC−5).
+const CENTRAL_UTC_OFFSET = "-05:00";
+
+// Absolute instant (ms) a pickup slot occurs, built with the fixed Central
+// offset so the comparison is correct regardless of the device's time zone.
+function pickupInstant(day: "saturday" | "sunday", label: string): number {
+  const t = to24Hour(label); // "6:30 AM" -> "06:30"
+  if (!t) return NaN;
+  return Date.parse(`${COFFEE_DATES[day]}T${t}:00${CENTRAL_UTC_OFFSET}`);
+}
+
+// Pickup times still in the future, so slots disappear as the morning passes
+// (e.g. ordering at 6:35 AM Saturday hides 6:30 AM and earlier).
+export function futureCoffeePickupTimes(day: "saturday" | "sunday"): string[] {
+  const now = Date.now();
+  return COFFEE_PICKUP_TIMES[day].filter((label) => {
+    const t = pickupInstant(day, label);
+    return Number.isFinite(t) && t > now;
+  });
+}
+
+// Server-side guard: is this slot valid for the day AND still upcoming?
+export function isCoffeePickupAvailable(day: "saturday" | "sunday", label: string): boolean {
+  return COFFEE_PICKUP_TIMES[day].includes(label) && pickupInstant(day, label) > Date.now();
+}
