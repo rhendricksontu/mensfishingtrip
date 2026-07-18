@@ -127,8 +127,11 @@ export default async function MyTripPage() {
 
   // One car both ways — the Rides tab manages the single "to_trip" ride, so
   // that's the sole source of truth for a member's ride (no from_trip fallback,
-  // which could otherwise surface a stale assignment).
-  const myRide = findRide("to_trip");
+  // which could otherwise surface a stale assignment). A willing driver with no
+  // passengers yet has no ride row, so show them their own (empty) driver card.
+  const myRide =
+    findRide("to_trip") ??
+    (me.willing_to_drive ? { driver: me, passengers: [] as Attendee[] } : null);
 
   // Each card needs BOTH an assignment AND the organizer's go-ahead to show.
   const showCabin = visibility.show_cabins && Boolean(cabin);
