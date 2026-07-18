@@ -59,11 +59,11 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {/* Keep the nav + page live for members on the pages that change most.
-            Admins are skipped so their editors aren't disrupted mid-change.
-            The Volunteers page polls itself (faster) so it isn't listed here. */}
+        {/* Keep every page (and the nav) live while open and connected. The
+            component skips refreshes while a field is focused, so it won't
+            interrupt an organizer mid-edit; form pages are skipped entirely. */}
         <ServiceWorkerUpdater />
-        <LiveRefresh enabled={!isAdmin} activePrefixes={["/me", "/agenda"]} />
+        <LiveRefresh enabled={isAuthed} />
         <CacheWarmer routes={warmRoutes} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>

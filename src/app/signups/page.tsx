@@ -3,7 +3,6 @@ import { getSignups, getSignupLeaders, getAttendees } from "@/lib/data";
 import { getCurrentAttendee } from "@/lib/attendee";
 import { getAdminUser } from "@/lib/auth";
 import SignupBoard from "@/components/SignupBoard";
-import LiveRefresh from "@/components/LiveRefresh";
 
 export const metadata = { title: "Volunteers · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
@@ -32,9 +31,6 @@ export default async function SignupsPage() {
 
   return (
     <div className="space-y-5">
-      {/* Poll faster here so a leader who's removed is bounced to My Trip
-          promptly (the access check above redirects on the next refresh). */}
-      <LiveRefresh enabled={!isAdmin} intervalMs={4000} />
       <div>
         <h1 className="text-2xl font-bold text-brand-800">Volunteer Tracking</h1>
         <p className="mt-1 text-brand-600">
