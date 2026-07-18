@@ -29,11 +29,16 @@ export default function Nav({
     { href: "/agenda", label: "Agenda" },
     ...(canSeeSignups ? [{ href: "/signups", label: "Volunteers" }] : []),
     { href: "/locations", label: "Locations" },
-    ...(isAdmin ? [{ href: "/admin", label: "Organizer" }] : []),
+    // Link straight to a real page (not the /admin redirect) so it opens offline.
+    ...(isAdmin ? [{ href: "/admin/summary", label: "Organizer" }] : []),
   ];
 
-  const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+  const isActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    // Keep "Organizer" highlighted across every admin tab.
+    if (href.startsWith("/admin")) return pathname.startsWith("/admin");
+    return pathname.startsWith(href);
+  };
 
   return (
     <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
