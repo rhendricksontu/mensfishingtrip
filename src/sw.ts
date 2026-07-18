@@ -36,6 +36,9 @@ const serwist = new Serwist({
       matcher: ({ url }) => url.pathname.startsWith("/storage/v1/object/public/"),
       handler: new CacheFirst({
         cacheName: "trip-attachments",
+        // Match by URL only — Next/Supabase set Vary headers that otherwise
+        // make the cached response invisible to lookups.
+        matchOptions: { ignoreVary: true },
         plugins: [
           // Cache opaque (no-cors) responses too, so pre-warmed images store.
           new CacheableResponsePlugin({ statuses: [0, 200] }),
@@ -61,6 +64,9 @@ const serwist = new Serwist({
         APP_ROUTES.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`)),
       handler: new NetworkFirst({
         cacheName: "trip-pages",
+        // Ignore Next's Vary: RSC/Next-Router-* header so the cached document is
+        // actually returned on offline lookup (matched by URL only).
+        matchOptions: { ignoreVary: true },
         plugins: [
           new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 }),
         ],
@@ -75,6 +81,7 @@ const serwist = new Serwist({
         sameOrigin && url.pathname.startsWith("/_next/static/"),
       handler: new CacheFirst({
         cacheName: "next-static",
+        matchOptions: { ignoreVary: true },
         plugins: [
           new CacheableResponsePlugin({ statuses: [0, 200] }),
           new ExpirationPlugin({ maxEntries: 250, maxAgeSeconds: 60 * 60 * 24 * 30 }),
