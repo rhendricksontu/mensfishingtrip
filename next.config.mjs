@@ -3,6 +3,12 @@ import withSerwistInit from "@serwist/next";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    // Don't reuse a stale prefetched copy of a dynamic page on client-side
+    // navigation — always refetch so edits (e.g. a cabin rename) show up
+    // without a manual refresh. Offline is handled by the service worker.
+    staleTimes: { dynamic: 0, static: 180 },
+  },
 };
 
 // Service worker for offline use in the field (weak signal at Broken Bow) and
