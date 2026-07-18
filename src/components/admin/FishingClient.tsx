@@ -387,7 +387,7 @@ function AddGuide({
   const [who, setWho] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [cap, setCap] = useState(4);
+  const [cap, setCap] = useState(2);
   const [when, setWhen] = useState<GuideWhen>("both");
   const [meet, setMeet] = useState(""); // selected meet address
   const [timeAM, setTimeAM] = useState(""); // morning meet time, 24h HH:MM
