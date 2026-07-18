@@ -8,6 +8,10 @@ import { usePathname, useRouter } from "next/navigation";
 // browser), so we re-fetch on an interval and — for an instant feel — whenever
 // the tab regains focus. router.refresh() preserves scroll and input.
 //
+// Network-aware for the field (weak rural signal): we skip ticks when the tab
+// is hidden or the device is offline, refresh promptly when the connection
+// returns, and don't poll on a timer under data-saver (focus/reconnect only).
+//
 // `activePrefixes` limits polling to matching routes (omit to always poll where
 // the component is rendered).
 export default function LiveRefresh({
@@ -28,16 +32,26 @@ export default function LiveRefresh({
 
   useEffect(() => {
     if (!active) return;
-    const refreshIfVisible = () => {
-      if (document.visibilityState === "visible") router.refresh();
+
+    const refresh = () => {
+      if (document.visibilityState === "visible" && navigator.onLine !== false) {
+        router.refresh();
+      }
     };
-    const id = setInterval(refreshIfVisible, intervalMs);
-    document.addEventListener("visibilitychange", refreshIfVisible);
-    window.addEventListener("focus", refreshIfVisible);
+
+    // Don't burn a thin/metered connection on a timer under data-saver — only
+    // refresh when the user returns to the tab or the connection comes back.
+    const conn = (navigator as { connection?: { saveData?: boolean } }).connection;
+    const id = conn?.saveData ? null : setInterval(refresh, intervalMs);
+
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    window.addEventListener("online", refresh);
     return () => {
-      clearInterval(id);
-      document.removeEventListener("visibilitychange", refreshIfVisible);
-      window.removeEventListener("focus", refreshIfVisible);
+      if (id) clearInterval(id);
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+      window.removeEventListener("online", refresh);
     };
   }, [router, intervalMs, active]);
 
