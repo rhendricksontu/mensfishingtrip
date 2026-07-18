@@ -40,6 +40,15 @@ export default function Nav({
     return pathname.startsWith(href);
   };
 
+  // Offline, client-side routing (RSC fetch) fails; force a full-page navigation
+  // so the cached document loads instead.
+  const offlineFullNav = (e: { preventDefault: () => void }, href: string) => {
+    if (typeof navigator !== "undefined" && navigator.onLine === false) {
+      e.preventDefault();
+      window.location.assign(href);
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-brand-700 text-white shadow">
       <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
@@ -62,6 +71,7 @@ export default function Nav({
                   key={l.href}
                   href={l.href}
                   prefetch={false}
+                  onClick={(e) => offlineFullNav(e, l.href)}
                   className={classNames(
                     "whitespace-nowrap rounded-md px-2.5 py-1.5 text-sm font-medium",
                     isActive(l.href)
@@ -114,7 +124,10 @@ export default function Nav({
               key={l.href}
               href={l.href}
               prefetch={false}
-              onClick={() => setOpen(false)}
+              onClick={(e) => {
+                offlineFullNav(e, l.href);
+                setOpen(false);
+              }}
               className={classNames(
                 "block rounded-md px-3 py-2.5 text-base font-medium",
                 isActive(l.href)

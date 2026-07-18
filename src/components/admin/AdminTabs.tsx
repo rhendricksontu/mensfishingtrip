@@ -26,6 +26,14 @@ export default function AdminTabs() {
             key={t.href}
             href={t.href}
             prefetch={false}
+            // Offline, client-side routing (RSC fetch) fails; force a full-page
+            // navigation so the cached document loads instead.
+            onClick={(e) => {
+              if (navigator.onLine === false) {
+                e.preventDefault();
+                window.location.assign(t.href);
+              }
+            }}
             aria-current={active ? "page" : undefined}
             className={classNames(
               "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ring-1",
