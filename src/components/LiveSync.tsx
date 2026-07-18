@@ -1,27 +1,15 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
 
-// Long forms we never yank out from under someone.
-const SKIP_PREFIXES = ["/rsvp", "/login", "/reset"];
-
-function isEditing(): boolean {
-  const el = document.activeElement as HTMLElement | null;
-  if (!el) return false;
-  const tag = el.tagName;
-  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || el.isContentEditable;
-}
-
-// One coordinated loop for freshness + offline readiness:
-//
-//   When the app comes to the foreground (open / tab focus / reconnect):
-//     1. refresh once  → pull the latest data
-//     2. warm the cache → prepare every page/image for offline
-//   Then it settles into normal operation: refresh every 10s (live updates)
-//   and re-warm every 30s (keep the offline copy current).
-//
-// Guards: skip while hidden, offline, or mid-edit; form pages are skipped.
+// Offline cache-warmer. It does NOT auto-refresh the page (that's now the
+// SyncIndicator's tap-to-sync job) — deliberately, so a network drop can't
+// crash a background refresh mid-flight. It just keeps the offline copy of the
+// member/organizer pages current while online:
+//   - re-fetch each page's HTML document (so the offline copy stays fresh)
+//   - cache the JS/CSS it references + images, but only if not already cached
+//     (they're content-hashed, so once is forever)
+// Runs on foreground, on reconnect, and every 2 minutes.
 export default function LiveSync({
   enabled = true,
   routes = [],
@@ -31,33 +19,15 @@ export default function LiveSync({
   routes?: string[];
   assets?: string[];
 }) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const skip = SKIP_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-
   useEffect(() => {
-    if (!enabled || skip) return;
+    const supported =
+      typeof window !== "undefined" && "caches" in window && "serviceWorker" in navigator;
+    if (!enabled || (!routes.length && !assets.length) || !supported) return;
+
     let cancelled = false;
-    // Tracked via events so we stop refreshing the instant the network drops,
-    // not just on the next navigator.onLine read (which can lag/be unreliable).
     let online = navigator.onLine !== false;
 
-    const refresh = () => {
-      if (
-        online &&
-        navigator.onLine !== false &&
-        document.visibilityState === "visible" &&
-        !isEditing()
-      ) {
-        router.refresh();
-      }
-    };
-
-    const hasCaches = typeof caches !== "undefined";
-    // Fetch an immutable asset (chunk/image) only if it isn't already cached —
-    // they're content-hashed, so once is forever. Avoids re-downloading them.
     const cacheIfMissing = async (url: string, opts: RequestInit) => {
-      if (!hasCaches) return;
       try {
         if (!(await caches.match(url))) fetch(url, opts).catch(() => {});
       } catch {
@@ -65,9 +35,6 @@ export default function LiveSync({
       }
     };
 
-    // Warm each page for offline: re-fetch the HTML document (so the offline
-    // copy stays current), and cache the JS/CSS it references + images — but
-    // only the ones not already cached, since those never change.
     const warm = async () => {
       if (!online || navigator.onLine === false) return;
       for (const url of routes) {
@@ -94,28 +61,18 @@ export default function LiveSync({
       }
     };
 
-    // Foreground: latest first, then prepare for offline.
-    const onForeground = () => {
-      refresh();
-      void warm();
-    };
-
-    onForeground(); // initial run
-    // No constant refresh timer — the SyncIndicator flags new data and the user
-    // taps to sync (or it refreshes on foreground/reconnect below). We only keep
-    // a slow timer to re-cache page documents for offline. Immutable assets
-    // aren't re-fetched at all.
+    void warm();
     const warmId = setInterval(() => void warm(), 120000);
 
     const onVisible = () => {
-      if (document.visibilityState === "visible") onForeground();
+      if (document.visibilityState === "visible") void warm();
     };
     const onOnline = () => {
       online = true;
-      onForeground();
+      void warm();
     };
     const onOffline = () => {
-      online = false; // stop refreshing immediately
+      online = false;
     };
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onVisible);
@@ -130,7 +87,7 @@ export default function LiveSync({
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
     };
-  }, [enabled, skip, routes, assets, router]);
+  }, [enabled, routes, assets]);
 
   return null;
 }
