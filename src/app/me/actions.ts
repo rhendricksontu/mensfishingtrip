@@ -145,10 +145,13 @@ export async function deleteMyAccount(): Promise<void> {
   const me = await getCurrentAttendee();
   if (me) {
     const db = createAdminClient();
-    if (me.user_id) {
-      await db.auth.admin.deleteUser(me.user_id).catch(() => {});
-    }
+    // Remove the RSVP row first, then the linked login, so the account is gone
+    // entirely and the phone can be reused.
     await db.from("attendees").delete().eq("id", me.id);
+    if (me.user_id) {
+      const { error } = await db.auth.admin.deleteUser(me.user_id);
+      if (error) console.error("deleteMyAccount: could not delete auth user:", error.message);
+    }
   }
   const supabase = createSupabaseServerClient();
   await supabase.auth.signOut();

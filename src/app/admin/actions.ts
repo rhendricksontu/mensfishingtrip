@@ -91,13 +91,16 @@ export async function updateAttendee(id: string, patch: AttendeePatch) {
 export async function deleteAttendee(id: string) {
   await requireAdmin();
   const db = createAdminClient();
-  // Remove their login account too, if any.
   const { data } = await db.from("attendees").select("user_id").eq("id", id).maybeSingle();
-  if (data?.user_id) {
-    await db.auth.admin.deleteUser(data.user_id).catch(() => {});
-  }
+  // Remove the RSVP row first, then the linked login, so the person is gone
+  // entirely and their phone can be reused.
   await db.from("attendees").delete().eq("id", id);
+  if (data?.user_id) {
+    const { error } = await db.auth.admin.deleteUser(data.user_id);
+    if (error) console.error("deleteAttendee: could not delete auth user:", error.message);
+  }
   revalidatePath("/admin/roster");
+  revalidatePath("/admin/summary");
 }
 
 // Promote/demote a member to/from organizer (admin).
