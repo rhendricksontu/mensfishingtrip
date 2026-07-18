@@ -6,17 +6,21 @@ import { useEffect } from "react";
 // failed router.refresh() that re-renders the layout when the network drops).
 // When offline, reload once (loop-guarded) so the cached document loads instead
 // of a raw "application error". Must render its own <html>/<body>.
-export default function GlobalError({ reset }: { error: Error; reset: () => void }) {
+export default function GlobalError() {
   useEffect(() => {
-    // A failed background refresh as the network drops can crash the render
-    // before navigator.onLine flips. Reload (serves the cached document) rather
-    // than trusting navigator.onLine; loop-guarded so a real error can't spin.
+    // Reload when the connection returns (serves the cached/fresh document).
+    const reload = () => window.location.reload();
+    window.addEventListener("online", reload);
+
+    // If we're actually online (the crash wasn't a dropped network), reload now
+    // — loop-guarded so a real error can't spin.
     const key = "offlineReloadAt";
     const last = Number(sessionStorage.getItem(key) || "0");
-    if (Date.now() - last > 5000) {
+    if (navigator.onLine !== false && Date.now() - last > 5000) {
       sessionStorage.setItem(key, String(Date.now()));
       window.location.reload();
     }
+    return () => window.removeEventListener("online", reload);
   }, []);
 
   return (
@@ -34,22 +38,10 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
         }}
       >
         <div>
-          <p style={{ fontWeight: 600 }}>Reconnecting…</p>
+          <p style={{ fontWeight: 600 }}>You&apos;re Offline</p>
           <p style={{ fontSize: "0.875rem", color: "#5f7185", marginTop: "0.25rem" }}>
-            One moment — if this stays, tap below.
+            Once you&apos;re reconnected, the page will reload.
           </p>
-          <button
-            onClick={() => reset()}
-            style={{
-              marginTop: "0.75rem",
-              padding: "0.5rem 1rem",
-              borderRadius: "0.5rem",
-              border: "1px solid #c4ccd6",
-              background: "white",
-            }}
-          >
-            Try Again
-          </button>
         </div>
       </body>
     </html>
