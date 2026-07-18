@@ -215,7 +215,11 @@ export default async function MyTripPage() {
               <VolunteerView
                 key={`${v.role}:${v.trip_day}`}
                 roleLabel={SIGNUP_ROLE_LABELS[v.role]}
-                dayLabel={v.trip_day.charAt(0).toUpperCase() + v.trip_day.slice(1)}
+                dayLabel={
+                  v.trip_day === "both"
+                    ? "Saturday & Sunday"
+                    : v.trip_day.charAt(0).toUpperCase() + v.trip_day.slice(1)
+                }
                 leader={v.leader}
                 volunteers={v.volunteers}
                 meId={me.id}

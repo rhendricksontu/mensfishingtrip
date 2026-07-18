@@ -23,9 +23,12 @@ const DAYS = [
   { key: "sunday", label: "Sunday" },
 ];
 
-// Guide lunches are Saturday-only; the others run both days.
-function daysForRole(role: SignupRole) {
-  return role === "guide_lunch" ? DAYS.filter((d) => d.key === "saturday") : DAYS;
+// The card instances for a role. Guide lunches are Saturday-only; coffee makers
+// are one combined crew (same people both mornings); breakfast runs each day.
+function instancesForRole(role: SignupRole): { key: string; label: string }[] {
+  if (role === "guide_lunch") return [{ key: "saturday", label: "Saturday" }];
+  if (role === "coffee_maker") return [{ key: "both", label: "Saturday & Sunday" }];
+  return DAYS;
 }
 
 export default function AdminVolunteersClient({
@@ -57,7 +60,7 @@ export default function AdminVolunteersClient({
         <section key={role.key}>
           <h2 className="mb-3 text-lg font-bold text-brand-700">{role.label}s</h2>
           <div className="grid gap-3 sm:grid-cols-2">
-            {daysForRole(role.key).map((d) => {
+            {instancesForRole(role.key).map((d) => {
               const key = `${role.key}:${d.key}`;
               const leaderId = leaderByKey.get(key) ?? null;
               const leader = leaderId ? memberById.get(leaderId) : null;
