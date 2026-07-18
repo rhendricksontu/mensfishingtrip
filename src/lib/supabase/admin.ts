@@ -16,5 +16,11 @@ export function createAdminClient() {
 
   return createClient(url, secretKey, {
     auth: { persistSession: false, autoRefreshToken: false },
+    // Supabase-js uses fetch, which Next.js otherwise caches in its Data Cache —
+    // serving stale rows even on force-dynamic pages. Force every read to hit
+    // the database so app data is always current.
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
   });
 }
