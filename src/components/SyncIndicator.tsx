@@ -22,7 +22,7 @@ export default function SyncIndicator() {
     };
   }, []);
 
-  const label = !online ? "Offline" : pending ? "Refreshing…" : "Synced • Tap to Refresh";
+  const label = !online ? "Offline" : pending ? "Refreshing…" : "Online";
 
   return (
     <div className="flex justify-center pt-2">
