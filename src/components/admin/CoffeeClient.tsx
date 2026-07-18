@@ -91,15 +91,13 @@ function CoffeeRow({ row }: { row: Row }) {
     >
       <div className="min-w-0 space-y-1">
         <p className="font-semibold text-brand-700">{order.pickup_time}</p>
-        <p>
-          <span className="inline-flex items-center rounded-full bg-[#6f4e37] px-3 py-0.5 font-medium text-cream">
-            {order.drink}
-          </span>
-        </p>
         <p className="truncate text-sm text-brand-800">{name}</p>
         {phone && <PhoneLink phone={phone} className="block text-sm text-brand-400 underline" />}
       </div>
       <div className="flex shrink-0 flex-col items-end gap-1.5">
+        <span className="inline-flex items-center rounded-full bg-[#6f4e37] px-3 py-0.5 font-medium text-cream">
+          {order.drink}
+        </span>
         {ready ? (
           <button
             onClick={() => toggle(false)}
