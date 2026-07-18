@@ -3,11 +3,14 @@
 import { useEffect } from "react";
 
 // Proactively caches pages (and agenda image attachments) while online so the
-// app works offline even if the user hasn't opened those tabs/images yet. Runs
-// once per session (and again when a connection returns), quietly in the
-// background. We fetch the full HTML document (not router.prefetch, which would
-// pollute Next's client Router Cache with stale copies); the service worker
-// caches it, and offline client-side navigation falls back to that document.
+// app works offline even if the user hasn't opened those tabs/images yet.
+//
+// Reliability: rather than warming once and hoping every fetch lands, we check
+// what's actually in the cache and (re)fetch only what's missing — on load,
+// on reconnect, and periodically while online. So a fetch that failed on weak
+// signal simply gets retried next cycle until everything is stored. We fetch
+// the full HTML document (not router.prefetch, which pollutes Next's client
+// Router Cache); the service worker caches it for offline navigation.
 export default function CacheWarmer({
   routes,
   assets = [],
@@ -16,31 +19,41 @@ export default function CacheWarmer({
   assets?: string[];
 }) {
   useEffect(() => {
-    if ((!routes.length && !assets.length) || !("serviceWorker" in navigator)) return;
+    const hasCaches =
+      typeof window !== "undefined" && "caches" in window && "serviceWorker" in navigator;
+    if ((!routes.length && !assets.length) || !hasCaches) return;
 
-    const warm = () => {
+    let cancelled = false;
+
+    // Fetch only targets not already cached, so repeat runs are cheap and any
+    // previously-failed fetch is retried until it succeeds.
+    const warm = async () => {
       if (!navigator.onLine) return;
-      if (sessionStorage.getItem("cacheWarmed") === "1") return;
-      sessionStorage.setItem("cacheWarmed", "1");
-      for (const r of routes) {
-        fetch(r, { credentials: "include" }).catch(() => {});
-      }
-      // Cross-origin Storage images: no-cors so the request mirrors an <img>
-      // load, which the service worker's CacheFirst rule stores for offline.
-      for (const a of assets) {
-        fetch(a, { mode: "no-cors" }).catch(() => {});
+      const targets: { url: string; opts: RequestInit }[] = [
+        ...routes.map((url) => ({ url, opts: { credentials: "include" as const } })),
+        // Cross-origin Storage images: no-cors mirrors an <img> load so the
+        // service worker's CacheFirst rule stores them for offline.
+        ...assets.map((url) => ({ url, opts: { mode: "no-cors" as const } })),
+      ];
+      for (const { url, opts } of targets) {
+        if (cancelled) return;
+        try {
+          const hit = await caches.match(url);
+          if (!hit) fetch(url, opts).catch(() => {});
+        } catch {
+          /* ignore */
+        }
       }
     };
 
-    // Let the current page settle first, then warm; also warm on reconnect.
-    const t = setTimeout(warm, 3000);
-    const onOnline = () => {
-      sessionStorage.removeItem("cacheWarmed");
-      warm();
-    };
+    const t = setTimeout(warm, 2000); // let the current page settle first
+    const id = setInterval(warm, 30000); // keep catching up while online
+    const onOnline = () => warm();
     window.addEventListener("online", onOnline);
     return () => {
+      cancelled = true;
       clearTimeout(t);
+      clearInterval(id);
       window.removeEventListener("online", onOnline);
     };
   }, [routes, assets]);
