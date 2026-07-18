@@ -54,13 +54,30 @@ export default function LiveSync({
     };
 
     const hasCaches = typeof caches !== "undefined";
-    // Re-fetch page documents (keeps offline copy fresh) and any un-cached
-    // images. Documents are what the app loads for offline navigation.
+    // Warm each page for offline: cache the HTML document AND the JS/CSS chunks
+    // it references (parsed from the HTML) — otherwise a page you never opened
+    // online is missing its chunks and throws on load. Also cache un-cached
+    // images. Re-runs keep the document fresh; cached chunks are served
+    // instantly so re-fetching them is cheap.
     const warm = async () => {
       if (!online || navigator.onLine === false) return;
       for (const url of routes) {
         if (cancelled) return;
-        fetch(url, { credentials: "include" }).catch(() => {});
+        try {
+          const res = await fetch(url, { credentials: "include" });
+          const type = res.headers.get("content-type") || "";
+          if (!res.ok || !type.includes("text/html")) continue;
+          const html = await res.text();
+          const seen = new Set<string>();
+          for (const m of html.matchAll(/["'](\/_next\/static\/[^"']+?\.(?:js|css))["']/g)) {
+            if (seen.has(m[1])) continue;
+            seen.add(m[1]);
+            if (cancelled) return;
+            fetch(m[1]).catch(() => {});
+          }
+        } catch {
+          /* ignore */
+        }
       }
       if (!hasCaches) return;
       for (const url of assets) {
