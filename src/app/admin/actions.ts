@@ -6,6 +6,23 @@ import { requireAdmin } from "@/lib/require-admin";
 import { sanitizeNotes } from "@/lib/sanitize";
 import type { FishingSession, RideDirection, VisibilityKey } from "@/lib/types";
 
+// ---- Coffee queue ----------------------------------------------------------
+
+// Organizer marks a coffee order ready for pickup (or back to pending). The
+// attendee then sees a "ready" banner on My Trip and confirms pickup.
+export async function setCoffeeReady(orderId: string, ready: boolean) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const { error } = await db
+    .from("coffee_orders")
+    .update({ status: ready ? "ready" : "pending", updated_at: new Date().toISOString() })
+    .eq("id", orderId);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/coffee");
+  revalidatePath("/me");
+  return { ok: true };
+}
+
 // ---- Attendee-facing card visibility --------------------------------------
 
 // Toggle whether attendees see their cabin / fishing / ride card on /me.

@@ -1,4 +1,6 @@
 export type RidePreference = "driving" | "riding" | "either";
+export type CoffeeDay = "saturday" | "sunday";
+export type CoffeeStatus = "pending" | "ready" | "picked_up";
 export type FishingSession = "saturday_morning" | "saturday_afternoon";
 export type SignupRole = "breakfast_cook" | "coffee_maker" | "guide_lunch";
 export type RideDirection = "to_trip" | "from_trip";
@@ -115,6 +117,17 @@ export interface AgendaItem {
   notes: string | null;
   // Stable key tying this item to a known event a cabin can host (or null).
   event_key: string | null;
+}
+
+export interface CoffeeOrder {
+  id: string;
+  attendee_id: string;
+  day: CoffeeDay;
+  drink: string;
+  pickup_time: string; // display label, e.g. "6:15 AM"
+  status: CoffeeStatus;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface AgendaFile {

@@ -6,6 +6,7 @@ import type {
   AgendaFile,
   Attendee,
   Cabin,
+  CoffeeOrder,
   FishingGroup,
   LocationItem,
   Ride,
@@ -225,6 +226,31 @@ export function getRides(): Promise<Ride[]> {
       .select("*")
       .order("created_at", { ascending: true });
     return (data as Ride[]) ?? [];
+  }, []);
+}
+
+// Live coffee orders (not yet picked up) for the organizer queue.
+export function getCoffeeOrders(): Promise<CoffeeOrder[]> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db
+      .from("coffee_orders")
+      .select("*")
+      .neq("status", "picked_up");
+    return (data as CoffeeOrder[]) ?? [];
+  }, []);
+}
+
+// One attendee's live coffee orders (for the Order Coffee button + ready banner).
+export function getCoffeeOrdersForAttendee(attendeeId: string): Promise<CoffeeOrder[]> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db
+      .from("coffee_orders")
+      .select("*")
+      .eq("attendee_id", attendeeId)
+      .neq("status", "picked_up");
+    return (data as CoffeeOrder[]) ?? [];
   }, []);
 }
 

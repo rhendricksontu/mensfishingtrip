@@ -7,6 +7,7 @@ import { classNames } from "@/lib/utils";
 const TABS = [
   { href: "/admin/summary", label: "Summary" },
   { href: "/admin/ar", label: "AR" },
+  { href: "/admin/coffee", label: "Coffee" },
   { href: "/admin/rides", label: "Rides" },
   { href: "/admin/cabins", label: "Cabins" },
   { href: "/admin/fishing", label: "Fishing" },

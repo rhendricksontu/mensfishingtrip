@@ -8,10 +8,12 @@ import {
   getSignups,
   getSignupLeaders,
   getVisibility,
+  getCoffeeOrdersForAttendee,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
+import CoffeeReadyBanner from "@/components/CoffeeReadyBanner";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
 import type {
@@ -34,7 +36,7 @@ export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
-  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility] =
+  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility, coffee] =
     await Promise.all([
       getAttendees(),
       getCabins(),
@@ -44,7 +46,11 @@ export default async function MyTripPage() {
       getSignups(),
       getSignupLeaders(),
       getVisibility(),
+      getCoffeeOrdersForAttendee(me.id),
     ]);
+
+  // Coffee orders the organizer has marked ready for pickup.
+  const readyCoffee = coffee.filter((o) => o.status === "ready");
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
 
@@ -146,6 +152,9 @@ export default async function MyTripPage() {
         <h1 className="text-2xl font-bold text-brand-800">My Fishing Trip</h1>
         <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
       </div>
+
+      {/* Coffee ready for pickup — sits right below the welcome. */}
+      <CoffeeReadyBanner orders={readyCoffee} />
 
       {/* Payment — the paid state is shown as a pill on the Your RSVP card. */}
       {!me.paid && (

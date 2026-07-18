@@ -66,3 +66,40 @@ export const RIDE_PREF_LABELS: Record<string, string> = {
   riding: "Passenger",
   either: "Either", // legacy fallback for older RSVPs
 };
+
+// ---- Coffee ordering -------------------------------------------------------
+
+export const COFFEE_DRINKS = [
+  "Americano",
+  "Espresso - Single Shot",
+  "Espresso - Double Shot",
+  "Iced Coffee",
+  "Latte",
+  "Mocha",
+  "Sunrise",
+] as const;
+
+// Build "5:45 AM"-style labels in 15-minute steps between two minute-of-day
+// bounds (inclusive).
+function pickupTimes(startMin: number, endMin: number): string[] {
+  const out: string[] = [];
+  for (let m = startMin; m <= endMin; m += 15) {
+    let h = Math.floor(m / 60);
+    const min = m % 60;
+    const mer = h >= 12 ? "PM" : "AM";
+    h = h % 12 || 12;
+    out.push(`${h}:${String(min).padStart(2, "0")} ${mer}`);
+  }
+  return out;
+}
+
+// Pickup windows (Central), 15-minute increments.
+export const COFFEE_PICKUP_TIMES: Record<"saturday" | "sunday", string[]> = {
+  saturday: pickupTimes(5 * 60 + 45, 9 * 60), // 5:45 AM – 9:00 AM
+  sunday: pickupTimes(5 * 60 + 45, 7 * 60), // 5:45 AM – 7:00 AM
+};
+
+export const COFFEE_DAYS = [
+  { day: "saturday", label: "Saturday" },
+  { day: "sunday", label: "Sunday" },
+] as const;

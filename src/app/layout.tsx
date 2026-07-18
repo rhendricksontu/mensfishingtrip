@@ -50,6 +50,7 @@ export default async function RootLayout({
     warmRoutes.push(
       "/admin/summary",
       "/admin/ar",
+      "/admin/coffee",
       "/admin/rides",
       "/admin/cabins",
       "/admin/fishing",

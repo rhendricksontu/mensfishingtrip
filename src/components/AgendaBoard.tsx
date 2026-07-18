@@ -13,7 +13,14 @@ import {
   uploadAgendaFile,
   deleteAgendaFile,
 } from "@/app/admin/actions";
-import type { AgendaItem, AgendaFile } from "@/lib/types";
+import CoffeeOrderButton from "@/components/CoffeeOrderButton";
+import type { AgendaItem, AgendaFile, CoffeeDay, CoffeeOrder } from "@/lib/types";
+
+// Coffee ordering lives on the Saturday/Sunday "Coffee & Breakfast" cards.
+function coffeeDayFor(item: AgendaItem): CoffeeDay | null {
+  if (!/coffee/i.test(item.title)) return null;
+  return item.trip_day === "saturday" || item.trip_day === "sunday" ? item.trip_day : null;
+}
 
 function EditIcon() {
   return (
@@ -67,12 +74,17 @@ export default function AgendaBoard({
   items,
   files,
   isAdmin,
+  canOrderCoffee = false,
+  myCoffee = [],
 }: {
   items: AgendaItem[];
   files: AgendaFile[];
   isAdmin: boolean;
+  canOrderCoffee?: boolean;
+  myCoffee?: CoffeeOrder[];
 }) {
   const filesFor = (id: string) => files.filter((f) => f.agenda_item_id === id);
+  const coffeeFor = (day: CoffeeDay) => myCoffee.find((o) => o.day === day) ?? null;
   const byDay = TRIP_DAYS.map((day) => ({
     day,
     items: items.filter((i) => i.trip_day === day),
@@ -97,14 +109,19 @@ export default function AgendaBoard({
             <section key={day}>
               <h2 className="mb-3 text-lg font-bold text-brand-700">{DAY_LABELS[day]}</h2>
               <ol className="space-y-3">
-                {dayItems.map((item) => (
-                  <AgendaRow
-                    key={item.id}
-                    item={item}
-                    files={filesFor(item.id)}
-                    isAdmin={isAdmin}
-                  />
-                ))}
+                {dayItems.map((item) => {
+                  const coffeeDay = coffeeDayFor(item);
+                  return (
+                    <AgendaRow
+                      key={item.id}
+                      item={item}
+                      files={filesFor(item.id)}
+                      isAdmin={isAdmin}
+                      coffeeDay={canOrderCoffee ? coffeeDay : null}
+                      coffeeOrder={coffeeDay ? coffeeFor(coffeeDay) : null}
+                    />
+                  );
+                })}
               </ol>
               {isAdmin && <AddAgendaItem day={day} />}
             </section>
@@ -118,10 +135,14 @@ function AgendaRow({
   item,
   files,
   isAdmin,
+  coffeeDay = null,
+  coffeeOrder = null,
 }: {
   item: AgendaItem;
   files: AgendaFile[];
   isAdmin: boolean;
+  coffeeDay?: CoffeeDay | null;
+  coffeeOrder?: CoffeeOrder | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -324,6 +345,7 @@ function AgendaRow({
               <p className="mt-1 text-xs font-medium text-brand-500">{label}</p>
             );
           })()}
+          {coffeeDay && <CoffeeOrderButton day={coffeeDay} existing={coffeeOrder} />}
           {(item.notes || files.length > 0) && (
             <div className="mt-2 flex flex-wrap gap-2">
               {item.notes && (
