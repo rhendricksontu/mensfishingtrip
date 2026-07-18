@@ -38,7 +38,7 @@ export default function AdminTabs() {
   }, []);
 
   return (
-    <nav ref={navRef} className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1">
+    <nav ref={navRef} className="-mx-4 flex gap-1 overflow-x-auto px-4 py-1.5">
       {TABS.map((t) => {
         const active = pathname === t.href;
         return (
