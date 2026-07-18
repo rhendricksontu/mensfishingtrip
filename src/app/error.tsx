@@ -8,7 +8,12 @@ import { useEffect } from "react";
 export default function Error({ reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
     if (typeof navigator !== "undefined" && navigator.onLine === false) {
-      window.location.reload();
+      const key = "offlineReloadAt";
+      const last = Number(sessionStorage.getItem(key) || "0");
+      if (Date.now() - last > 4000) {
+        sessionStorage.setItem(key, String(Date.now()));
+        window.location.reload();
+      }
     }
   }, []);
 

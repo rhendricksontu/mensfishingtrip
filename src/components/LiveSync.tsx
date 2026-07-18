@@ -38,11 +38,15 @@ export default function LiveSync({
   useEffect(() => {
     if (!enabled || skip) return;
     let cancelled = false;
+    // Tracked via events so we stop refreshing the instant the network drops,
+    // not just on the next navigator.onLine read (which can lag/be unreliable).
+    let online = navigator.onLine !== false;
 
     const refresh = () => {
       if (
-        document.visibilityState === "visible" &&
+        online &&
         navigator.onLine !== false &&
+        document.visibilityState === "visible" &&
         !isEditing()
       ) {
         router.refresh();
@@ -53,7 +57,7 @@ export default function LiveSync({
     // Re-fetch page documents (keeps offline copy fresh) and any un-cached
     // images. Documents are what the app loads for offline navigation.
     const warm = async () => {
-      if (navigator.onLine === false) return;
+      if (!online || navigator.onLine === false) return;
       for (const url of routes) {
         if (cancelled) return;
         fetch(url, { credentials: "include" }).catch(() => {});
@@ -83,9 +87,17 @@ export default function LiveSync({
     const onVisible = () => {
       if (document.visibilityState === "visible") onForeground();
     };
+    const onOnline = () => {
+      online = true;
+      onForeground();
+    };
+    const onOffline = () => {
+      online = false; // stop refreshing immediately
+    };
     document.addEventListener("visibilitychange", onVisible);
     window.addEventListener("focus", onVisible);
-    window.addEventListener("online", onForeground);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
 
     return () => {
       cancelled = true;
@@ -93,7 +105,8 @@ export default function LiveSync({
       clearInterval(warmId);
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
-      window.removeEventListener("online", onForeground);
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
     };
   }, [enabled, skip, routes, assets, router]);
 
