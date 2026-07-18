@@ -110,16 +110,9 @@ export default function CabinsClient({
       label,
       people: Array.from(people.values()).sort((x, y) => x.name.localeCompare(y.name)),
     }))
-    // Order by role + day, then put the leader group before its volunteers.
-    .sort((a, b) => {
-      const baseA = a.label.replace(/ \(Leader\)$/, "");
-      const baseB = b.label.replace(/ \(Leader\)$/, "");
-      const byBase = baseA.localeCompare(baseB);
-      if (byBase !== 0) return byBase;
-      const leaderA = a.label.endsWith("(Leader)") ? 0 : 1;
-      const leaderB = b.label.endsWith("(Leader)") ? 0 : 1;
-      return leaderA - leaderB;
-    });
+    // Lexicographic by label: each role's Leader group ("… Leader") sorts right
+    // before its crew ("…s") because a space sorts before "s".
+    .sort((a, b) => (a.label < b.label ? -1 : a.label > b.label ? 1 : 0));
 
   return (
     <div className="space-y-4">
