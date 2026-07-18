@@ -14,7 +14,6 @@ import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
-import LiveRefresh from "@/components/LiveRefresh";
 import type {
   Attendee,
   Cabin,
@@ -139,7 +138,6 @@ export default async function MyTripPage() {
 
   return (
     <div className="space-y-5">
-      <LiveRefresh />
       <div>
         <h1 className="text-2xl font-bold text-brand-800">My Fishing Trip</h1>
         <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>

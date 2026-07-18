@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import LiveRefresh from "@/components/LiveRefresh";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
 import { isSignupLeader } from "@/lib/data";
@@ -37,6 +38,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
+        {/* Keep the nav + page live for members (e.g. volunteer changes);
+            admins are skipped so their editors aren't disrupted mid-change. */}
+        <LiveRefresh enabled={!isAdmin} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
       </body>

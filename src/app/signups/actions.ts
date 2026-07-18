@@ -77,6 +77,7 @@ export async function removeSignup(id: string): Promise<{ ok: boolean; error?: s
     .maybeSingle();
   if (!row) {
     revalidatePath("/signups");
+    revalidatePath("/me");
     return { ok: true }; // already gone
   }
 
