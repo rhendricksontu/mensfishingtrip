@@ -34,8 +34,12 @@ export default function SyncIndicator() {
         className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium text-brand-400 hover:text-brand-700 disabled:opacity-60"
       >
         <span
-          className={`h-1.5 w-1.5 rounded-full ${
-            !online ? "bg-brand-300" : pending ? "bg-amber-400" : "bg-olive-500"
+          className={`h-2 w-2 rounded-full ${
+            !online
+              ? "bg-red-500 shadow-[0_0_5px_1px_#ef4444]"
+              : pending
+                ? "bg-amber-400 shadow-[0_0_5px_1px_#fbbf24]"
+                : "bg-green-500 shadow-[0_0_5px_1px_#22c55e]"
           }`}
         />
         {label}
