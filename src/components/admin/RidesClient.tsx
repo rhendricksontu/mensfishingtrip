@@ -157,7 +157,7 @@ export default function RidesClient({
                       <span className="font-medium text-brand-800">{d.name}</span>
                       <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
                       <span className="ml-2 text-xs text-brand-500">
-                        {d.seat_capacity} {d.seat_capacity === 1 ? "seat" : "seats"}
+                        ({d.seat_capacity})
                       </span>
                     </span>
                     <button
