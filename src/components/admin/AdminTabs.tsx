@@ -22,21 +22,19 @@ const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect :
 export default function AdminTabs() {
   const pathname = usePathname();
   const navRef = useRef<HTMLElement>(null);
-  const activeRef = useRef<HTMLAnchorElement>(null);
 
-  // Full-page nav remounts this with the scroller at the far left. Center the
-  // active tab by setting scrollLeft directly, before paint — only the tab bar
-  // moves (no page jump) and there's no animated bounce. Clamped so the ends
-  // (Summary / Activities) sit flush instead of over-scrolling.
+  // Full-page tab nav resets the scroller to the left. Instead of correcting to
+  // the active tab, just keep the bar wherever the user left it: restore the
+  // saved position before paint (no bounce) and save it as they scroll.
   useBrowserLayoutEffect(() => {
     const nav = navRef.current;
-    const tab = activeRef.current;
-    if (!nav || !tab) return;
-    const navRect = nav.getBoundingClientRect();
-    const tabRect = tab.getBoundingClientRect();
-    const target =
-      nav.scrollLeft + (tabRect.left - navRect.left) - (nav.clientWidth - tabRect.width) / 2;
-    nav.scrollLeft = Math.max(0, target);
+    if (!nav) return;
+    const KEY = "adminTabsScroll";
+    const saved = sessionStorage.getItem(KEY);
+    if (saved !== null) nav.scrollLeft = Number(saved) || 0;
+    const onScroll = () => sessionStorage.setItem(KEY, String(nav.scrollLeft));
+    nav.addEventListener("scroll", onScroll, { passive: true });
+    return () => nav.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
@@ -49,7 +47,6 @@ export default function AdminTabs() {
           <a
             key={t.href}
             href={t.href}
-            ref={active ? activeRef : undefined}
             aria-current={active ? "page" : undefined}
             className={classNames(
               "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ring-1",
