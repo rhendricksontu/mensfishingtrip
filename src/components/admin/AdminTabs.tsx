@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { classNames } from "@/lib/utils";
 
@@ -15,6 +16,13 @@ const TABS = [
 
 export default function AdminTabs() {
   const pathname = usePathname();
+  const activeRef = useRef<HTMLAnchorElement>(null);
+
+  // Full-page nav remounts this and resets the scroll to the left; bring the
+  // active tab back into view so it stays put (e.g. Activities on the right).
+  useEffect(() => {
+    activeRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  }, []);
 
   return (
     <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1">
@@ -26,6 +34,7 @@ export default function AdminTabs() {
           <a
             key={t.href}
             href={t.href}
+            ref={active ? activeRef : undefined}
             aria-current={active ? "page" : undefined}
             className={classNames(
               "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium ring-1",

@@ -102,7 +102,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
             }}
           >
             <button type="submit" className="text-sm text-red-600 underline hover:text-red-700">
-              Can&apos;t make the trip? Delete your account.
+              Can&apos;t make the trip? Delete your RSVP.
             </button>
           </form>
         </div>
