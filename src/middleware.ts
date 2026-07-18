@@ -41,9 +41,16 @@ export async function middleware(request: NextRequest) {
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
-    return NextResponse.redirect(url);
+    const redirectRes = NextResponse.redirect(url);
+    redirectRes.headers.set("Cache-Control", "no-store, must-revalidate");
+    return redirectRes;
   }
 
+  // Dynamic, per-user pages must not be cached by the browser — especially an
+  // iOS "Add to Home Screen" webview, which otherwise serves a stale app shell
+  // indefinitely. Static assets (JS/CSS/images) are excluded by the matcher and
+  // keep their immutable long cache.
+  response.headers.set("Cache-Control", "no-store, must-revalidate");
   return response;
 }
 
