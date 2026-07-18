@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { classNames } from "@/lib/utils";
 
@@ -15,18 +15,32 @@ const TABS = [
   { href: "/admin/activities", label: "Activities" },
 ];
 
+// Runs before paint on the client (so the scroll is set with no visible bounce);
+// falls back to useEffect on the server to avoid the SSR warning.
+const useBrowserLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect;
+
 export default function AdminTabs() {
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
   const activeRef = useRef<HTMLAnchorElement>(null);
 
-  // Full-page nav remounts this and resets the scroll to the left; bring the
-  // active tab back into view so it stays put (e.g. Activities on the right).
-  useEffect(() => {
-    activeRef.current?.scrollIntoView({ block: "nearest", inline: "center" });
+  // Full-page nav remounts this with the scroller at the far left. Center the
+  // active tab by setting scrollLeft directly, before paint — only the tab bar
+  // moves (no page jump) and there's no animated bounce. Clamped so the ends
+  // (Summary / Activities) sit flush instead of over-scrolling.
+  useBrowserLayoutEffect(() => {
+    const nav = navRef.current;
+    const tab = activeRef.current;
+    if (!nav || !tab) return;
+    const navRect = nav.getBoundingClientRect();
+    const tabRect = tab.getBoundingClientRect();
+    const target =
+      nav.scrollLeft + (tabRect.left - navRect.left) - (nav.clientWidth - tabRect.width) / 2;
+    nav.scrollLeft = Math.max(0, target);
   }, []);
 
   return (
-    <nav className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1">
+    <nav ref={navRef} className="-mx-4 flex gap-1 overflow-x-auto px-4 pb-1">
       {TABS.map((t) => {
         const active = pathname === t.href;
         return (
