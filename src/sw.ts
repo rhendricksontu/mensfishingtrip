@@ -44,19 +44,22 @@ const serwist = new Serwist({
         ],
       }),
     },
-    // The core member pages, matched by path for any request (document or RSC)
-    // so cache-warming (a plain fetch) populates them. NetworkFirst = fresh
-    // online, last-warmed copy offline. Must come before defaultCache, whose
-    // page rule only matches actual navigations.
+    // The core member/organizer pages, kept offline as full DOCUMENTS (the
+    // cache-warmer's plain fetch + real navigations). We deliberately exclude
+    // RSC requests (React payloads from client-side nav and LiveRefresh's
+    // router.refresh) — those churn constantly and would evict the documents
+    // we need for offline. They fall through to defaultCache's own RSC cache.
+    // NetworkFirst = fresh online, last-warmed copy offline.
     {
       matcher: ({ request, url, sameOrigin }) =>
         request.method === "GET" &&
         sameOrigin &&
+        request.headers.get("RSC") !== "1" &&
         APP_ROUTES.some((p) => url.pathname === p || url.pathname.startsWith(`${p}/`)),
       handler: new NetworkFirst({
         cacheName: "trip-pages",
         plugins: [
-          new ExpirationPlugin({ maxEntries: 64, maxAgeSeconds: 60 * 60 * 24 * 7 }),
+          new ExpirationPlugin({ maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 }),
         ],
       }),
     },
