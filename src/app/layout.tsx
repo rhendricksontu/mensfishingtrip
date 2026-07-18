@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "@/components/Nav";
 import SyncIndicator from "@/components/SyncIndicator";
-import LiveRefresh from "@/components/LiveRefresh";
-import CacheWarmer from "@/components/CacheWarmer";
+import LiveSync from "@/components/LiveSync";
 import ServiceWorkerUpdater from "@/components/ServiceWorkerUpdater";
 import { getSessionUser, getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
@@ -66,12 +65,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {/* Keep every page (and the nav) live while open and connected. The
-            component skips refreshes while a field is focused, so it won't
-            interrupt an organizer mid-edit; form pages are skipped entirely. */}
+        {/* On foreground: refresh once, then warm the offline cache; then live
+            updates every 10s + re-warm every 30s. Skips edits/forms/offline. */}
         <ServiceWorkerUpdater />
-        <LiveRefresh enabled={isAuthed} />
-        <CacheWarmer routes={warmRoutes} assets={warmAssets} />
+        <LiveSync enabled={isAuthed} routes={warmRoutes} assets={warmAssets} />
         <Nav isAuthed={isAuthed} isAdmin={isAdmin} canSeeSignups={canSeeSignups} />
         {isAuthed && <SyncIndicator />}
         <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
