@@ -121,16 +121,17 @@ export default function CoffeeOrderButton({
           <button
             type="button"
             disabled={cancelling}
-            onClick={() =>
+            onClick={() => {
+              if (!confirm("Remove your coffee order for this day?")) return;
               startCancel(async () => {
                 await cancelCoffeeOrder(day);
                 setOpen(false);
                 router.refresh();
-              })
-            }
+              });
+            }}
             className="ml-auto text-sm text-red-600 underline hover:text-red-700"
           >
-            Remove order
+            Remove Order
           </button>
         )}
       </div>
