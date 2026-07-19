@@ -16,7 +16,7 @@ export default function CoffeeReadyBanner({ orders }: { orders: CoffeeOrder[] })
   return (
     <div className="space-y-3">
       {orders.map((o) => (
-        <div key={o.id} className="card border-l-4 border-olive-500 bg-olive-50">
+        <div key={o.id} className="card border-l-4 border-[#6f4e37] bg-olive-50">
           <p className="font-bold text-brand-800">☕ Your {o.drink} is Ready!</p>
           <button
             disabled={pending}
