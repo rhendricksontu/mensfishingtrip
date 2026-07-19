@@ -180,6 +180,12 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
         </select>
       </Field>
 
+      {ridePref === "riding" && (
+        <Field label="Preferred Driver" error={err("preferred_driver")}>
+          <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you'd like to ride with (optional)" maxLength={100} />
+        </Field>
+      )}
+
       {(ridePref === "driving" || ridePref === "either") && (
         <div className="rounded-lg bg-brand-50 p-4 space-y-4">
           <label className="flex items-start gap-3">
@@ -202,12 +208,6 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           required
         />
       </Field>
-
-      {ridePref !== "driving" && (
-        <Field label="Preferred Driver" error={err("preferred_driver")}>
-          <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you'd like to ride with (optional)" maxLength={100} />
-        </Field>
-      )}
 
         </div>
       </fieldset>
