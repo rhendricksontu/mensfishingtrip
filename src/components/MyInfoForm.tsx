@@ -214,7 +214,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
 
       <fieldset className="rounded-lg border border-brand-100 p-4">
         <legend className="px-1 text-sm font-semibold text-brand-700">Activity Interest</legend>
-        <p className="mb-3 text-xs text-brand-500">Optional — check any you&apos;d be interested in.</p>
+        <p className="mb-3 text-xs text-brand-500">Check any you&apos;d be interested in. (Optional)</p>
         <div className="space-y-3">
           {ACTIVITY_OPTIONS.map((a) => (
             <label key={a.value} className="flex items-center gap-3">
