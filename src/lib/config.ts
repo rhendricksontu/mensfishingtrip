@@ -68,7 +68,6 @@ export const RIDE_PREF_LABELS: Record<string, string> = {
   driving: "Driver",
   riding: "Passenger",
   either: "Either", // legacy fallback for older RSVPs
-  arranged: "My Ride is Already Set",
 };
 
 // ---- Coffee ordering -------------------------------------------------------

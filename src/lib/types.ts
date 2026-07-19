@@ -1,4 +1,4 @@
-export type RidePreference = "driving" | "riding" | "either" | "arranged";
+export type RidePreference = "driving" | "riding" | "either";
 export type CoffeeDay = "saturday" | "sunday";
 export type CoffeeStatus = "pending" | "ready" | "picked_up";
 export type FishingSession = "saturday_morning" | "saturday_afternoon";
