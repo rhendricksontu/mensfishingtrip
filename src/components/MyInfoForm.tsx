@@ -177,12 +177,19 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <option value="driving">Driver</option>
           <option value="riding">Passenger</option>
           <option value="either">Either</option>
+          <option value="arranged">My Ride is Already Set</option>
         </select>
       </Field>
 
       {ridePref === "riding" && (
         <Field label="Preferred Driver" error={err("preferred_driver")}>
           <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you'd like to ride with (optional)" maxLength={100} />
+        </Field>
+      )}
+
+      {ridePref === "arranged" && (
+        <Field label="List Who You Are Riding With (Optional)" error={err("preferred_driver")}>
+          <input name="preferred_driver" className="input" defaultValue={attendee.preferred_driver ?? ""} placeholder="Who you're riding with (optional)" maxLength={100} />
         </Field>
       )}
 
