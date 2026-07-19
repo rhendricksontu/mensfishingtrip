@@ -231,6 +231,7 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           <label className="flex items-center gap-3">
             <input
               type="checkbox"
+              name="wants_other"
               checked={otherActivity}
               onChange={(e) => setOtherActivity(e.target.checked)}
               className="h-5 w-5 rounded border-brand-300 text-brand-600 focus:ring-brand-500"

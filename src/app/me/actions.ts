@@ -35,6 +35,16 @@ const EditSchema = z.object({
   seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
   activities: z.array(z.enum(["biking", "golfing", "hiking"])).default([]),
   activity_other: z.string().trim().max(200).optional().default(""),
+  wants_other: z.boolean().default(false),
+}).superRefine((val, ctx) => {
+  // If they checked "Other", they must say what it is.
+  if (val.wants_other && !val.activity_other.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["activity_other"],
+      message: "Please specify your other activity.",
+    });
+  }
 });
 
 export interface EditState {
@@ -75,6 +85,7 @@ export async function updateMyRsvp(
     seat_capacity: formData.get("seat_capacity") || 0,
     activities: formData.getAll("activities").map(String),
     activity_other: formData.get("activity_other") ?? "",
+    wants_other: bool(formData, "wants_other"),
   });
 
   if (!parsed.success) {
