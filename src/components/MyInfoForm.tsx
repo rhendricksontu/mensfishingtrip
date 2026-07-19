@@ -82,9 +82,9 @@ export default function MyInfoForm({ attendee }: { attendee: Attendee }) {
           />
           <Row label="Fish with a Guide" value={attendee.fish_with_guide ? "Yes" : "No"} />
           <Row label="Ride Preference" value={RIDE_PREF_LABELS[attendee.ride_preference] ?? "Not set"} />
+          {attendee.preferred_driver && <Row label="Preferred Driver" value={attendee.preferred_driver} />}
           {attendee.willing_to_drive && <Row label="Willing to Drive" value={`Yes · ${attendee.seat_capacity} seat(s)`} />}
           {attendee.departure_time && <Row label="Departure" value={attendee.departure_time} />}
-          {attendee.preferred_driver && <Row label="Preferred Driver" value={attendee.preferred_driver} />}
           {activityList.length > 0 && <Row label="Activities" value={activityList.join(", ")} />}
         </dl>
 

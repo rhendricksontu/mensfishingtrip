@@ -187,6 +187,7 @@ export default function SummaryClient({
                   label="Ride Preference"
                   value={RIDE_PREF_LABELS[a.ride_preference] ?? "Not set"}
                 />
+                {a.preferred_driver && <Row label="Preferred Driver" value={a.preferred_driver} />}
                 {a.willing_to_drive && (
                   <Row
                     label="Willing to Drive"
@@ -194,7 +195,6 @@ export default function SummaryClient({
                   />
                 )}
                 <Row label="Departure" value={a.departure_time || "Not set"} />
-                {a.preferred_driver && <Row label="Preferred Driver" value={a.preferred_driver} />}
                 {activityListFor(a).length > 0 && (
                   <Row label="Activities" value={activityListFor(a).join(", ")} />
                 )}
