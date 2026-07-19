@@ -29,6 +29,7 @@ export const DEPARTURE_TIME_OPTIONS = [
   "Friday Morning (8am-12pm)",
   "Early Friday Afternoon (12pm-3pm)",
   "Friday Afternoon (After 3pm)",
+  "I Don't Know",
   "Other",
 ];
 
