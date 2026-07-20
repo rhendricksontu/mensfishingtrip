@@ -4,8 +4,16 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { assignPassenger, unassignPassenger, setDriverStatus } from "@/app/admin/actions";
 import { formatPhone, normalizePhone } from "@/lib/utils";
+import { DEPARTURE_TIME_OPTIONS } from "@/lib/config";
 import PhoneLink from "@/components/PhoneLink";
 import type { Attendee, Ride } from "@/lib/types";
+
+// Rank a preferred departure time by its position in the option list (earliest
+// first); custom/blank times sort last. Used to order the unassigned lists.
+const departureRank = (a: Attendee) => {
+  const i = DEPARTURE_TIME_OPTIONS.indexOf(a.departure_time ?? "");
+  return i === -1 ? DEPARTURE_TIME_OPTIONS.length : i;
+};
 
 interface RidePassenger {
   ride_id: string;
@@ -46,12 +54,16 @@ export default function RidesClient({
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
   const byName = (a: Attendee, b: Attendee) => a.name.localeCompare(b.name);
+  // Preferred departure time first, then name A-Z (for the unassigned lists).
+  const byDeparture = (a: Attendee, b: Attendee) =>
+    departureRank(a) - departureRank(b) || a.name.localeCompare(b.name);
+  const departureLabel = (a: Attendee) => a.departure_time || "No time set";
   // Drivers who offered seats; and "self-drivers" who drive but won't take
   // passengers (RSVP: Driver/Either but not willing to drive others).
   const drivers = attendees.filter((a) => a.willing_to_drive).sort(byName);
   const selfDrivers = attendees
     .filter((a) => !a.willing_to_drive && a.ride_preference === "driving")
-    .sort(byName);
+    .sort(byDeparture);
 
   const passengersOf = (rideId: string) =>
     (ridePassengers
@@ -75,11 +87,11 @@ export default function RidesClient({
   //  - "driving" → self-drivers (their own car), handled below
   const unplaced = attendees
     .filter((a) => !a.willing_to_drive && a.ride_preference === "riding" && !seated.has(a.id))
-    .sort(byName);
+    .sort(byDeparture);
   const undecided = attendees
     .filter((a) => !a.willing_to_drive && a.ride_preference === "either" && !seated.has(a.id))
-    .sort(byName);
-  const emptyDrivers = drivers.filter((d) => passengersFor(d).length === 0);
+    .sort(byDeparture);
+  const emptyDrivers = drivers.filter((d) => passengersFor(d).length === 0).sort(byDeparture);
 
   return (
     <div className="space-y-6">
@@ -91,7 +103,7 @@ export default function RidesClient({
               <li key={a.id} className="flex items-center justify-between gap-2">
                 <span>
                   <span className="font-medium text-brand-800">{a.name}</span>
-                  <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+                  <span className="ml-2 text-xs text-brand-400">{departureLabel(a)}</span>
                 </span>
                 <button
                   onClick={() => makeDriver(a.id, a.seat_capacity)}
@@ -117,7 +129,7 @@ export default function RidesClient({
               <li key={a.id} className="flex items-center justify-between gap-2">
                 <span>
                   <span className="font-medium text-brand-800">{a.name}</span>
-                  <PhoneLink phone={a.phone} className="ml-2 text-xs text-brand-400 underline" />
+                  <span className="ml-2 text-xs text-brand-400">{departureLabel(a)}</span>
                 </span>
                 <span className="flex shrink-0 gap-2">
                   <button
@@ -155,7 +167,7 @@ export default function RidesClient({
                   <li key={d.id} className="flex items-center justify-between gap-2">
                     <span>
                       <span className="font-medium text-brand-800">{d.name}</span>
-                      <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
+                      <span className="ml-2 text-xs text-brand-400">{departureLabel(d)}</span>
                       <span className="ml-2 text-xs text-brand-500">
                         ({d.seat_capacity})
                       </span>
@@ -182,7 +194,7 @@ export default function RidesClient({
                 {selfDrivers.map((d) => (
                   <li key={d.id}>
                     <span className="font-medium text-brand-800">{d.name}</span>
-                    <PhoneLink phone={d.phone} className="ml-2 text-xs text-brand-400 underline" />
+                    <span className="ml-2 text-xs text-brand-400">{departureLabel(d)}</span>
                   </li>
                 ))}
               </ul>
