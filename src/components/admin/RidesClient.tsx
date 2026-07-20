@@ -122,7 +122,7 @@ export default function RidesClient({
         <div className={`card border border-dashed border-amber-200 bg-amber-50/40 text-sm ${flipping ? "opacity-60" : ""}`}>
           <p className="font-semibold text-amber-800">Unassigned Driver/Passenger</p>
           <p className="text-xs text-brand-500">
-            Chose &ldquo;Either&rdquo; at RSVP — pick a role or assign them to a car below.
+            Chose &ldquo;Either&rdquo; at RSVP, Pick a role or assign them to a car below.
           </p>
           <ul className="mt-1.5 space-y-1 text-brand-600">
             {undecided.map((a) => (
