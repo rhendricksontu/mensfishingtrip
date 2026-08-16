@@ -13,9 +13,13 @@ export default function ARClient({ attendees }: { attendees: Attendee[] }) {
   const unpaidCount = total - paidCount;
   const outstanding = unpaidCount * PAYMENT.amount;
 
-  // Unpaid first (so outstanding rises to the top), then alphabetical.
+  // Unpaid first (so outstanding rises to the top), then by last name.
+  const lastName = (n: string) => n.trim().split(/\s+/).pop() ?? n;
   const sorted = [...attendees].sort(
-    (a, b) => Number(a.paid) - Number(b.paid) || a.name.localeCompare(b.name)
+    (a, b) =>
+      Number(a.paid) - Number(b.paid) ||
+      lastName(a.name).localeCompare(lastName(b.name)) ||
+      a.name.localeCompare(b.name)
   );
 
   return (
