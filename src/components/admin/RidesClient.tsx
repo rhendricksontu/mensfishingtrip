@@ -60,7 +60,7 @@ export default function RidesClient({
   const departureLabel = (a: Attendee) => a.departure_time || "No time set";
   // Drivers who offered seats; and "self-drivers" who drive but won't take
   // passengers (RSVP: Driver/Either but not willing to drive others).
-  const drivers = attendees.filter((a) => a.willing_to_drive).sort(byName);
+  const drivers = attendees.filter((a) => a.willing_to_drive).sort(byDeparture);
   const selfDrivers = attendees
     .filter((a) => !a.willing_to_drive && a.ride_preference === "driving")
     .sort(byDeparture);
