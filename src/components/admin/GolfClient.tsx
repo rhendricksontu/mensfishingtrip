@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { setGolfLeader } from "@/app/golf/actions";
 import PhoneLink from "@/components/PhoneLink";
 import GolfForm from "@/components/GolfForm";
+import GolfersList from "@/components/GolfersList";
 import type { Attendee, Golf } from "@/lib/types";
 
 export default function GolfClient({
@@ -18,6 +19,7 @@ export default function GolfClient({
   const [pending, start] = useTransition();
   const leader = golf.leader_id ? attendees.find((a) => a.id === golf.leader_id) : null;
   const sorted = [...attendees].sort((a, b) => a.name.localeCompare(b.name));
+  const golfers = sorted.filter((a) => (a.activities ?? []).includes("golfing"));
 
   const setLeader = (id: string | null) =>
     start(async () => {
@@ -59,6 +61,8 @@ export default function GolfClient({
         <h3 className="mb-2 font-bold text-brand-800">Golf Details</h3>
         <GolfForm golf={golf} />
       </div>
+
+      <GolfersList golfers={golfers} />
     </div>
   );
 }

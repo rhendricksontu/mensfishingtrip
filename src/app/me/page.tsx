@@ -17,6 +17,7 @@ import MyInfoForm from "@/components/MyInfoForm";
 import CoffeeReadyBanner from "@/components/CoffeeReadyBanner";
 import GolfForm from "@/components/GolfForm";
 import GolfCard from "@/components/GolfCard";
+import GolfersList from "@/components/GolfersList";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
 import type {
@@ -64,6 +65,10 @@ export default async function MyTripPage() {
     golf.title || golf.start_time || golf.location || golf.location_name || golf.notes
   );
   const showGolf = iAmGolfLeader || (iAmGolfer && golfHasDetails);
+  // Everyone who chose Golfing — shown to the leader.
+  const golfers = attendees
+    .filter((a) => (a.activities ?? []).includes("golfing"))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
 
@@ -252,6 +257,7 @@ export default async function MyTripPage() {
                 You&apos;re organizing golf. Set the details golfers will see.
               </p>
               <GolfForm golf={golf} />
+              <GolfersList golfers={golfers} />
             </>
           ) : (
             <GolfCard golf={golf} />
