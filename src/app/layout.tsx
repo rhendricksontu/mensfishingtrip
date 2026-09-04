@@ -51,6 +51,7 @@ export default async function RootLayout({
       "/admin/summary",
       "/admin/ar",
       "/admin/coffee",
+      "/admin/golf",
       "/admin/rides",
       "/admin/cabins",
       "/admin/fishing",

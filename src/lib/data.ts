@@ -8,6 +8,7 @@ import type {
   Cabin,
   CoffeeOrder,
   FishingGroup,
+  Golf,
   LocationItem,
   Ride,
   Signup,
@@ -227,6 +228,28 @@ export function getRides(): Promise<Ride[]> {
       .order("created_at", { ascending: true });
     return (data as Ride[]) ?? [];
   }, []);
+}
+
+const GOLF_DEFAULT: Golf = {
+  leader_id: null,
+  title: null,
+  start_time: null,
+  location: null,
+  location_name: null,
+  notes: null,
+};
+
+// The single golf event's config (leader + details set by the leader/organizer).
+export function getGolf(): Promise<Golf> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db
+      .from("golf")
+      .select("leader_id, title, start_time, location, location_name, notes")
+      .eq("id", 1)
+      .maybeSingle();
+    return (data as Golf) ?? { ...GOLF_DEFAULT };
+  }, { ...GOLF_DEFAULT });
 }
 
 // Live coffee orders (not yet picked up) for the organizer queue.

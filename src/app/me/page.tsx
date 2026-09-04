@@ -9,11 +9,14 @@ import {
   getSignupLeaders,
   getVisibility,
   getCoffeeOrdersForAttendee,
+  getGolf,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
 import MyInfoForm from "@/components/MyInfoForm";
 import CoffeeReadyBanner from "@/components/CoffeeReadyBanner";
+import GolfForm from "@/components/GolfForm";
+import GolfCard from "@/components/GolfCard";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
 import type {
@@ -36,7 +39,7 @@ export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
-  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility, coffee] =
+  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility, coffee, golf] =
     await Promise.all([
       getAttendees(),
       getCabins(),
@@ -47,10 +50,20 @@ export default async function MyTripPage() {
       getSignupLeaders(),
       getVisibility(),
       getCoffeeOrdersForAttendee(me.id),
+      getGolf(),
     ]);
 
   // Coffee orders the organizer has marked ready for pickup.
   const readyCoffee = coffee.filter((o) => o.status === "ready");
+
+  // Golf — the leader gets an editable card; anyone who chose Golfing sees the
+  // details (once set).
+  const iAmGolfLeader = golf.leader_id === me.id;
+  const iAmGolfer = me.activities?.includes("golfing") ?? false;
+  const golfHasDetails = Boolean(
+    golf.title || golf.start_time || golf.location || golf.location_name || golf.notes
+  );
+  const showGolf = iAmGolfLeader || (iAmGolfer && golfHasDetails);
 
   const byId = new Map(attendees.map((a) => [a.id, a]));
 
@@ -226,6 +239,23 @@ export default async function MyTripPage() {
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Golf — the leader edits; golfers see the details once set */}
+      {showGolf && (
+        <div className="space-y-2">
+          <h2 className="font-bold text-brand-800">Golf</h2>
+          {iAmGolfLeader ? (
+            <>
+              <p className="text-sm text-brand-500">
+                You&apos;re organizing golf. Set the details golfers will see.
+              </p>
+              <GolfForm golf={golf} />
+            </>
+          ) : (
+            <GolfCard golf={golf} />
+          )}
         </div>
       )}
 

@@ -138,6 +138,15 @@ export interface AgendaFile {
   url: string; // public download URL (computed)
 }
 
+export interface Golf {
+  leader_id: string | null;
+  title: string | null;
+  start_time: string | null; // 24h "HH:MM"
+  location: string | null; // address
+  location_name: string | null; // place name
+  notes: string | null;
+}
+
 export interface LocationItem {
   id: string;
   name: string;
