@@ -46,13 +46,23 @@ export default async function LocationsPage() {
       {empty ? (
         <div className="card text-brand-600">Locations will be posted here soon.</div>
       ) : (
-        <div className="space-y-3">
-          {cabins.map((c) => (
-            <CabinCard key={c.id} cabin={c} />
-          ))}
-          {places.map((p, i) => (
-            <PlaceCard key={i} place={p} />
-          ))}
+        <div className="space-y-6">
+          {cabins.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-lg font-bold text-brand-700">Cabins</h2>
+              {cabins.map((c) => (
+                <CabinCard key={c.id} cabin={c} />
+              ))}
+            </section>
+          )}
+          {places.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-lg font-bold text-brand-700">Other Locations</h2>
+              {places.map((p, i) => (
+                <PlaceCard key={i} place={p} />
+              ))}
+            </section>
+          )}
         </div>
       )}
     </div>
