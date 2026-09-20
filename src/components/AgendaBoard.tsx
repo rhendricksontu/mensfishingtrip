@@ -85,9 +85,14 @@ export default function AgendaBoard({
 }) {
   const filesFor = (id: string) => files.filter((f) => f.agenda_item_id === id);
   const coffeeFor = (day: CoffeeDay) => myCoffee.find((o) => o.day === day) ?? null;
+  // Chronological within each day (untimed items last), then by sort_order.
+  const timeKey = (i: AgendaItem) =>
+    (i.start_time && to24Hour(i.start_time)) || "99:99";
   const byDay = TRIP_DAYS.map((day) => ({
     day,
-    items: items.filter((i) => i.trip_day === day),
+    items: items
+      .filter((i) => i.trip_day === day)
+      .sort((a, b) => timeKey(a).localeCompare(timeKey(b)) || a.sort_order - b.sort_order),
   }));
 
   return (
