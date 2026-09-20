@@ -6,6 +6,22 @@ import { shortenPlace, addressLines, addressOneLine } from "@/lib/utils";
 export const metadata = { title: "Locations · Men's Fishing Trip" };
 export const dynamic = "force-dynamic";
 
+// Categorize an auto-derived place by keywords in its name/address so dinner
+// spots and river spots get their own sections. Anything unmatched falls into
+// "Other Locations" so it's never dropped.
+const DINNER_RE =
+  /saloon|brewery|grill|restaurant|kitchen|caf[eé]|\bbar\b|pizza|steakhouse|diner|eatery|bbq|tavern|\bpub\b|smokehouse|winery|distillery|tap\s?room/i;
+const RIVER_RE =
+  /river|park|creek|bend|\bfly\b|float|trail|falls|lake|marina|launch|fishing|canoe|kayak|put.?in|access/i;
+
+type Place = { name: string | null; address: string };
+function placeCategory(p: Place): "dinner" | "river" | "other" {
+  const hay = `${p.name ?? ""} ${p.address}`;
+  if (DINNER_RE.test(hay)) return "dinner";
+  if (RIVER_RE.test(hay)) return "river";
+  return "other";
+}
+
 export default async function LocationsPage() {
   const [agenda, cabins] = await Promise.all([getAgenda(), getCabins()]);
 
@@ -33,6 +49,9 @@ export default async function LocationsPage() {
   const places = [...byAddr.values()].sort((a, b) =>
     (a.name || a.address).localeCompare(b.name || b.address)
   );
+  const dinnerPlaces = places.filter((p) => placeCategory(p) === "dinner");
+  const riverPlaces = places.filter((p) => placeCategory(p) === "river");
+  const otherPlaces = places.filter((p) => placeCategory(p) === "other");
 
   const empty = cabins.length === 0 && places.length === 0;
 
@@ -55,10 +74,26 @@ export default async function LocationsPage() {
               ))}
             </section>
           )}
-          {places.length > 0 && (
+          {dinnerPlaces.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-lg font-bold text-brand-700">Dinner Spots</h2>
+              {dinnerPlaces.map((p, i) => (
+                <PlaceCard key={i} place={p} />
+              ))}
+            </section>
+          )}
+          {riverPlaces.length > 0 && (
+            <section className="space-y-3">
+              <h2 className="text-lg font-bold text-brand-700">River Locations</h2>
+              {riverPlaces.map((p, i) => (
+                <PlaceCard key={i} place={p} />
+              ))}
+            </section>
+          )}
+          {otherPlaces.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-lg font-bold text-brand-700">Other Locations</h2>
-              {places.map((p, i) => (
+              {otherPlaces.map((p, i) => (
                 <PlaceCard key={i} place={p} />
               ))}
             </section>
