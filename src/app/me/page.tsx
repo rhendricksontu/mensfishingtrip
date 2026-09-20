@@ -395,12 +395,6 @@ function RideCard({
         )}
       </div>
 
-      {driver.departure_time && (
-        <div className="space-y-0.5 text-xs text-brand-500">
-          <p>Preferred Departure: {driver.departure_time}</p>
-        </div>
-      )}
-
       {info.passengers.length > 0 && (
         <ul className="divide-y divide-brand-50">
           {info.passengers.map((p) => (
