@@ -11,11 +11,18 @@ export default async function LocationsPage() {
 
   // Auto-build the list from the agenda so it always stays in sync: one card per
   // distinct real-address place used on an agenda item (skip "Cabins" and blanks).
+  const addrKey = (addr: string) => addr.replace(/@.*/, "").trim().toLowerCase();
+  // Addresses already shown as cabin cards (a cabin can host events like
+  // breakfast, which copies its address onto agenda items) — don't list twice.
+  const cabinKeys = new Set(
+    cabins.map((c) => addressOneLine(c)).filter(Boolean).map(addrKey)
+  );
   const byAddr = new Map<string, { name: string | null; address: string }>();
   for (const item of agenda) {
     const address = item.location?.trim();
     if (!address || !/\d/.test(address)) continue;
-    const key = address.replace(/@.*/, "").trim().toLowerCase();
+    const key = addrKey(address);
+    if (cabinKeys.has(key)) continue; // already shown as a cabin card
     const existing = byAddr.get(key);
     if (!existing) {
       byAddr.set(key, { name: item.location_name?.trim() || null, address });
