@@ -493,6 +493,16 @@ function GuideView({
           ))}
         </ul>
       )}
+
+      <a
+        href="https://license.gooutdoorsoklahoma.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block rounded-lg bg-olive-50 px-3 py-2 text-xs font-medium text-olive-800"
+      >
+        🎣 A fishing license is required. Get yours for the day at{" "}
+        <span className="underline">license.gooutdoorsoklahoma.com</span>
+      </a>
     </div>
   );
 }
