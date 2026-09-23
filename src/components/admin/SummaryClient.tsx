@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { SESSION_LABELS, RIDE_PREF_LABELS, ACTIVITY_OPTIONS } from "@/lib/config";
 import { setAttendeeRole, deleteAttendee } from "@/app/admin/actions";
 import PhoneLink from "@/components/PhoneLink";
+import AdminRsvpForm from "@/components/admin/AdminRsvpForm";
 import type { Attendee, Cabin, FishingGroup, Ride } from "@/lib/types";
 
 interface RidePassenger {
@@ -26,6 +27,7 @@ export default function SummaryClient({
   ridePassengers: RidePassenger[];
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const router = useRouter();
   const [pending, start] = useTransition();
   const byId = new Map(attendees.map((a) => [a.id, a]));
@@ -165,8 +167,20 @@ export default function SummaryClient({
                 {open ? "Hide" : "View"}
               </span>
             </button>
-            {open && (
+            {open && editingId === a.id && (
+              <AdminRsvpForm attendee={a} onClose={() => setEditingId(null)} />
+            )}
+            {open && editingId !== a.id && (
               <dl className="mt-3 space-y-1.5 border-t border-brand-50 pt-3 text-sm">
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setEditingId(a.id)}
+                    className="btn-secondary text-xs"
+                  >
+                    Edit RSVP
+                  </button>
+                </div>
                 <SectionHeading>RSVP</SectionHeading>
                 <Row
                   label="Cell Phone"

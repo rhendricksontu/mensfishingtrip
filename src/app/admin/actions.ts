@@ -1,10 +1,160 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/require-admin";
 import { sanitizeNotes } from "@/lib/sanitize";
+import { normalizePhone, formatPhone, phoneKey, authEmailForPhone } from "@/lib/utils";
 import type { FishingSession, RideDirection, VisibilityKey } from "@/lib/types";
+
+// ---- Edit any attendee's RSVP (from the Summary tab) -----------------------
+
+export interface RsvpEditState {
+  ok: boolean;
+  error?: string;
+  fieldErrors?: Record<string, string>;
+}
+
+const AdminRsvpSchema = z
+  .object({
+    name: z.string().trim().min(2, "Enter a full name."),
+    fish_with_guide: z.enum(["yes", "no"], {
+      errorMap: () => ({ message: "Choose yes or no." }),
+    }),
+    phone: z
+      .string()
+      .trim()
+      .refine((v) => normalizePhone(v).length >= 10, "Enter a valid phone number."),
+    emergency_contact_name: z.string().trim().min(2, "Emergency contact name is required."),
+    emergency_contact_phone: z
+      .string()
+      .trim()
+      .refine((v) => normalizePhone(v).length >= 10, "Enter a valid emergency contact phone."),
+    ride_preference: z.enum(["driving", "riding", "either"], {
+      errorMap: () => ({ message: "Choose Driver, Passenger, or Either." }),
+    }),
+    departure_time: z.string().trim().min(1, "Choose a departure time."),
+    preferred_driver: z.string().trim().max(100).optional().default(""),
+    willing_to_drive: z.boolean(),
+    seat_capacity: z.coerce.number().int().min(0).max(20).default(0),
+    activities: z.array(z.enum(["biking", "golfing", "hiking"])).default([]),
+    activity_other: z.string().trim().max(200).optional().default(""),
+    wants_other: z.boolean().default(false),
+  })
+  .superRefine((val, ctx) => {
+    if (val.wants_other && !val.activity_other.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["activity_other"],
+        message: "Please specify the other activity.",
+      });
+    }
+  });
+
+function fbool(formData: FormData, key: string): boolean {
+  const v = formData.get(key);
+  return v === "on" || v === "true" || v === "1";
+}
+function fother(formData: FormData, key: string): string {
+  const sel = String(formData.get(key) ?? "");
+  return sel === "Other" ? String(formData.get(`${key}_other`) ?? "").trim() : sel;
+}
+
+// Organizer edits any attendee's RSVP. Keeps the login (phone = username) in sync
+// when the phone changes, mirroring the self-serve edit.
+export async function adminUpdateRsvp(
+  _prev: RsvpEditState,
+  formData: FormData
+): Promise<RsvpEditState> {
+  await requireAdmin();
+  const id = String(formData.get("attendee_id") ?? "");
+  if (!id) return { ok: false, error: "Missing attendee." };
+
+  const db = createAdminClient();
+  const { data: target } = await db
+    .from("attendees")
+    .select("id, phone, user_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (!target) return { ok: false, error: "Attendee not found." };
+
+  const parsed = AdminRsvpSchema.safeParse({
+    name: formData.get("name"),
+    fish_with_guide: formData.get("fish_with_guide"),
+    phone: formData.get("phone"),
+    emergency_contact_name: formData.get("emergency_contact_name"),
+    emergency_contact_phone: formData.get("emergency_contact_phone"),
+    ride_preference: formData.get("ride_preference"),
+    departure_time: fother(formData, "departure_time"),
+    preferred_driver: formData.get("preferred_driver") ?? "",
+    willing_to_drive: fbool(formData, "willing_to_drive"),
+    seat_capacity: formData.get("seat_capacity") || 0,
+    activities: formData.getAll("activities").map(String),
+    activity_other: formData.get("activity_other") ?? "",
+    wants_other: fbool(formData, "wants_other"),
+  });
+  if (!parsed.success) {
+    const fieldErrors: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = String(issue.path[0]);
+      if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+    }
+    return { ok: false, error: "Please fix the highlighted fields.", fieldErrors };
+  }
+
+  const d = parsed.data;
+  const willingToDrive = d.ride_preference !== "riding" && d.willing_to_drive;
+
+  // Keep the login email (derived from the phone) in sync if the phone changed.
+  if (target.user_id && phoneKey(d.phone) !== phoneKey(target.phone)) {
+    const { error: authErr } = await db.auth.admin.updateUserById(target.user_id, {
+      email: authEmailForPhone(d.phone),
+      email_confirm: true,
+    });
+    if (authErr) {
+      const msg = authErr.message?.toLowerCase() ?? "";
+      if (msg.includes("already") || msg.includes("registered") || msg.includes("exists")) {
+        return {
+          ok: false,
+          error: "That phone number is already linked to another account.",
+          fieldErrors: { phone: "Already in use." },
+        };
+      }
+      return { ok: false, error: "Could not update the login. Try again." };
+    }
+  }
+
+  const { error } = await db
+    .from("attendees")
+    .update({
+      name: d.name,
+      fish_with_guide: d.fish_with_guide === "yes",
+      phone: formatPhone(d.phone),
+      emergency_contact_name: d.emergency_contact_name,
+      emergency_contact_phone: formatPhone(d.emergency_contact_phone),
+      ride_preference: d.ride_preference,
+      departure_time: d.departure_time || null,
+      preferred_driver: d.preferred_driver || null,
+      willing_to_drive: willingToDrive,
+      seat_capacity: willingToDrive ? d.seat_capacity : 0,
+      needs_ride: d.ride_preference === "riding",
+      activities: d.activities,
+      activity_other: d.activity_other || null,
+    })
+    .eq("id", id);
+  if (error) return { ok: false, error: "Could not save the RSVP." };
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/summary");
+  revalidatePath("/admin/ar");
+  revalidatePath("/admin/rides");
+  revalidatePath("/admin/roster");
+  revalidatePath("/admin/cabins");
+  revalidatePath("/admin/fishing");
+  revalidatePath("/me");
+  return { ok: true };
+}
 
 // ---- Coffee queue ----------------------------------------------------------
 
