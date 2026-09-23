@@ -5,19 +5,22 @@ import {
   getFishingGroups,
   getRides,
   getRidePassengers,
+  getWhatToBring,
 } from "@/lib/data";
 import SummaryClient from "@/components/admin/SummaryClient";
+import WhatToBringEditor from "@/components/admin/WhatToBringEditor";
 
 export const dynamic = "force-dynamic";
 
 export default async function SummaryPage() {
   await requireAdmin();
-  const [attendees, cabins, groups, rides, ridePassengers] = await Promise.all([
+  const [attendees, cabins, groups, rides, ridePassengers, whatToBring] = await Promise.all([
     getAttendees(),
     getCabins(),
     getFishingGroups(),
     getRides(),
     getRidePassengers(),
+    getWhatToBring(),
   ]);
 
   return (
@@ -28,6 +31,7 @@ export default async function SummaryPage() {
           Everyone who has RSVP&apos;d. Tap a name for their fishing trip details.
         </p>
       </div>
+      <WhatToBringEditor initial={whatToBring ?? ""} />
       <SummaryClient
         attendees={attendees}
         cabins={cabins}

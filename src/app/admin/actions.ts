@@ -8,6 +8,25 @@ import { sanitizeNotes } from "@/lib/sanitize";
 import { normalizePhone, formatPhone, phoneKey, authEmailForPhone } from "@/lib/utils";
 import type { FishingSession, RideDirection, VisibilityKey } from "@/lib/types";
 
+// ---- Global trip notes -----------------------------------------------------
+
+// Organizer sets the "What to Bring" note shown on everyone's My Trip page.
+export async function setWhatToBring(text: string) {
+  await requireAdmin();
+  const db = createAdminClient();
+  const value = text.trim();
+  const { error } = await db
+    .from("trip_info")
+    .upsert(
+      { id: 1, what_to_bring: value || null, updated_at: new Date().toISOString() },
+      { onConflict: "id" }
+    );
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/me");
+  revalidatePath("/admin/summary");
+  return { ok: true };
+}
+
 // ---- Edit any attendee's RSVP (from the Summary tab) -----------------------
 
 export interface RsvpEditState {

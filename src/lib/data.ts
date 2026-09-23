@@ -239,6 +239,15 @@ const GOLF_DEFAULT: Golf = {
   notes: null,
 };
 
+// Editable global "What to Bring" note (trip_info single row).
+export function getWhatToBring(): Promise<string | null> {
+  return safe(async () => {
+    const db = createAdminClient();
+    const { data } = await db.from("trip_info").select("what_to_bring").eq("id", 1).maybeSingle();
+    return (data?.what_to_bring as string | null) ?? null;
+  }, null);
+}
+
 // The single golf event's config (leader + details set by the leader/organizer).
 export function getGolf(): Promise<Golf> {
   return safe(async () => {

@@ -10,6 +10,7 @@ import {
   getVisibility,
   getCoffeeOrdersForAttendee,
   getGolf,
+  getWhatToBring,
 } from "@/lib/data";
 import { PAYMENT, SESSION_LABELS } from "@/lib/config";
 import { addressLines, addressOneLine, shortenPlace } from "@/lib/utils";
@@ -18,6 +19,7 @@ import CoffeeReadyBanner from "@/components/CoffeeReadyBanner";
 import GolfForm from "@/components/GolfForm";
 import GolfCard from "@/components/GolfCard";
 import GolfersList from "@/components/GolfersList";
+import ExpandableNote from "@/components/ExpandableNote";
 import MapLink from "@/components/MapLink";
 import PhoneLink from "@/components/PhoneLink";
 import type {
@@ -40,7 +42,7 @@ export const metadata = { title: "My Fishing Trip · Men's Fishing Trip" };
 
 export default async function MyTripPage() {
   const me = await requireAttendee();
-  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility, coffee, golf] =
+  const [attendees, cabins, groups, rides, ridePassengers, signups, signupLeaders, visibility, coffee, golf, whatToBring] =
     await Promise.all([
       getAttendees(),
       getCabins(),
@@ -52,6 +54,7 @@ export default async function MyTripPage() {
       getVisibility(),
       getCoffeeOrdersForAttendee(me.id),
       getGolf(),
+      getWhatToBring(),
     ]);
 
   // Coffee orders the organizer has marked ready for pickup.
@@ -170,6 +173,13 @@ export default async function MyTripPage() {
         <h1 className="text-2xl font-bold text-brand-800">My Fishing Trip</h1>
         <p className="text-sm text-brand-500">Welcome, {me.name.split(" ")[0]}!</p>
       </div>
+
+      {/* What to Bring — expandable, above River Parking */}
+      {whatToBring?.trim() && (
+        <div className="card border-l-4 border-brand-300">
+          <ExpandableNote label="What to Bring" details={whatToBring} />
+        </div>
+      )}
 
       {/* General info everyone should see, up top */}
       <div className="card border-l-4 border-brand-300">
