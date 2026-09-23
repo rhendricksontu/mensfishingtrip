@@ -1,6 +1,7 @@
 import { getAgenda, getCabins } from "@/lib/data";
 import type { Cabin } from "@/lib/types";
 import MapLink from "@/components/MapLink";
+import CabinCheckin from "@/components/CabinCheckin";
 import { shortenPlace, addressLines, addressOneLine } from "@/lib/utils";
 
 export const metadata = { title: "Locations · Men's Fishing Trip" };
@@ -123,6 +124,7 @@ function CabinCard({ cabin }: { cabin: Cabin }) {
           Get directions
         </MapLink>
       )}
+      <CabinCheckin name={cabin.name} details={cabin.checkin_details} />
     </div>
   );
 }

@@ -459,6 +459,21 @@ function CabinCard({
             </div>
           </div>
 
+          <div>
+            <span className="label">Check-in Details</span>
+            <textarea
+              className="input min-h-[80px]"
+              defaultValue={cabin.checkin_details ?? ""}
+              placeholder="How to check in, door/lockbox codes, where to park, etc."
+              onBlur={(e) => {
+                const v = e.target.value.trim();
+                if (v !== (cabin.checkin_details ?? "")) {
+                  run(() => updateCabin(cabin.id, { checkin_details: v || null }));
+                }
+              }}
+            />
+          </div>
+
           {occupants.length > 0 && (
             <ul className="divide-y divide-brand-50">
               {occupants.map((a) => (

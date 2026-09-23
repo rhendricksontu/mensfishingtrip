@@ -32,6 +32,8 @@ export interface Cabin {
   sort_order: number;
   // Event keys this cabin is the designated location for (see CABIN_EVENT_OPTIONS).
   event_locations: string[];
+  // Free-text check-in instructions shown on Locations + the check-in agenda item.
+  checkin_details: string | null;
 }
 
 export interface FishingGroup {

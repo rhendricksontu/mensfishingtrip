@@ -179,7 +179,7 @@ export async function createCabin(
 
 export async function updateCabin(
   id: string,
-  patch: { name?: string; capacity?: number } & CabinAddress
+  patch: { name?: string; capacity?: number; checkin_details?: string | null } & CabinAddress
 ) {
   await requireAdmin();
   const db = createAdminClient();

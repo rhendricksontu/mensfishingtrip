@@ -14,7 +14,8 @@ import {
   deleteAgendaFile,
 } from "@/app/admin/actions";
 import CoffeeOrderButton from "@/components/CoffeeOrderButton";
-import type { AgendaItem, AgendaFile, CoffeeDay, CoffeeOrder } from "@/lib/types";
+import CabinCheckin from "@/components/CabinCheckin";
+import type { AgendaItem, AgendaFile, Cabin, CoffeeDay, CoffeeOrder } from "@/lib/types";
 
 // Coffee ordering lives on the Saturday/Sunday "Coffee & Breakfast" cards.
 function coffeeDayFor(item: AgendaItem): CoffeeDay | null {
@@ -73,18 +74,22 @@ async function compressImage(file: File): Promise<File> {
 export default function AgendaBoard({
   items,
   files,
+  cabins = [],
   isAdmin,
   canOrderCoffee = false,
   myCoffee = [],
 }: {
   items: AgendaItem[];
   files: AgendaFile[];
+  cabins?: Cabin[];
   isAdmin: boolean;
   canOrderCoffee?: boolean;
   myCoffee?: CoffeeOrder[];
 }) {
   const filesFor = (id: string) => files.filter((f) => f.agenda_item_id === id);
   const coffeeFor = (day: CoffeeDay) => myCoffee.find((o) => o.day === day) ?? null;
+  // Cabins with check-in details, surfaced under the "Arrive & Check In" item.
+  const checkinCabins = cabins.filter((c) => c.checkin_details?.trim());
   // Chronological within each day (untimed items last), then by sort_order.
   const timeKey = (i: AgendaItem) =>
     (i.start_time && to24Hour(i.start_time)) || "99:99";
@@ -116,6 +121,7 @@ export default function AgendaBoard({
               <ol className="space-y-3">
                 {dayItems.map((item) => {
                   const coffeeDay = coffeeDayFor(item);
+                  const isCheckin = /check\s*-?\s*in/i.test(item.title);
                   return (
                     <AgendaRow
                       key={item.id}
@@ -124,6 +130,7 @@ export default function AgendaBoard({
                       isAdmin={isAdmin}
                       coffeeDay={canOrderCoffee ? coffeeDay : null}
                       coffeeOrder={coffeeDay ? coffeeFor(coffeeDay) : null}
+                      checkinCabins={isCheckin ? checkinCabins : []}
                     />
                   );
                 })}
@@ -142,12 +149,14 @@ function AgendaRow({
   isAdmin,
   coffeeDay = null,
   coffeeOrder = null,
+  checkinCabins = [],
 }: {
   item: AgendaItem;
   files: AgendaFile[];
   isAdmin: boolean;
   coffeeDay?: CoffeeDay | null;
   coffeeOrder?: CoffeeOrder | null;
+  checkinCabins?: Cabin[];
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -351,6 +360,13 @@ function AgendaRow({
             );
           })()}
           {coffeeDay && <CoffeeOrderButton day={coffeeDay} existing={coffeeOrder} />}
+          {checkinCabins.length > 0 && (
+            <div className="mt-1 space-y-1">
+              {checkinCabins.map((c) => (
+                <CabinCheckin key={c.id} name={c.name} details={c.checkin_details} />
+              ))}
+            </div>
+          )}
           {(item.notes || files.length > 0) && (
             <div className="mt-2 flex flex-wrap gap-2">
               {item.notes && (

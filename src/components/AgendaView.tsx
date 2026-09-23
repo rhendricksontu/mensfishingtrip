@@ -1,12 +1,13 @@
-import { getAgenda, getAgendaFiles, getCoffeeOrdersForAttendee } from "@/lib/data";
+import { getAgenda, getAgendaFiles, getCabins, getCoffeeOrdersForAttendee } from "@/lib/data";
 import { getAdminUser } from "@/lib/auth";
 import { getCurrentAttendee } from "@/lib/attendee";
 import AgendaBoard from "@/components/AgendaBoard";
 
 export default async function AgendaView() {
-  const [items, files, admin, me] = await Promise.all([
+  const [items, files, cabins, admin, me] = await Promise.all([
     getAgenda(),
     getAgendaFiles(),
+    getCabins(),
     getAdminUser(),
     getCurrentAttendee(),
   ]);
@@ -17,6 +18,7 @@ export default async function AgendaView() {
     <AgendaBoard
       items={items}
       files={files}
+      cabins={cabins}
       isAdmin={Boolean(admin)}
       canOrderCoffee={Boolean(me)}
       myCoffee={myCoffee}
