@@ -275,6 +275,15 @@ export default async function MyTripPage() {
         </div>
       )}
 
+      {/* General info everyone should see */}
+      <div className="card border-l-4 border-brand-300">
+        <p className="font-semibold text-brand-800">About River Parking</p>
+        <p className="mt-1 text-sm text-brand-600">
+          Use the parking pass signs at the park. You can take a picture of the QR code
+          when you drive in. They are everywhere.
+        </p>
+      </div>
+
       {/* Editable details */}
       <MyInfoForm attendee={me} />
     </div>
